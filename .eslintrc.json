@@ -5,7 +5,7 @@
     "es2021": true,
     "node": true
   },
-  "extends": ["airbnb", "node", "prettier", "plugin:node/recommended"],
+  "extends": ["airbnb", "prettier", "plugin:node/recommended"],
   "plugins": ["prettier"],
   "parserOptions": {
     "ecmaVersion": "latest"
