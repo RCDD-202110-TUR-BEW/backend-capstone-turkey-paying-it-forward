@@ -17,7 +17,7 @@
   "dependencies": {
     "dotenv": "^14.2.0",
     "express": "^4.17.2",
-    "yarn": "^1.22.17",
+    "mongoose": "^6.1.8",
     "yarn-upgrade-all": "^0.6.1"
   },
   "devDependencies": {
