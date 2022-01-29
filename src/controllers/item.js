@@ -1,7 +1,4 @@
 module.exports = {
-  getAllItems: (req, res) => {
-    res.send('All items');
-  },
   getSingleItem: (req, res) => {
     res.send('Single item');
   },

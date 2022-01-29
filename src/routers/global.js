@@ -8,6 +8,6 @@ const globalController = require('../controllers/global');
 router.get('/donators', globalController.getAllDonators);
 
 // GET route for /all-items
-router.get('/all-items', globalController.getAllGlobalItems);
+router.get('/all-items', globalController.getAllItems);
 
 module.exports = router;

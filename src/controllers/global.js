@@ -2,7 +2,7 @@ module.exports = {
   getAllDonators: (req, res) => {
     res.send('All donators');
   },
-  getAllGlobalItems: (req, res) => {
+  getAllItems: (req, res) => {
     res.send('All items');
   },
 };
