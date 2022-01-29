@@ -18,9 +18,9 @@ const port = process.env.NODE_LOCAL_PORT;
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
-app.use('/api', authRoutes);
-app.use('/api', itemRoutes);
-app.use('/api', userRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/items', itemRoutes);
+app.use('/api/users', userRoutes);
 app.use(globalRoutes);
 
 app.listen(port, () => {

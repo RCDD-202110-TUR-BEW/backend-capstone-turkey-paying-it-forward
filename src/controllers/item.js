@@ -11,15 +11,12 @@ module.exports = {
   getFilteredItems: (req, res) => {
     res.send('Filtered items');
   },
-
   updateItem: (req, res) => {
     res.send('Item with the specified ID has been updated');
   },
-
   addItem: (req, res) => {
     res.send('New item has been added');
   },
-
   deleteItem: (req, res) => {
     res.send('Item with the specified ID has been deleted');
   },
