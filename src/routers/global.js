@@ -2,12 +2,13 @@ const express = require('express');
 
 const router = express.Router();
 
-const globalController = require('../controllers/global');
+const userController = require('../controllers/user');
+const itemController = require('../controllers/item');
 
-// GET route for /donators
-router.get('/donators', globalController.getAllDonators);
+// GET route for /api/global/donators
+router.get('/donators', userController.getAllDonators);
 
-// GET route for /all-items
-router.get('/all-items', globalController.getAllItems);
+// GET route for /api/global/all-items
+router.get('/all-items', itemController.getAllItems);
 
 module.exports = router;

@@ -21,7 +21,7 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/items', itemRoutes);
 app.use('/api/users', userRoutes);
-app.use(globalRoutes);
+app.use('/api/global', globalRoutes);
 
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);

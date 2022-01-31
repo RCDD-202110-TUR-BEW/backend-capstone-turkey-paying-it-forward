@@ -14,4 +14,7 @@ module.exports = {
   deleteUser: (req, res) => {
     res.send('User with the specified ID has been deleted');
   },
+  getAllDonators: (req, res) => {
+    res.send('All donators');
+  },
 };
