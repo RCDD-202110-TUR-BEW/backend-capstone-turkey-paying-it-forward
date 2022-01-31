@@ -10,11 +10,12 @@ const ratingSchema = Schema({
   },
   raters: {
     type: [Object],
-    required: [true, 'Raters are required'],
+    default: [],
   },
   averageRate: {
     type: Number,
-    required: [true, 'Average rate is required'],
+    min: 0,
+    max: 5,
   },
 });
 const modelName = process.env.RATING_MODEL_NAME;
