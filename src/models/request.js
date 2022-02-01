@@ -1,4 +1,8 @@
 const mongoose = require('mongoose');
+const isImageUrl = require('is-image-url');
+
+const validator = (url) => isImageUrl(url);
+const imageValidator = [validator, 'Please enter a valid image URL!'];
 
 const { Schema } = mongoose;
 
@@ -6,8 +10,11 @@ const requestSchema = new Schema(
   {
     name: {
       type: String,
-      maxLength: [30, "Item name's max length is 30 characters"],
-      required: [true, 'Item name is required'],
+      maxLength: [
+        30,
+        'Request name should have max length of 30 characters only.',
+      ],
+      required: [true, 'Request name is required'],
     },
     type: {
       type: String,
@@ -21,9 +28,9 @@ const requestSchema = new Schema(
           'Furniture',
         ],
         message:
-          "Item type should be equal to 'Books', 'Stationery', 'School Books', 'Novels', 'Test Books' or 'Furniture'",
+          "Request type should be any one of 'Books', 'Stationery', 'School Books', 'Novels', 'Test Books' or 'Furniture'",
       },
-      required: [true, 'Item type is required'],
+      required: [true, 'Request type is required'],
     },
     description: {
       type: String,
@@ -31,6 +38,7 @@ const requestSchema = new Schema(
     },
     photo: {
       type: String,
+      validate: imageValidator,
     },
     owner: {
       type: { type: Schema.Types.ObjectId, ref: process.env.USER_MODEL_NAME },
