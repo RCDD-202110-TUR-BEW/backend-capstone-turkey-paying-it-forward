@@ -13,14 +13,14 @@ const itemSchema = new Schema({
     enum: {
       values: [
         'Books',
-        'Stationary',
+        'Stationery',
         'School Books',
         'Novels',
         'Test Books',
         'Furniture',
       ],
       message:
-        "Item type should be equal to 'Books', 'Stationary', 'School Books', 'Novels', 'Test Books' or 'Furniture'",
+        "Item type should be equal to 'Books', 'Stationery', 'School Books', 'Novels', 'Test Books' or 'Furniture'",
     },
     required: [true, 'Item type is required'],
   },
