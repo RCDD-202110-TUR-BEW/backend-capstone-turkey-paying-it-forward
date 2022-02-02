@@ -24,6 +24,7 @@ const userSchema = Schema({
   address: {
     type: String,
     required: [true, 'Address is required'],
+    maxlength: 95,
   },
   password_hash: {
     type: String,
