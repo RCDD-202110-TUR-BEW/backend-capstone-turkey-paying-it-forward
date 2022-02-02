@@ -33,6 +33,10 @@ const userSchema = Schema({
     type: Schema.Types.ObjectId,
     ref: process.env.RATING_MODEL_NAME,
   },
+  isDonator: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const modelName = process.env.USER_MODEL_NAME;
