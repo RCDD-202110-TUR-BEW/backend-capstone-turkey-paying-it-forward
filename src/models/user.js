@@ -30,7 +30,7 @@ const userSchema = Schema({
     type: String,
     required: [true, 'Password is required'],
   },
-  ratingRef: {
+  rating: {
     type: Schema.Types.ObjectId,
     ref: process.env.RATING_MODEL_NAME,
   },

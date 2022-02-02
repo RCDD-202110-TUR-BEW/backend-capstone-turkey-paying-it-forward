@@ -6,7 +6,7 @@ const raterSchema = Schema({
   raterId: {
     type: Schema.Types.ObjectId,
     ref: process.env.USER_MODEL_NAME,
-    required: [true, 'Rater id is required'],
+    required: [true, 'Rater ID is required'],
   },
   rating: {
     type: Number,
@@ -17,7 +17,7 @@ const raterSchema = Schema({
 });
 
 const ratingSchema = Schema({
-  userRef: {
+  user: {
     type: Schema.Types.ObjectId,
     ref: process.env.USER_MODEL_NAME,
     required: [true, 'User reference is required'],
