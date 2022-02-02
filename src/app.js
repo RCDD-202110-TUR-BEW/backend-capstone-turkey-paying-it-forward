@@ -2,7 +2,7 @@ const express = require('express');
 
 require('dotenv').config();
 
-const connectToMongo = require('./db/connection');
+const { connectToMongo } = require('./db/connection');
 
 const authRoutes = require('./routers/auth');
 
