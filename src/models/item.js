@@ -54,7 +54,8 @@ const itemSchema = new Schema(
       default: [],
     },
     owner: {
-      type: { type: Schema.Types.ObjectId, ref: process.env.USER_MODEL_NAME },
+      type: Schema.Types.ObjectId,
+      ref: process.env.USER_MODEL_NAME,
       required: [true, 'Owner reference is required'],
     },
   },

@@ -41,7 +41,8 @@ const requestSchema = new Schema(
       validate: imageValidator,
     },
     owner: {
-      type: { type: Schema.Types.ObjectId, ref: process.env.USER_MODEL_NAME },
+      type: Schema.Types.ObjectId,
+      ref: process.env.USER_MODEL_NAME,
       required: [true, 'Owner reference is required'],
     },
   },
