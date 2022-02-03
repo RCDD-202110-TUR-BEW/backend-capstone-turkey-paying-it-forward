@@ -18,13 +18,41 @@ module.exports = {
   getFilteredItems: (req, res) => {
     res.send('Filtered items');
   },
-  updateItem: (req, res) => {
-    res.send('Item with the specified ID has been updated');
+  updateItem: async (req, res) => {
+    const { id } = req.params;
+    try {
+      const updatedItem = await ItemModel.findByIdAndUpdate(
+        id,
+        { $set: req.body },
+        { new: true }
+      );
+      if (!updatedItem) {
+        res
+          .status(422)
+          .json({ message: 'The item with the specified ID was not found.' });
+      } else {
+        res.json(updatedItem);
+      }
+    } catch (err) {
+      res.status(422).json({ message: err.message });
+    }
   },
   addItem: (req, res) => {
     res.send('New item has been added');
   },
-  deleteItem: (req, res) => {
-    res.send('Item with the specified ID has been deleted');
+  deleteItem: async (req, res) => {
+    const { id } = req.params;
+    try {
+      const item = await ItemModel.findByIdAndDelete(id);
+      if (!item) {
+        res
+          .status(422)
+          .json({ message: 'The item with the specified ID was not found.' });
+      } else {
+        res.status(204).json({ message: 'The item is successfully deleted.' });
+      }
+    } catch (err) {
+      res.status(422).json({ message: err.message });
+    }
   },
 };
