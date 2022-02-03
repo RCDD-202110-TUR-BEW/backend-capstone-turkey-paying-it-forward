@@ -1,6 +1,13 @@
+const ItemModel = require('../models/item');
+
 module.exports = {
-  getAllItems: (req, res) => {
-    res.send('All items');
+  getAllItems: async (req, res) => {
+    try {
+      const items = await ItemModel.find();
+      res.json(items);
+    } catch (err) {
+      res.status(422).json({ message: err.message });
+    }
   },
   getSingleItem: (req, res) => {
     res.send('Single item');

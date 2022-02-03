@@ -1,3 +1,5 @@
+const UserModel = require('../models/user');
+
 module.exports = {
   getAllUsers: (req, res) => {
     res.send('All users');
@@ -14,7 +16,12 @@ module.exports = {
   deleteUser: (req, res) => {
     res.send('User with the specified ID has been deleted');
   },
-  getAllDonators: (req, res) => {
-    res.send('All donators');
+  getAllDonators: async (req, res) => {
+    try {
+      const donators = await UserModel.find({ isDonator: true });
+      res.json(donators);
+    } catch (err) {
+      res.status(422).json({ message: err.message });
+    }
   },
 };
