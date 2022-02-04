@@ -13,7 +13,7 @@ module.exports = {
     const { id } = req.params;
     try {
       const user = await UserModel.findById(id);
-      if (!user) throw new Error("The user with the specified id wasn't found");
+      if (!user) throw new Error("The user with the specified ID wasn't found");
       res.json(user);
     } catch (err) {
       res.status(422).json({ message: err.message });
@@ -33,7 +33,7 @@ module.exports = {
       );
 
       if (!updatedUser)
-        throw new Error("The user with the specified id wasn't found");
+        throw new Error("The user with the specified ID wasn't found");
 
       res.json(updatedUser);
     } catch (err) {
