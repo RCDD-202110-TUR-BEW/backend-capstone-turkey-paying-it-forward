@@ -13,7 +13,8 @@ module.exports = {
     const { id } = req.params;
     try {
       const user = await UserModel.findById(id);
-      res.status(200).json(user);
+      if (!user) throw new Error("The user with the specified id wasn't found");
+      res.json(user);
     } catch (err) {
       res.status(422).json({ message: err.message });
     }
@@ -31,23 +32,21 @@ module.exports = {
         }
       );
 
-      if (!updatedUser) {
-        res
-          .status(422)
-          .json({ message: "The user with the specified id wasn't found" });
-      } else {
-        res.json(updatedUser);
-      }
+      if (!updatedUser)
+        throw new Error("The user with the specified id wasn't found");
+
+      res.json(updatedUser);
     } catch (err) {
       res.status(422).json({ message: err.message });
     }
   },
 
+  // TODO: make sure to add authorization
   deleteUser: async (req, res) => {
     const { id } = req.params;
     try {
       const user = await UserModel.findByIdAndRemove(id);
-      res.status(204).json(user);
+      res.end();
     } catch (err) {
       res.status(422).json({ message: err.message });
     }
