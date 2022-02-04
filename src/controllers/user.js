@@ -45,7 +45,7 @@ module.exports = {
   deleteUser: async (req, res) => {
     const { id } = req.params;
     try {
-      const user = await UserModel.findByIdAndRemove(id);
+      await UserModel.findByIdAndRemove(id);
       res.end();
     } catch (err) {
       res.status(422).json({ message: err.message });
