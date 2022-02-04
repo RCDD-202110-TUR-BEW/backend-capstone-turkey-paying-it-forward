@@ -10,8 +10,8 @@ router.get('/available', itemController.getAvailableItems);
 // GET route for /api/items/filter
 router.get('/filter', itemController.getFilteredItems);
 
-// POST route for /api/items/item
-router.post('/item', itemController.addItem);
+// POST route for /api/items
+router.post('/', itemController.addItem);
 
 // GET, PUT and DELETE routes for /api/items/:id
 router
