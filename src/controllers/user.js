@@ -46,7 +46,7 @@ module.exports = {
     const { id } = req.params;
     try {
       await UserModel.findByIdAndRemove(id);
-      res.end();
+      res.status(204).end();
     } catch (err) {
       res.status(422).json({ message: err.message });
     }
