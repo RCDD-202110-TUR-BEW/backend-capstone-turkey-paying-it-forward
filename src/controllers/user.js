@@ -42,15 +42,7 @@ module.exports = {
       res.status(422).json({ message: err.message });
     }
   },
-  addUser: async (req, res) => {
-    const user = req.body;
-    try {
-      const newUser = await UserModel.create(user);
-      res.status(201).json(newUser);
-    } catch (err) {
-      res.status(422).json({ message: err.message });
-    }
-  },
+
   deleteUser: async (req, res) => {
     const { id } = req.params;
     try {
