@@ -4,7 +4,7 @@ module.exports = {
   getAllItems: async (req, res) => {
     try {
       const items = await ItemModel.find();
-      if (items.length < 0) res.json({ message: 'No items found' });
+      if (items.length <= 0) throw new Error('No items found');
       else res.json(items);
     } catch (err) {
       res.status(422).json({ message: err.message });

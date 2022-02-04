@@ -19,7 +19,7 @@ module.exports = {
   getAllDonators: async (req, res) => {
     try {
       const donators = await UserModel.find({ isDonator: true });
-      if (donators.length < 0) res.json({ message: 'No donators found' });
+      if (donators.length <= 0) throw new Error('No donators found');
       else res.json(donators);
     } catch (err) {
       res.status(422).json({ message: err.message });
