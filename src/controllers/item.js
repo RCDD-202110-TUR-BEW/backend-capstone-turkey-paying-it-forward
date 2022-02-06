@@ -11,7 +11,7 @@ module.exports = {
       if (!item) throw new Error('There is no item with the provided id!');
       res.json(item);
     } catch (err) {
-      res.status(422).json({ message: err.message });
+      res.status(422).json({ message: err.message ?? err });
     }
   },
   getAvailableItems: async (req, res) => {
@@ -21,7 +21,7 @@ module.exports = {
         throw new Error('There are no available items at the moment!');
       res.json(availableItems);
     } catch (err) {
-      res.status(422).json({ message: err.message });
+      res.status(422).json({ message: err.message ?? err });
     }
   },
   getFilteredItems: async (req, res) => {
@@ -36,7 +36,7 @@ module.exports = {
         throw new Error(`There are no available items of type ${typeQuery}!`);
       res.json(filteredItems);
     } catch (err) {
-      res.status(422).json({ message: err.message });
+      res.status(422).json({ message: err.message ?? err });
     }
   },
   updateItem: (req, res) => {
