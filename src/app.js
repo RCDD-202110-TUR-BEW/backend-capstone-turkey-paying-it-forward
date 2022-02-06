@@ -23,9 +23,9 @@ app.use('/api/items', itemRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/global', globalRoutes);
 
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
   connectToMongo();
 });
 
-module.exports = app;
+module.exports = server;
