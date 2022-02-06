@@ -27,4 +27,12 @@ const closeDatabase = async (drop = false) => {
   await mongoose.connection.close();
 };
 
-module.exports = { connectToMongo, closeDatabase };
+const clearDatabase = async () => {
+  const { collections } = mongoose.connection;
+  /* eslint-disable no-restricted-syntax, guard-for-in, no-await-in-loop */
+  for (const key in collections) {
+    await collections[key].deleteMany();
+  }
+};
+
+module.exports = { connectToMongo, closeDatabase, clearDatabase };
