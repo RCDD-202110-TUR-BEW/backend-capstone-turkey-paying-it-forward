@@ -1,4 +1,3 @@
-/* eslint-disable */
 const request = require('supertest');
 const server = require('../../app');
 const {
@@ -6,6 +5,7 @@ const {
   clearDatabase,
   connectToMongo,
 } = require('../../db/connection');
+
 let itemId;
 const trueItem = {
   name: 'Sofa',
@@ -97,7 +97,7 @@ describe('Items Endpoints', () => {
   });
 
   describe('POST /api/items', () => {
-    test('Should create a new item and response with the correct message', async () => {
+    test('Should create a new item when all provided inputs are valid', async () => {
       const response = await request(server)
         .post('/api/items')
         .set('Content-Type', 'application/json')
@@ -160,7 +160,7 @@ describe('Items Endpoints', () => {
       expect(response.body.message).toContain('Item name is required');
     });
 
-    test('Should not create a new item when name is not provided', async () => {
+    test('Should not create a new item when description is not provided', async () => {
       const response = await request(server)
         .post('/api/items')
         .set('Content-Type', 'application/json')
@@ -174,7 +174,24 @@ describe('Items Endpoints', () => {
   });
 
   describe('GET /api/items/available', () => {
-    beforeAll(async () => {
+    test('Should send all available items in the response', async () => {
+      await clearDatabase();
+      const response = await request(server).get('/api/items/available');
+
+      const responseBody = response.body;
+
+      expect(response.header['content-type']).toContain('application/json');
+      expect(response.statusCode).toBe(422);
+      expect(responseBody.message).toBe(
+        'There are no available items at the moment!'
+      );
+    });
+
+    test('Should send all available items in the response', async () => {
+      await request(server)
+        .post('/api/items')
+        .set('Content-Type', 'application/json')
+        .send(trueItem);
       await request(server)
         .post('/api/items')
         .set('Content-Type', 'application/json')
@@ -183,10 +200,9 @@ describe('Items Endpoints', () => {
         .post('/api/items')
         .set('Content-Type', 'application/json')
         .send(trueItem3);
-    });
-    test('Should send all available items in the response', async () => {
-      const response = await request(server).get('/api/items/available');
 
+      const response = await request(server).get('/api/items/available');
+      /* eslint-disable no-underscore-dangle */
       const responseBody = response.body;
       itemId = responseBody[0]._id;
 
@@ -194,6 +210,8 @@ describe('Items Endpoints', () => {
       expect(response.statusCode).toBe(200);
       expect(responseBody.length).toBe(3);
       expect(responseBody[0]).toMatchObject(trueItem);
+      expect(responseBody[1]).toMatchObject(trueItem2);
+      expect(responseBody[2]).toMatchObject(trueItem3);
     });
   });
 
@@ -209,7 +227,7 @@ describe('Items Endpoints', () => {
       expect(responseBody._id.toString()).toBe(itemId.toString());
     });
 
-    test('Should response with an error message when id is incorrect', async () => {
+    test('Should response with an error message when requested item ID does not exist', async () => {
       const response = await request(server).get(
         `/api/items/507f191e810c19729de860ea`
       );
@@ -219,8 +237,18 @@ describe('Items Endpoints', () => {
       expect(response.header['content-type']).toContain('application/json');
       expect(response.statusCode).toBe(422);
       expect(responseBody.message).toBe(
-        'There is no item with the provided id!'
+        'There is no item with the provided ID!'
       );
+    });
+
+    test('Should response with an error message when requested item ID is not valid', async () => {
+      const response = await request(server).get(`/api/items/invalidId123`);
+
+      const responseBody = response.body;
+
+      expect(response.header['content-type']).toContain('application/json');
+      expect(response.statusCode).toBe(422);
+      expect(responseBody.message).toBe('Requested item ID is not valid!');
     });
   });
 
@@ -236,6 +264,7 @@ describe('Items Endpoints', () => {
       expect(response.statusCode).toBe(200);
       expect(responseBody.length).toBe(2);
       expect(responseBody[0]).toMatchObject(trueItem);
+      expect(responseBody[1]).toMatchObject(trueItem3);
     });
 
     test('Should response with an error message when there are no items of the requested type', async () => {
@@ -261,7 +290,7 @@ describe('Items Endpoints', () => {
       expect(response.header['content-type']).toContain('application/json');
       expect(response.statusCode).toBe(422);
       expect(responseBody.message).toBeDefined();
-      expect(responseBody.message).toBe('Type query is required!');
+      expect(responseBody.message).toBe('Type query parameter is required!');
     });
   });
 });
