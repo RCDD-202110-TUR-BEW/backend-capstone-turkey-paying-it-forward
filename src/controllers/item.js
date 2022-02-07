@@ -1,3 +1,4 @@
+const { ObjectId } = require('mongoose').Types;
 const ItemModel = require('../models/item');
 
 module.exports = {
@@ -7,8 +8,10 @@ module.exports = {
   getSingleItem: async (req, res) => {
     try {
       const itemId = req.params.id;
+      if (String(new ObjectId(itemId)) !== itemId.toString())
+        throw new Error('Requested item ID is not valid!');
       const item = await ItemModel.findById(itemId);
-      if (!item) throw new Error('There is no item with the provided id!');
+      if (!item) throw new Error('There is no item with the provided ID!');
       res.json(item);
     } catch (err) {
       res.status(422).json({ message: err.message ?? err });
@@ -27,7 +30,7 @@ module.exports = {
   getFilteredItems: async (req, res) => {
     try {
       const typeQuery = req.query.type;
-      if (!typeQuery) throw new Error('Type query is required!');
+      if (!typeQuery) throw new Error('Type query parameter is required!');
       const filteredItems = await ItemModel.find({
         type: typeQuery,
         isAvailable: true,
