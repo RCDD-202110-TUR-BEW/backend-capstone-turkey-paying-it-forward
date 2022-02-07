@@ -22,7 +22,7 @@ module.exports = {
       if (donators.length <= 0) throw new Error('No donators found');
       else res.json(donators);
     } catch (err) {
-      res.status(422).json({ message: err.message });
+      res.status(422).json({ message: err.message ?? err });
     }
   },
 };

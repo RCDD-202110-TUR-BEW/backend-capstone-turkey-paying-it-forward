@@ -7,7 +7,7 @@ module.exports = {
       if (items.length <= 0) throw new Error('No items found');
       else res.json(items);
     } catch (err) {
-      res.status(422).json({ message: err.message });
+      res.status(422).json({ message: err.message ?? err });
     }
   },
   getSingleItem: (req, res) => {

@@ -3,7 +3,8 @@
     "browser": true,
     "commonjs": true,
     "es2021": true,
-    "node": true
+    "node": true,
+    "jest": true
   },
   "extends": ["airbnb", "prettier", "plugin:node/recommended"],
   "plugins": ["prettier"],
@@ -16,6 +17,7 @@
     "no-console": "warn",
     "func-names": "off",
     "no-process-exit": "off",
-    "class-methods-use-this": "off"
+    "class-methods-use-this": "off",
+    "arrow-body-style": "warn"
   }
 }
