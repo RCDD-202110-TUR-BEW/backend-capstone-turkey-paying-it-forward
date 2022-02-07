@@ -12,7 +12,7 @@ const connectToMongo = () => {
   const db = mongoose.connection;
 
   db.once('open', () => {
-    console.log('Database connected');
+    console.log('Database connected to: ', url);
   });
 
   db.on('error', (err) => {
@@ -31,7 +31,7 @@ const clearDatabase = async () => {
   const { collections } = mongoose.connection;
   /* eslint-disable no-restricted-syntax, guard-for-in, no-await-in-loop */
   for (const key in collections) {
-    await collections[key].deleteMany();
+    await mongoose.connection.dropCollection(key);
   }
 };
 
