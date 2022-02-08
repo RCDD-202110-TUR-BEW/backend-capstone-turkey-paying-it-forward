@@ -4,11 +4,10 @@ module.exports = function (req, res, next) {
   try {
     // eslint-disable-next-line no-underscore-dangle
     if (req.user._id === req.params.id) {
-      next();
-    } else {
-      res.status(401).json({ message: 'Unauthorized' });
+      return next();
     }
+    return res.status(401).json({ message: 'Unauthorized' });
   } catch (error) {
-    res.status(401).json({ message: 'Unauthorized' });
+    return res.status(401).json({ message: 'Unauthorized' });
   }
 };
