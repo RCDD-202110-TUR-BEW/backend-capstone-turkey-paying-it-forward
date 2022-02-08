@@ -174,7 +174,7 @@ describe('Items Endpoints', () => {
   });
 
   describe('GET /api/items/available', () => {
-    test('Should send all available items in the response', async () => {
+    test('Should response with an error message when there are no available items', async () => {
       await clearDatabase();
       const response = await request(server).get('/api/items/available');
 

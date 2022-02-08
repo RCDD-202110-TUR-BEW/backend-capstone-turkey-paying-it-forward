@@ -29,10 +29,12 @@ const closeDatabase = async (drop = false) => {
 
 const clearDatabase = async () => {
   const { collections } = mongoose.connection;
-  /* eslint-disable no-restricted-syntax, guard-for-in, no-await-in-loop */
+  const results = [];
+  /* eslint-disable no-restricted-syntax, guard-for-in */
   for (const key in collections) {
-    await mongoose.connection.dropCollection(key);
+    results.push(mongoose.connection.dropCollection(key));
   }
+  await Promise.all(results);
 };
 
 module.exports = { connectToMongo, closeDatabase, clearDatabase };
