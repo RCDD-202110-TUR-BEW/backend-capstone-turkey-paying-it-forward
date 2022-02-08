@@ -32,6 +32,7 @@ describe('user-authorization function middleware', () => {
     expect(res.status).not.toHaveBeenCalled();
     expect(res.json).not.toHaveBeenCalled();
   });
+
   it("should unauthorize user when the passed param's id not equals to user's id ", () => {
     const req = {
       user,
@@ -40,6 +41,7 @@ describe('user-authorization function middleware', () => {
       },
     };
     const next = jest.fn().mockReturnThis();
+
     userAuthorization(req, res, next);
     expect(next).not.toHaveBeenCalled();
     expect(res.status).toHaveBeenCalled();
@@ -47,6 +49,7 @@ describe('user-authorization function middleware', () => {
     expect(res.json).toHaveBeenCalled();
     expect(res.json).toHaveBeenCalledWith({ message: 'Unauthorized' });
   });
+
   it('should unauthorize user when user is not defined', () => {
     const req = {
       params: {
@@ -54,6 +57,7 @@ describe('user-authorization function middleware', () => {
       },
     };
     const next = jest.fn().mockReturnThis();
+
     userAuthorization(req, res, next);
     expect(next).not.toHaveBeenCalled();
     expect(res.status).toHaveBeenCalledWith(401);
