@@ -12,7 +12,7 @@ const connectToMongo = () => {
   const db = mongoose.connection;
 
   db.once('open', () => {
-    console.log('Database connected');
+    console.log('Database connected to: ', url);
   });
 
   db.on('error', (err) => {
@@ -27,4 +27,14 @@ const closeDatabase = async (drop = false) => {
   await mongoose.connection.close();
 };
 
-module.exports = { connectToMongo, closeDatabase };
+const clearDatabase = async () => {
+  const { collections } = mongoose.connection;
+  const results = [];
+  /* eslint-disable no-restricted-syntax, guard-for-in */
+  for (const key in collections) {
+    results.push(mongoose.connection.dropCollection(key));
+  }
+  await Promise.all(results);
+};
+
+module.exports = { connectToMongo, closeDatabase, clearDatabase };
