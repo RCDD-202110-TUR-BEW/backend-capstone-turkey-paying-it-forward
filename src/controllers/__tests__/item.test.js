@@ -87,13 +87,12 @@ const noDescriptionItem = {
 describe('Items Endpoints', () => {
   beforeAll(async () => {
     connectToMongo();
-    await clearDatabase();
   });
 
   afterAll(async () => {
     await clearDatabase();
     await closeDatabase();
-    server.close();
+    await server.close();
   });
 
   describe('POST /api/items', () => {
