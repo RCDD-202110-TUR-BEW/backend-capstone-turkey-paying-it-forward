@@ -39,7 +39,6 @@ describe('User Endpoints', () => {
   });
 
   afterAll(async () => {
-    await clearDatabase();
     await closeDatabase();
     server.close();
   });
