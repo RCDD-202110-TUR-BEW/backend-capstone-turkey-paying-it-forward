@@ -1,58 +1,79 @@
-const mockingoose = require('mockingoose');
+const request = require('supertest');
 
-const UserModel = require('../../models/user');
+const server = require('../../app');
 
-const { getAllDonators } = require('../user');
+const {
+  closeDatabase,
+  clearDatabase,
+  connectToMongo,
+} = require('../../db/connection');
 
-const users = [
-  {
-    _id: 'abc12345',
-    username: 'Aisha',
-    firstName: 'Aisha',
-    lastName: 'Colins',
-    email: 'aisha.colins@gmail.com',
-    address: 'Green Avenue, Brooks Street, 25/5',
-    password_hash: 'asdfghjkl',
-    isDonator: true,
-  },
+let userId;
 
-  {
-    _id: '56789abc',
-    username: 'Lena',
-    firstName: 'Lena',
-    lastName: 'James',
-    email: 'lena.james@gmail.com',
-    address: 'Fox Avenue, Milburn Street, 10/31',
-    password_hash: 'qwertyuiop',
-    isDonator: true,
-  },
-];
+const newValidUser = {
+  username: 'new.user',
+  firstName: 'New',
+  lastName: 'User',
+  email: 'email@domain.com',
+  password: 'testPassword',
+  password2: 'testPassword',
+  address: 'new address',
+  acceptTos: 'on',
+};
 
-let req;
-let res;
+const newValidUser2 = {
+  username: 'new.user2',
+  firstName: 'New2',
+  lastName: 'User2',
+  email: 'email2@domain.com',
+  password: 'testPassword2',
+  password2: 'testPassword2',
+  address: 'new address2',
+  acceptTos: 'on',
+};
 
-describe('GET /api/global/donators', () => {
-  beforeEach(() => {
-    req = {};
-    res = {
-      json: jest.fn(),
-    };
+describe('User Endpoints', () => {
+  beforeAll(async () => {
+    connectToMongo();
+    await clearDatabase();
   });
 
-  it('Should get information of all users, whose isDonator field is set to true.', async () => {
-    mockingoose(UserModel).toReturn(users, 'find');
-    const spyOnFind = jest.spyOn(UserModel, 'find');
-    const fetchedUsers = await getAllDonators(req, res);
-    for (let i = 0; i < users.length; i += 1) {
-      expect(fetchedUsers[i].username).toBe(users[i].username);
-      expect(fetchedUsers[i].email).toBe(users[i].email);
-    }
-    expect(spyOnFind).toHaveBeenCalledTimes(1);
+  afterAll(async () => {
+    await clearDatabase();
+    await closeDatabase();
+    server.close();
   });
 
-  it('Should throw an error if the database is empty', async () => {
-    mockingoose(UserModel).toReturn([], 'find');
-    const fetchedUsers = await getAllDonators(req, res);
-    expect(fetchedUsers).toBe('There are no users in the database');
+  describe('GET /api/users/', () => {
+    test('Should send the all the users from database in the response', async () => {
+      await request(server)
+        .post('/api/auth/signup')
+        .set('Content-Type', 'application/json')
+        .send(newValidUser);
+
+      await request(server)
+        .post('/api/auth/signup')
+        .set('Content-Type', 'application/json')
+        .send(newValidUser2);
+
+      const response = await request(server).get('/api/users');
+
+      const responseBody = response.body;
+      console.log(responseBody);
+      // eslint-disable-next-line no-underscore-dangle
+      userId = responseBody[0]._id;
+      console.log(userId);
+      await request(server)
+        .put(`/api/users/${userId}`)
+        .set('Content-Type', 'application/json')
+        .send({ isDonator: true });
+
+      const res = await request(server).get('/api/global/donators');
+
+      expect(res.header['content-type']).toContain('application/json');
+      expect(res.statusCode).toBe(200);
+      // expect(responseBody.length).toBe(2);
+      expect(responseBody[0].username).toBe('new.user');
+    });
   });
 });
