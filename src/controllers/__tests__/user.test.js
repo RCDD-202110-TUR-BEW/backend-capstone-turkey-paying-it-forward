@@ -35,12 +35,12 @@ const newValidUser2 = {
 describe('User Endpoints', () => {
   beforeAll(async () => {
     connectToMongo();
+    await clearDatabase();
   });
 
   afterAll(async () => {
-    await clearDatabase();
     await closeDatabase();
-    await server.close();
+    server.close();
   });
 
   describe('GET /api/users/', () => {
