@@ -44,8 +44,18 @@ describe('User Endpoints', () => {
     server.close();
   });
 
-  describe('GET /api/users/', () => {
-    test('Should send the all the users from database in the response', async () => {
+  describe('GET /api/global/donators', () => {
+    test('Should response with an error message when there are no donators', async () => {
+      const response = await request(server).get('/api/global/donators');
+
+      const responseBody = response.body;
+
+      expect(response.header['content-type']).toContain('application/json');
+      expect(response.statusCode).toBe(422);
+      expect(responseBody.message).toBe('No donators found');
+    });
+
+    test('Should send just those users who are donators in the response', async () => {
       await request(server)
         .post('/api/auth/signup')
         .set('Content-Type', 'application/json')
@@ -59,10 +69,10 @@ describe('User Endpoints', () => {
       const response = await request(server).get('/api/users');
 
       const responseBody = response.body;
-      console.log(responseBody);
+
       // eslint-disable-next-line no-underscore-dangle
       userId = responseBody[0]._id;
-      console.log(userId);
+
       await request(server)
         .put(`/api/users/${userId}`)
         .set('Content-Type', 'application/json')
@@ -72,8 +82,8 @@ describe('User Endpoints', () => {
 
       expect(res.header['content-type']).toContain('application/json');
       expect(res.statusCode).toBe(200);
-      // expect(responseBody.length).toBe(2);
-      expect(responseBody[0].username).toBe('new.user');
+      expect(res.body.length).toBe(1);
+      expect(res.body[0].username).toBe('new.user');
     });
   });
 });
