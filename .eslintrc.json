@@ -17,7 +17,6 @@
     "no-console": "warn",
     "func-names": "off",
     "no-process-exit": "off",
-    "class-methods-use-this": "off",
-    "arrow-body-style": "warn"
+    "class-methods-use-this": "off"
   }
 }

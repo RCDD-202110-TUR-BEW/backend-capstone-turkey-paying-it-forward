@@ -32,6 +32,15 @@ const newValidUser2 = {
   acceptTos: 'on',
 };
 
+const donator = {
+  username: 'new.user',
+  firstName: 'New',
+  lastName: 'User',
+  email: 'email@domain.com',
+  address: 'new address',
+  isDonator: true,
+};
+
 describe('User Endpoints', () => {
   beforeAll(async () => {
     connectToMongo();
@@ -82,7 +91,7 @@ describe('User Endpoints', () => {
       expect(res.header['content-type']).toContain('application/json');
       expect(res.statusCode).toBe(200);
       expect(res.body.length).toBe(1);
-      expect(res.body[0].username).toBe('new.user');
+      expect(res.body[0]).toMatchObject(donator);
     });
   });
 });
