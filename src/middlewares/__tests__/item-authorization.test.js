@@ -26,8 +26,8 @@ jest.mock('../../models/item', () => ({
 afterAll(() => {
   jest.clearAllMocks();
 });
-describe('itemAuthorization function middleware ', () => {
-  it('should authorize user when his id equals to item owner id', async () => {
+describe('item-authorization function middleware ', () => {
+  it('Should authorize when requesting user is the owner of requested item', async () => {
     const req = {
       params: {
         id: correctItemId,
@@ -37,14 +37,14 @@ describe('itemAuthorization function middleware ', () => {
       },
     };
 
-    const next = jest.fn().mockReturnThis();
+    const next = jest.fn();
     await itemAuthorization(req, res, next);
     expect(next).toHaveBeenCalled();
     expect(Item.findById).toHaveBeenCalled();
     expect(res.status).not.toHaveBeenCalled();
   });
 
-  it('should unauthorize user when his id not equal to item owner id', async () => {
+  it('Should unauthorize when requesting user is not the owner of requested item', async () => {
     const req = {
       params: {
         id: correctItemId,
@@ -53,7 +53,7 @@ describe('itemAuthorization function middleware ', () => {
         _id: falseOwnerId,
       },
     };
-    const next = jest.fn().mockReturnThis();
+    const next = jest.fn();
 
     await itemAuthorization(req, res, next);
     expect(next).not.toHaveBeenCalled();
@@ -62,7 +62,7 @@ describe('itemAuthorization function middleware ', () => {
     expect(res.status).toHaveBeenCalled();
   });
 
-  it('should unauthorize user when item is not found', async () => {
+  it("should unauthorize when item doesn't exists", async () => {
     const req = {
       params: {
         id: incorrectItemId,
@@ -71,22 +71,25 @@ describe('itemAuthorization function middleware ', () => {
         _id: trueOwnerId,
       },
     };
-    const next = jest.fn().mockReturnThis();
+    const next = jest.fn();
 
     await itemAuthorization(req, res, next);
     expect(next).not.toHaveBeenCalled();
     expect(Item.findById).toHaveBeenCalled();
     expect(Item.findById).toHaveBeenCalledWith(incorrectItemId);
     expect(res.status).toHaveBeenCalled();
+    expect(res.json).toHaveBeenCalledWith({
+      message: 'unauthorized to modify requested item',
+    });
   });
 
-  it('should unauthorize user when user is undefined', async () => {
+  it('should unauthorize when user is undefined', async () => {
     const req = {
       params: {
         id: correctItemId,
       },
     };
-    const next = jest.fn().mockReturnThis();
+    const next = jest.fn();
     await itemAuthorization(req, res, next);
     expect(next).not.toHaveBeenCalled();
     expect(res.status).toHaveBeenCalled();

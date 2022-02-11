@@ -1,12 +1,15 @@
 const jwt = require('jsonwebtoken');
-const isAuth = require('../isAuth');
+const userAuthentication = require('../user-authentication');
 
-const validToken = { tokenValue: 'validToken', expires: 'validTime' };
-const validTokenWithNoValidTime = {
-  tokenValue: 'invalidToken',
+const validTokenWithValidTime = {
+  tokenValue: 'validToken',
   expires: 'validTime',
 };
-const invalidToken = {
+const validTokenWithNoValidTime = {
+  tokenValue: 'validToken',
+  expires: 'invalidTime',
+};
+const invalidTokenWithValidTime = {
   tokenValue: 'invalidToken',
   expires: 'validTime',
 };
@@ -14,7 +17,7 @@ const invalidTokenWithInvalidTime = {
   tokenValue: 'invalidToken',
   expires: 'invalidTime',
 };
-const user = {
+const mockUser = {
   id: 1,
   username: 'name',
   email: 'someemail@gmail.com',
@@ -25,33 +28,38 @@ const res = {
   json: jest.fn().mockReturnThis(),
   clearCookie: jest.fn().mockReturnThis(),
 };
-const next = jest.fn().mockReturnThis();
+const next = jest.fn();
 
 const verify = jest.spyOn(jwt, 'verify');
 
 afterAll(() => {
   jest.clearAllMocks();
 });
-describe('isAuth function middleware', () => {
-  it('Should verify when valid token and correct secret are passed', (done) => {
-    verify.mockImplementation(() => user);
+describe('user-authentication function middleware', () => {
+  it('Should authenticate for valid token with valid expiry time', () => {
+    verify.mockImplementation(() => ({ user: mockUser }));
     const req = {
       cookies: {
-        token: validToken,
+        token: validTokenWithValidTime,
       },
     };
 
-    isAuth(req, res, next);
+    userAuthentication(req, res, next);
+    expect(verify).toHaveReturnedWith({ user: mockUser });
     expect(verify).toHaveBeenCalled();
     expect(verify).toHaveBeenCalledTimes(1);
     expect(res.json).not.toHaveBeenCalled();
     expect(verify).not.toThrow();
-    expect(verify).toHaveBeenCalledWith(validToken, process.env.JWT_SECRET);
-    expect(verify).toHaveReturnedWith(user);
-    done();
+    expect(verify).toHaveBeenCalledWith(
+      validTokenWithValidTime,
+      process.env.JWT_SECRET
+    );
+    expect(next).toHaveBeenCalled();
+    expect(req.user).toEqual(mockUser);
+    expect(req.user.id).toEqual(mockUser.id);
   });
 
-  it('Should throw error when token time is expired', (done) => {
+  it('Should not authenticate for valid token with no valid expiry time', () => {
     verify.mockImplementation(() => {
       throw new Error('invalid token');
     });
@@ -61,7 +69,7 @@ describe('isAuth function middleware', () => {
       },
     };
 
-    isAuth(req, res, next);
+    userAuthentication(req, res, next);
     expect(verify).toHaveBeenCalled();
     expect(verify).toThrow();
     expect(verify).toHaveBeenCalledWith(
@@ -73,31 +81,32 @@ describe('isAuth function middleware', () => {
       message: 'You are not authenticated',
     });
     expect(res.clearCookie).toHaveBeenCalledWith('token');
-    done();
   });
 
-  it('Should throw error when token is invalid and time is valid', (done) => {
+  it('Should not authenticate for invalid token with valid expiry time', () => {
     verify.mockImplementation(() => {
       throw new Error('invalid token');
     });
     const req = {
       cookies: {
-        token: invalidToken,
+        token: invalidTokenWithValidTime,
       },
     };
 
-    isAuth(req, res, next);
+    userAuthentication(req, res, next);
     expect(verify).toThrow();
-    expect(verify).toHaveBeenCalledWith(invalidToken, process.env.JWT_SECRET);
+    expect(verify).toHaveBeenCalledWith(
+      invalidTokenWithValidTime,
+      process.env.JWT_SECRET
+    );
     expect(res.status).toHaveBeenCalledWith(401);
     expect(res.json).toHaveBeenCalledWith({
       message: 'You are not authenticated',
     });
     expect(res.clearCookie).toHaveBeenCalledWith('token');
-    done();
   });
 
-  it('Should throw error when token is invalid and time is invalid', (done) => {
+  it('Should not authenticate for invalid token with no valid expiry time', () => {
     verify.mockImplementation(() => {
       throw new Error('invalid token');
     });
@@ -107,7 +116,7 @@ describe('isAuth function middleware', () => {
       },
     };
 
-    isAuth(req, res, next);
+    userAuthentication(req, res, next);
     expect(verify).toThrow();
     expect(verify).toHaveBeenCalledWith(
       invalidTokenWithInvalidTime,
@@ -118,10 +127,9 @@ describe('isAuth function middleware', () => {
       message: 'You are not authenticated',
     });
     expect(res.clearCookie).toHaveBeenCalledWith('token');
-    done();
   });
 
-  it('Should throw error when no token found in cookies', (done) => {
+  it('Should not authenticate when no token is found', () => {
     verify.mockImplementation(() => {
       throw new Error('invalid token');
     });
@@ -129,13 +137,12 @@ describe('isAuth function middleware', () => {
       cookies: {},
     };
 
-    isAuth(req, res, next);
+    userAuthentication(req, res, next);
     expect(verify).toThrow();
     expect(res.status).toHaveBeenCalledWith(401);
     expect(res.json).toHaveBeenCalledWith({
       message: 'You are not authenticated',
     });
     expect(res.clearCookie).toHaveBeenCalledWith('token');
-    done();
   });
 });

@@ -2,7 +2,7 @@ const userAuthorization = require('../user-authorization');
 
 const incorrectUserId = 'IncorrectUserId';
 const correctUserId = 'CorrectUserId';
-const user = {
+const mockUser = {
   _id: 'CorrectUserId',
   username: 'John',
   email: '123@gmail.com',
@@ -17,14 +17,14 @@ afterAll(() => {
   jest.resetAllMocks();
 });
 describe('user-authorization function middleware', () => {
-  it("Should authorize user when user's id equals to the passed param's id", () => {
+  it('Should authorize user when he tries to modify his information', () => {
     const req = {
-      user,
+      user: mockUser,
       params: {
         id: correctUserId,
       },
     };
-    const next = jest.fn().mockReturnThis();
+    const next = jest.fn();
 
     userAuthorization(req, res, next);
     expect(next).toHaveBeenCalled();
@@ -33,21 +33,23 @@ describe('user-authorization function middleware', () => {
     expect(res.json).not.toHaveBeenCalled();
   });
 
-  it("should unauthorize user when the passed param's id not equals to user's id ", () => {
+  it('should unauthorize user when he tries to modify another user information', () => {
     const req = {
-      user,
+      user: mockUser,
       params: {
         id: incorrectUserId,
       },
     };
-    const next = jest.fn().mockReturnThis();
+    const next = jest.fn();
 
     userAuthorization(req, res, next);
     expect(next).not.toHaveBeenCalled();
     expect(res.status).toHaveBeenCalled();
     expect(res.status).toHaveBeenCalledWith(401);
     expect(res.json).toHaveBeenCalled();
-    expect(res.json).toHaveBeenCalledWith({ message: 'Unauthorized' });
+    expect(res.json).toHaveBeenCalledWith({
+      message: 'Unauthorized to to modify the requested user',
+    });
   });
 
   it('should unauthorize user when user is not defined', () => {
@@ -56,11 +58,13 @@ describe('user-authorization function middleware', () => {
         id: 'anyId',
       },
     };
-    const next = jest.fn().mockReturnThis();
+    const next = jest.fn();
 
     userAuthorization(req, res, next);
     expect(next).not.toHaveBeenCalled();
     expect(res.status).toHaveBeenCalledWith(401);
-    expect(res.json).toHaveBeenCalledWith({ message: 'Unauthorized' });
+    expect(res.json).toHaveBeenCalledWith({
+      message: 'Unauthorized to to modify the requested user',
+    });
   });
 });
