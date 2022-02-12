@@ -6,18 +6,11 @@ module.exports = {
       const users = await UserModel.find();
       res.json(users);
     } catch (err) {
-      res.status(422).json({ message: err.message });
+      res.status(422).json({ message: err.message ?? err });
     }
   },
   getSingleUser: async (req, res) => {
-    const { id } = req.params;
-    try {
-      const user = await UserModel.findById(id);
-      if (!user) throw new Error("The user with the specified ID wasn't found");
-      res.json(user);
-    } catch (err) {
-      res.status(422).json({ message: err.message });
-    }
+    res.send('Single user');
   },
   updateUser: async (req, res) => {
     const { id } = req.params;
@@ -28,15 +21,12 @@ module.exports = {
         { new: true }
       );
       if (!updatedUser)
-        throw new Error("The user with the specified id wasn't found");
+        throw new Error("The user with the specified ID wasn't found");
       await updatedUser.save();
       res.json(updatedUser);
     } catch (err) {
-      res.status(422).json({ message: err.message });
+      res.status(422).json({ message: err.message ?? err });
     }
-  },
-  addUser: (req, res) => {
-    res.send('New user has been added');
   },
   deleteUser: (req, res) => {
     res.send('User with the specified ID has been deleted');

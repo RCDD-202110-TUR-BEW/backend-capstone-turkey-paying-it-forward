@@ -10,34 +10,34 @@ const {
 
 let userId;
 
-const newValidUser = {
-  username: 'new.user',
-  firstName: 'New',
-  lastName: 'User',
-  email: 'email@domain.com',
-  password: 'testPassword',
-  password2: 'testPassword',
-  address: 'new address',
+const donatorUser = {
+  username: 'anne.frank',
+  firstName: 'Anne',
+  lastName: 'Frank',
+  email: 'annefrank@gmail.com',
+  password: 'password123',
+  password2: 'password123',
+  address: 'Croissant Avenue, Paris',
   acceptTos: 'on',
 };
 
-const newValidUser2 = {
-  username: 'new.user2',
-  firstName: 'New2',
-  lastName: 'User2',
-  email: 'email2@domain.com',
-  password: 'testPassword2',
-  password2: 'testPassword2',
-  address: 'new address2',
+const notDonatorUser = {
+  username: 'aisha.michael',
+  firstName: 'Aisha',
+  lastName: 'Michael',
+  email: 'aishamichael@yahoo.com',
+  password: '123password',
+  password2: '123password',
+  address: 'Gelato Avenue, Rome',
   acceptTos: 'on',
 };
 
-const donator = {
-  username: 'new.user',
-  firstName: 'New',
-  lastName: 'User',
-  email: 'email@domain.com',
-  address: 'new address',
+const expectedDonatorResponse = {
+  username: 'anne.frank',
+  firstName: 'Anne',
+  lastName: 'Frank',
+  email: 'annefrank@gmail.com',
+  address: 'Croissant Avenue, Paris',
   isDonator: true,
 };
 
@@ -67,12 +67,14 @@ describe('User Endpoints', () => {
       await request(server)
         .post('/api/auth/signup')
         .set('Content-Type', 'application/json')
-        .send(newValidUser);
+        .send(donatorUser);
 
+      // Following endpoint is called to sign up the user,
+      // When the user signs up the default for isDonator field is false
       await request(server)
         .post('/api/auth/signup')
         .set('Content-Type', 'application/json')
-        .send(newValidUser2);
+        .send(notDonatorUser);
 
       const response = await request(server).get('/api/users');
 
@@ -81,6 +83,7 @@ describe('User Endpoints', () => {
       // eslint-disable-next-line no-underscore-dangle
       userId = responseBody[0]._id;
 
+      // Following endpoint is called to set isDonator field to true
       await request(server)
         .put(`/api/users/${userId}`)
         .set('Content-Type', 'application/json')
@@ -91,7 +94,7 @@ describe('User Endpoints', () => {
       expect(res.header['content-type']).toContain('application/json');
       expect(res.statusCode).toBe(200);
       expect(res.body.length).toBe(1);
-      expect(res.body[0]).toMatchObject(donator);
+      expect(res.body[0]).toMatchObject(expectedDonatorResponse);
     });
   });
 });

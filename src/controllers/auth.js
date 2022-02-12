@@ -8,37 +8,45 @@ const User = require('../models/user');
 
 module.exports = {
   signInUser: async (req, res) => {
-    res.json('');
-    /*
-    const { email, password, rememberMe } = req.body;
+    const { username, email, password, rememberMe } = req.body;
+    let cookieAge = 24 * 3600;
+    try {
+      const user = await User.findOne({
+        $or: [{ email: email }, { username: username }],
+      });
+      /* eslint object-shorthand: ["warn"] */
+      if (!user) throw new Error('Wrong username');
+      const validPassword = await bcrypt.compare(password, user.password_hash);
+      if (!validPassword) throw new Error('Wrong password');
 
-    const user = await User.findOne({ email });
-    if (!user) return res.status(400).send('Wrong username or password');
+      const payload = {
+        username,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+      };
 
-    bcrypt.compare(password, user.password_hash, function (err, result) {
-      if (result) {
-        const payload = {
-          username: username,
-          email: email,
-          exp: (Date.now() + 12096e5) / 1000,
-          iat: Date.now() / 1000,
-        };
-
-        const token = jwt.sign(payload, process.env.JWT_SECRET);
-
-        res.cookie('token', token, {
-          httpOnly: true,
-        });
-        res.status(302).header('user', user.id).redirect('/user/authenticated');
-      } else {
-        res.status(400).send('Wrong username or password');
+      if (rememberMe) {
+        cookieAge = 14 * 24 * 3600;
       }
-    });
-    */
+
+      /* eslint no-underscore-dangle: ["error", { "allow": ["_id"] }] */
+      const token = jwt.sign(payload, process.env.JWT_SECRET, {
+        expiresIn: cookieAge,
+        subject: user._id.toString(),
+      });
+
+      res.cookie('token', token, {
+        maxAge: cookieAge * 1000,
+        httpOnly: true,
+      });
+      res.json({ message: 'Successfully signed in' });
+    } catch (err) {
+      res.status(422).json({ message: err.message ?? err });
+    }
   },
   // eslint-disable-next-line consistent-return
   signUpUser: async (req, res) => {
-    // res.json('');
     try {
       const {
         firstName,
@@ -52,14 +60,14 @@ module.exports = {
       } = req.body;
 
       if (await User.exists({ username })) {
-        return res.status(400).send('Username already used');
+        throw new Error('Username already used');
       }
       if (password !== password2) {
-        return res.status(400).send('passwords do not match');
+        throw new Error('Passwords do not match');
       }
 
       const passwordHash = await bcrypt.hash(password, saltRounds);
-      const user = await User.create({
+      const newUser = await User.create({
         firstName,
         lastName,
         username,
@@ -68,27 +76,17 @@ module.exports = {
         acceptTos,
         address,
       });
-
-      const payload = {
-        username,
-        email,
-        exp: (Date.now() + 12096e5) / 1000,
-        iat: Date.now() / 1000,
-      };
-
-      const token = jwt.sign(payload, process.env.JWT_SECRET);
-
-      res.cookie('token', token, {
-        httpOnly: true,
-      });
-      res.json(user);
+      res.json(newUser);
     } catch (err) {
       res.status(422).json({ message: err.message ?? err });
     }
   },
   signOutUser: (req, res) => {
-    // res.json('');
-
-    res.clearCookie('token');
+    try {
+      res.clearCookie('_t');
+      res.json({ success: true });
+    } catch (err) {
+      res.status(422).json({ message: err.message });
+    }
   },
 };
