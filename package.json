@@ -22,6 +22,7 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.1.8",
     "supertest": "^6.2.2",
+    "winston": "^3.5.1",
     "yarn-upgrade-all": "^0.6.1"
   },
   "devDependencies": {
