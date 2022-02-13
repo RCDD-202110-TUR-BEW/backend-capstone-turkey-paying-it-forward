@@ -1,34 +1,28 @@
-const winston = require('winston');
+const { createLogger, format, transports } = require('winston');
+
+const { combine, timestamp, prettyPrint } = format;
 
 /**
- *  Error: important events that will be cause the program execution to fail
-    Warn: crucial events that should be noticed to prevent fails
-    Info: important events that details a completed task
-    Debug: mostly used by developers
-
-    levels: {
+ *  
+ *  levels: {
     error: 0,
     warn: 1,
-    info: 2,
-    http: 3,
-    verbose: 4,
-    debug: 5,
-    silly: 6,
+    info: 2
     }
  * 
  */
-const logger = winston.createLogger({
-  level: 'debug',
-  format: winston.format.combine(winston.format.colorize()),
+const logger = createLogger({
+  level: 'info',
+  format: combine(timestamp(), prettyPrint()),
   transports: [
-    new winston.transports.File({ filename: 'error.log', level: 'error' }), // error
-    new winston.transports.File({ filename: 'combined.log' }), // combined file for all logs
+    new transports.File({ filename: 'error.log', level: 'error' }), // error
+    new transports.File({ filename: 'combined.log' }), // combined file for info and below
   ],
 });
 
 logger.add(
-  new winston.transports.Console({
-    format: winston.format.simple(),
+  new transports.Console({
+    format: format.combine(format.colorize(), format.simple()),
   })
 );
 
