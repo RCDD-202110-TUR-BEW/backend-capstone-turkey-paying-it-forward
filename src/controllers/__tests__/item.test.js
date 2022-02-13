@@ -1,5 +1,9 @@
 const request = require('supertest');
+
 const server = require('../../app');
+
+jest.setTimeout(5000);
+
 const {
   closeDatabase,
   clearDatabase,
@@ -7,6 +11,7 @@ const {
 } = require('../../db/connection');
 
 let itemId;
+
 const trueItem = {
   name: 'Sofa',
   description: 'A comfortable and medium size sofa',
