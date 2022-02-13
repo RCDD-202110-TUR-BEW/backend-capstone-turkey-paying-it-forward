@@ -6,6 +6,7 @@ const { closeDatabase, clearDatabase } = require('../../db/connection');
 let ownerId;
 let authCookie;
 let itemId;
+
 const trueItem = {
   name: 'Sofa',
   description: 'A comfortable and medium size sofa',
