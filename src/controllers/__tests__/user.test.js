@@ -10,6 +10,10 @@ const {
 
 let userId;
 
+const invalidId = 'invalidId123';
+
+const notExistingUserId = '937c7f79bcf86ce7863f5d0a';
+
 const newValidUser = {
   username: 'new.user',
   firstName: 'New',
@@ -18,7 +22,6 @@ const newValidUser = {
   password: 'testPassword',
   password2: 'testPassword',
   address: 'new address',
-  acceptTos: 'on',
 };
 
 const newValidUser2 = {
@@ -29,7 +32,30 @@ const newValidUser2 = {
   password: 'testPassword2',
   password2: 'testPassword2',
   address: 'new address2',
-  acceptTos: 'on',
+};
+
+const expectedValidUser = {
+  username: 'new.user',
+  firstName: 'New',
+  lastName: 'User',
+  email: 'email@domain.com',
+  address: 'new address',
+};
+
+const expectedValidUser2 = {
+  username: 'new.user2',
+  firstName: 'New2',
+  lastName: 'User2',
+  email: 'email2@domain.com',
+  address: 'new address2',
+};
+
+const updatedUser = {
+  username: 'updated username',
+  firstName: 'New',
+  lastName: 'User',
+  email: 'email@domain.com',
+  address: 'new address',
 };
 
 describe('User Endpoints', () => {
@@ -44,6 +70,16 @@ describe('User Endpoints', () => {
   });
 
   describe('GET /api/users/', () => {
+    test('Should response with an error message when there are no users', async () => {
+      const response = await request(server).get(`/api/users/`);
+
+      const responseBody = response.body;
+
+      expect(response.header['content-type']).toContain('application/json');
+      expect(response.statusCode).toBe(422);
+      expect(responseBody.message).toBe('There are no users at the moment!');
+    });
+
     test('Should send the all the users from database in the response', async () => {
       await request(server)
         .post('/api/auth/signup')
@@ -65,7 +101,8 @@ describe('User Endpoints', () => {
       expect(response.header['content-type']).toContain('application/json');
       expect(response.statusCode).toBe(200);
       expect(responseBody.length).toBe(2);
-      expect(responseBody[0].username).toBe('new.user');
+      expect(responseBody[0]).toMatchObject(expectedValidUser);
+      expect(responseBody[1]).toMatchObject(expectedValidUser2);
     });
   });
 
@@ -77,12 +114,12 @@ describe('User Endpoints', () => {
 
       expect(response.header['content-type']).toContain('application/json');
       expect(response.statusCode).toBe(200);
-      expect(responseBody.username).toBe('new.user');
+      expect(responseBody).toMatchObject(expectedValidUser);
     });
 
-    test('Should give error when the ID provided is not in the database', async () => {
+    test('Should response with an error message when requested user ID does not exist', async () => {
       const response = await request(server).get(
-        `/api/users/507f191e810c19729de860ea`
+        `/api/users/${notExistingUserId}`
       );
 
       const responseBody = response.body;
@@ -94,11 +131,12 @@ describe('User Endpoints', () => {
       );
     });
 
-    test('Should give error when the ID provided is not valid', async () => {
-      const response = await request(server).get(`/api/users/invalid9089`);
-
+    test('Should response with an error message when requested user ID is not valid', async () => {
+      const response = await request(server).get(`/api/users/${invalidId}`);
+      const responseBody = response.body;
       expect(response.header['content-type']).toContain('application/json');
       expect(response.statusCode).toBe(422);
+      expect(responseBody.message).toBe('Requested user ID is not valid!');
     });
   });
 
@@ -112,12 +150,12 @@ describe('User Endpoints', () => {
 
       expect(response.header['content-type']).toContain('application/json');
       expect(response.statusCode).toBe(200);
-      expect(responseBody.username).toBe('updated username');
+      expect(responseBody).toMatchObject(updatedUser);
     });
 
-    test('Should give error when the ID provided is not in the database', async () => {
+    test('Should response with an error message when requested user ID does not exist', async () => {
       const response = await request(server).get(
-        `/api/users/507f191e810c19729de860ea`
+        `/api/users/${notExistingUserId}`
       );
 
       const responseBody = response.body;
@@ -128,11 +166,12 @@ describe('User Endpoints', () => {
         "The user with the specified ID wasn't found"
       );
     });
-    test('Should give error when the ID provided is not valid', async () => {
-      const response = await request(server).get(`/api/users/invalid9089`);
-
+    test('Should response with an error message when requested user ID is not valid', async () => {
+      const response = await request(server).get(`/api/users/${invalidId}`);
+      const responseBody = response.body;
       expect(response.header['content-type']).toContain('application/json');
       expect(response.statusCode).toBe(422);
+      expect(responseBody.message).toBe('Requested user ID is not valid!');
     });
   });
 
@@ -142,11 +181,12 @@ describe('User Endpoints', () => {
       expect(response.statusCode).toBe(204);
     });
 
-    test('Should give error when the ID provided is not valid', async () => {
-      const response = await request(server).get(`/api/users/invalid9089`);
-
+    test('Should response with an error message when requested user ID is not valid', async () => {
+      const response = await request(server).get(`/api/users/${invalidId}`);
+      const responseBody = response.body;
       expect(response.header['content-type']).toContain('application/json');
       expect(response.statusCode).toBe(422);
+      expect(responseBody.message).toBe('Requested user ID is not valid!');
     });
   });
 });
