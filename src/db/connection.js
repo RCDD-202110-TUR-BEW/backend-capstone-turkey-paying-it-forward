@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+
 require('dotenv').config();
 
 const logger = require('../services/logger');
@@ -14,11 +15,11 @@ const connectToMongo = () => {
   const db = mongoose.connection;
 
   db.once('open', () => {
-    logger.log('info', `Database connected to: ${url}`);
+    logger.log('info', 'Database connected to: ', url);
   });
 
   db.on('error', (err) => {
-    logger.log('error', `Database connection error: ${err}`);
+    logger.log('error', 'Database connection error: ', err);
   });
 };
 
