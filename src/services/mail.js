@@ -20,7 +20,7 @@ module.exports = {
       const res = await transporter.sendMail(emailOptions);
       return res;
     } catch (error) {
-      return error.message;
+      return error;
     }
   },
 };
