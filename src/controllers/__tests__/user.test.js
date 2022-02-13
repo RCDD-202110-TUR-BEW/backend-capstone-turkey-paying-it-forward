@@ -2,6 +2,8 @@ const request = require('supertest');
 
 const server = require('../../app');
 
+jest.setTimeout(5000);
+
 const {
   closeDatabase,
   clearDatabase,
