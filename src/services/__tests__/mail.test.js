@@ -21,11 +21,12 @@ describe('sendEmail service function', () => {
       messageTime: 0,
       response: '250 2.0.0 OK 1575454969 qp 1469',
     };
-    spyOnCreateTransport.mockImplementation(() => ({
-      sendMail: jest.fn().mockResolvedValue(sendMailResult),
-    }));
-
+    const spyOnSendMail = jest.fn().mockResolvedValue(sendMailResult);
+    spyOnCreateTransport.mockReturnValue({
+      sendMail: spyOnSendMail,
+    });
     const res = await sendEmail(emailOptions);
+
     expect(spyOnCreateTransport).toHaveBeenCalled();
     expect(spyOnCreateTransport).toHaveBeenCalledWith({
       host: 'smtp.office365.com',
@@ -34,10 +35,14 @@ describe('sendEmail service function', () => {
         pass: process.env.EMAIL_PASSWORD,
       },
     });
-    expect(res).toEqual(sendMailResult);
+    expect(spyOnSendMail).toHaveBeenCalled();
+    expect(spyOnSendMail).toHaveBeenCalledWith(emailOptions);
+    expect(spyOnSendMail).toHaveBeenCalledTimes(1);
+    expect(spyOnSendMail).not.toThrow();
     expect(spyOnCreateTransport).toHaveBeenCalledTimes(1);
     expect(spyOnCreateTransport).toHaveReturned();
-    expect(spyOnCreateTransport);
+    expect(res).toEqual(sendMailResult);
+    spyOnSendMail.mockRestore();
   });
 
   it('should throw an error if the there are no recipients', async () => {
@@ -47,15 +52,20 @@ describe('sendEmail service function', () => {
       subject: '',
       html: '',
     };
-    spyOnCreateTransport.mockImplementation(() => ({
-      sendMail: jest.fn().mockRejectedValue(new Error('No recipients defined')),
-    }));
-
-    const res = await sendEmail(emailOptions);
-    expect(spyOnCreateTransport).toHaveBeenCalled();
-    expect(res).toEqual(new Error('No recipients defined'));
+    const spyOnSendMail = jest
+      .fn()
+      .mockRejectedValue(new Error('No recipients'));
+    spyOnCreateTransport.mockReturnValue({
+      sendMail: spyOnSendMail,
+    });
+    await sendEmail(emailOptions);
     expect(spyOnCreateTransport).toHaveBeenCalledTimes(1);
+    expect(spyOnCreateTransport).toHaveBeenCalled();
+    expect(spyOnSendMail).toHaveBeenCalled();
+    expect(spyOnSendMail).toHaveBeenCalledWith(emailOptions);
+    expect(spyOnSendMail).rejects.toThrow('No recipients');
     expect(spyOnCreateTransport).toHaveReturned();
+    spyOnSendMail.mockRestore();
   });
 
   // NOTE: I think this test is not necessary because invalid emails should be detected when user signs up
@@ -70,17 +80,23 @@ describe('sendEmail service function', () => {
       accepted: ['accepted@gmail.com'],
       rejected: ['rejected@'],
     };
-    spyOnCreateTransport.mockImplementation(() => ({
-      sendMail: jest.fn().mockResolvedValue(sendMailResult),
-    }));
+    const spyOnSendMail = jest.fn().mockResolvedValue(sendMailResult);
+    spyOnCreateTransport.mockReturnValue({
+      sendMail: spyOnSendMail,
+    });
 
     const res = await sendEmail(emailOptions);
     expect(spyOnCreateTransport).toHaveBeenCalled();
+    expect(spyOnCreateTransport).toHaveBeenCalledTimes(1);
+    expect(spyOnCreateTransport).toHaveReturned();
+    expect(spyOnSendMail).toHaveBeenCalled();
+    expect(spyOnSendMail).toHaveBeenCalledWith(emailOptions);
+    expect(spyOnSendMail).toHaveBeenCalledTimes(1);
+    expect(spyOnSendMail).not.toThrow();
     expect(res.accepted).toEqual(
       expect.arrayContaining(['accepted@gmail.com'])
     );
     expect(res.rejected).toEqual(expect.arrayContaining(['rejected@']));
-    expect(spyOnCreateTransport).toHaveBeenCalledTimes(1);
-    expect(spyOnCreateTransport).toHaveReturned();
+    spyOnSendMail.mockRestore();
   });
 });
