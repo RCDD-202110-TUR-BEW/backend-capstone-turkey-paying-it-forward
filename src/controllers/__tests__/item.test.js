@@ -382,7 +382,7 @@ describe('Items Endpoints', () => {
   describe('DELETE /api/items/:id', () => {
     test('Should delete matching item', async () => {
       const response = await request(server).delete(`/api/items/${itemId}`);
-      console.log(response.body);
+
       expect(response.statusCode).toBe(204);
     });
 

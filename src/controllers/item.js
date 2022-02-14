@@ -80,7 +80,7 @@ module.exports = {
       if (!item) {
         throw new Error('The item with the specified ID was not found.');
       }
-      res.status(204).json({ message: 'The item is successfully deleted.' });
+      res.status(204).end();
     } catch (err) {
       res.status(422).json({ message: err.message ?? err });
     }
