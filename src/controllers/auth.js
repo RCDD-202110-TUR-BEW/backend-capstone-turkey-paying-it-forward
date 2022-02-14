@@ -14,7 +14,7 @@ module.exports = {
       const user = await User.findOne({
         $or: [{ email }, { username }],
       });
-      if (!user) throw new Error('Wrong username or password');
+      if (!user) throw new Error('Wrong username or email');
       const validPassword = await bcrypt.compare(password, user.password_hash);
       if (!validPassword) throw new Error('Wrong password');
 
@@ -55,7 +55,7 @@ module.exports = {
         password,
         passwordConfirm,
         address,
-        acceptTos,
+        acceptTerms,
       } = req.body;
 
       if (await User.exists({ username })) {
@@ -75,7 +75,7 @@ module.exports = {
         username,
         email,
         password_hash: passwordHash,
-        acceptTos,
+        acceptTerms,
         address,
       });
       res.json(newUser);

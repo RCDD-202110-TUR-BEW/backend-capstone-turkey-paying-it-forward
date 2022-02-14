@@ -35,7 +35,7 @@ const correctUserWithEmail = {
   password: 'password1234',
 };
 
-const userWithWrongPassword2 = {
+const userWithPasswordsNotMatching = {
   username: 'joey.tribbiani',
   firstName: 'Joey',
   lastName: 'Tribbiani',
@@ -108,7 +108,7 @@ describe('Auth Endpoints', () => {
     test('Should throw an error if the passwords do not match', async () => {
       const res = await request(server)
         .post('/api/auth/signup')
-        .send(userWithWrongPassword2);
+        .send(userWithPasswordsNotMatching);
       expect(res.header.location).toBe(undefined);
       expect(res.statusCode).toBe(422);
       expect(res.text).toMatch(/passwords do not match/i);
@@ -138,13 +138,13 @@ describe('Auth Endpoints', () => {
       expect(res.text).toMatch(/successfully signed in/i);
     });
 
-    test('Should throw an error if the user is trying to sign with wrong username', async () => {
+    test('Should throw an error if the user is trying to sign with wrong username or email', async () => {
       const res = await request(server)
         .post('/api/auth/signin')
         .send(userWithWrongUsername);
       expect(res.header.location).toBe(undefined);
       expect(res.statusCode).toBe(422);
-      expect(res.text).toMatch(/wrong username or password/i);
+      expect(res.text).toMatch(/wrong username or email/i);
     });
 
     test('Should throw an error if the user is trying to sign in with wrong password', async () => {
