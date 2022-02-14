@@ -32,7 +32,8 @@ const clearDatabase = async () => {
   const results = [];
   /* eslint-disable no-restricted-syntax, guard-for-in */
   for (const key in collections) {
-    results.push(mongoose.connection.dropCollection(key));
+    // results.push(mongoose.connection.dropCollection(key));
+    results.push(collections[key].deleteMany());
   }
   await Promise.all(results);
 };

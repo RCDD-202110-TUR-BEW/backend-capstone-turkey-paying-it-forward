@@ -7,7 +7,7 @@
   "license": "MIT",
   "scripts": {
     "start": "nodemon src/app.js",
-    "test": "export IS_JEST=1 && yarn validate && jest --passWithNoTests",
+    "test": "export IS_JEST=1 yarn validate && jest --passWithNoTests --runInBand",
     "lint": "eslint --ignore-path .gitignore .",
     "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|json)\"",
     "validate": "yarn format && yarn lint",
@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "cookie-parser": "^1.4.6",
+    "bcrypt": "^5.0.1",
     "dotenv": "^14.2.0",
     "express": "^4.17.2",
     "is-image-url": "^1.1.8",

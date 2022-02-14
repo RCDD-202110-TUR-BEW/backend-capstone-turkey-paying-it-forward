@@ -2,8 +2,14 @@ const { ObjectId } = require('mongoose').Types;
 const ItemModel = require('../models/item');
 
 module.exports = {
-  getAllItems: (req, res) => {
-    res.send('All items');
+  getAllItems: async (req, res) => {
+    try {
+      const items = await ItemModel.find();
+      if (items.length <= 0) throw new Error('No items found');
+      else res.json(items);
+    } catch (err) {
+      res.status(422).json({ message: err.message ?? err });
+    }
   },
   getSingleItem: async (req, res) => {
     try {
