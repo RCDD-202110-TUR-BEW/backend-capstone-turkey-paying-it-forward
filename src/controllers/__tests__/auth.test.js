@@ -22,7 +22,7 @@ const mockUser = {
   password: 'password1234',
   passwordConfirm: 'password1234',
   address: 'Central Perk, New York',
-  acceptTos: 'on',
+  acceptTerms: true,
 };
 
 const correctUserWithUsername = {
@@ -43,7 +43,7 @@ const userWithWrongPassword2 = {
   password: 'password1234',
   passwordConfirm: 'password123',
   address: 'Central Perk, New York',
-  acceptTos: 'on',
+  acceptTerms: true,
 };
 
 const userWithWrongUsername = {
