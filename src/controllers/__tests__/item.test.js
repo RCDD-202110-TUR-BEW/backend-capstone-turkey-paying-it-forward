@@ -2,7 +2,7 @@ const request = require('supertest');
 
 const server = require('../../app');
 
-jest.setTimeout(5000);
+jest.setTimeout(50000);
 
 const {
   closeDatabase,
@@ -40,6 +40,17 @@ const trueItem3 = {
   photo:
     'https://www.ulcdn.net/images/products/215114/original/Apollo_Sofa_Set_FNSF51APDU30000SAAAA_slide_00.jpg?1538973284',
   type: 'Stationery',
+};
+
+const trueItem4 = {
+  name: 'My Sofa',
+  description: 'Another Sofa',
+  owner: '507c7f79bcf86cd7994f6c0e',
+  count: 2,
+  photo:
+    'https://www.ulcdn.net/images/products/215114/original/Apollo_Sofa_Set_FNSF51APDU30000SAAAA_slide_00.jpg?1538973284',
+  type: 'Stationery',
+  isAvailable: false,
 };
 
 const noOwnerItem = {
@@ -97,6 +108,134 @@ describe('Items Endpoints', () => {
   afterAll(async () => {
     await closeDatabase();
     server.close();
+  });
+
+  describe('GET /api/global/all-items', () => {
+    test('Should send all items in the response, including not available ones', async () => {
+      await request(server)
+        .post('/api/items')
+        .set('Content-Type', 'application/json')
+        .send(trueItem);
+      await request(server)
+        .post('/api/items')
+        .set('Content-Type', 'application/json')
+        .send(trueItem2);
+      await request(server)
+        .post('/api/items')
+        .set('Content-Type', 'application/json')
+        .send(trueItem3);
+      await request(server)
+        .post('/api/items')
+        .set('Content-Type', 'application/json')
+        .send(trueItem4);
+
+      const response = await request(server).get('/api/global/all-items');
+      /* eslint-disable no-underscore-dangle */
+      const responseBody = response.body;
+      itemId = responseBody[0]._id;
+
+      expect(response.header['content-type']).toContain('application/json');
+      expect(response.statusCode).toBe(200);
+      expect(responseBody.length).toBe(4);
+      expect(responseBody[0]).toMatchObject(trueItem);
+      expect(responseBody[1]).toMatchObject(trueItem2);
+      expect(responseBody[2]).toMatchObject(trueItem3);
+      expect(responseBody[3]).toMatchObject(trueItem4);
+    });
+
+    test('Should response with an error message when there are no items', async () => {
+      await clearDatabase();
+      const response = await request(server).get('/api/global/all-items');
+
+      const responseBody = response.body;
+
+      expect(response.header['content-type']).toContain('application/json');
+      expect(response.statusCode).toBe(422);
+      expect(responseBody.message).toBe('No items found');
+    });
+  });
+
+  describe('GET /api/items/available', () => {
+    test('Should response with an error message when there are no available items', async () => {
+      const response = await request(server).get('/api/items/available');
+
+      const responseBody = response.body;
+
+      expect(response.header['content-type']).toContain('application/json');
+      expect(response.statusCode).toBe(422);
+      expect(responseBody.message).toBe(
+        'There are no available items at the moment!'
+      );
+    });
+
+    test('Should send all available items in the response', async () => {
+      await request(server)
+        .post('/api/items')
+        .set('Content-Type', 'application/json')
+        .send(trueItem);
+      await request(server)
+        .post('/api/items')
+        .set('Content-Type', 'application/json')
+        .send(trueItem2);
+      await request(server)
+        .post('/api/items')
+        .set('Content-Type', 'application/json')
+        .send(trueItem3);
+
+      const response = await request(server).get('/api/items/available');
+      /* eslint-disable no-underscore-dangle */
+      const responseBody = response.body;
+      itemId = responseBody[0]._id;
+
+      expect(response.header['content-type']).toContain('application/json');
+      expect(response.statusCode).toBe(200);
+      expect(responseBody.length).toBe(3);
+      expect(responseBody[0]).toMatchObject(trueItem);
+      expect(responseBody[1]).toMatchObject(trueItem2);
+      expect(responseBody[2]).toMatchObject(trueItem3);
+    });
+  });
+
+  describe('GET /api/items/filter', () => {
+    test('Should send only the items with the requested type', async () => {
+      const response = await request(server).get(
+        `/api/items/filter?type=Stationery`
+      );
+
+      const responseBody = response.body;
+
+      expect(response.header['content-type']).toContain('application/json');
+      expect(response.statusCode).toBe(200);
+      expect(responseBody.length).toBe(2);
+      expect(responseBody[0]).toMatchObject(trueItem);
+      expect(responseBody[1]).toMatchObject(trueItem3);
+    });
+
+    test('Should response with an error message when there are no items of the requested type', async () => {
+      const response = await request(server).get(
+        `/api/items/filter?type=InvalidType`
+      );
+
+      const responseBody = response.body;
+
+      expect(response.header['content-type']).toContain('application/json');
+      expect(response.statusCode).toBe(422);
+      expect(responseBody.message).toBeDefined();
+      expect(responseBody.message).toBe(
+        'There are no available items of type InvalidType!'
+      );
+    });
+
+    test('Should response with an error message when no type is provided', async () => {
+      const response = await request(server).get(`/api/items/filter`);
+
+      const responseBody = response.body;
+
+      expect(response.header['content-type']).toContain('application/json');
+      expect(response.statusCode).toBe(422);
+      expect(responseBody.message).toBeDefined();
+      expect(responseBody.message).toBe('Type query parameter is required!');
+    });
   });
 
   describe('POST /api/items', () => {
@@ -176,48 +315,6 @@ describe('Items Endpoints', () => {
     });
   });
 
-  describe('GET /api/items/available', () => {
-    test('Should response with an error message when there are no available items', async () => {
-      await clearDatabase();
-      const response = await request(server).get('/api/items/available');
-
-      const responseBody = response.body;
-
-      expect(response.header['content-type']).toContain('application/json');
-      expect(response.statusCode).toBe(422);
-      expect(responseBody.message).toBe(
-        'There are no available items at the moment!'
-      );
-    });
-
-    test('Should send all available items in the response', async () => {
-      await request(server)
-        .post('/api/items')
-        .set('Content-Type', 'application/json')
-        .send(trueItem);
-      await request(server)
-        .post('/api/items')
-        .set('Content-Type', 'application/json')
-        .send(trueItem2);
-      await request(server)
-        .post('/api/items')
-        .set('Content-Type', 'application/json')
-        .send(trueItem3);
-
-      const response = await request(server).get('/api/items/available');
-      /* eslint-disable no-underscore-dangle */
-      const responseBody = response.body;
-      itemId = responseBody[0]._id;
-
-      expect(response.header['content-type']).toContain('application/json');
-      expect(response.statusCode).toBe(200);
-      expect(responseBody.length).toBe(3);
-      expect(responseBody[0]).toMatchObject(trueItem);
-      expect(responseBody[1]).toMatchObject(trueItem2);
-      expect(responseBody[2]).toMatchObject(trueItem3);
-    });
-  });
-
   describe('GET /api/items/:id', () => {
     test('Should send the correct item in the response', async () => {
       const response = await request(server).get(`/api/items/${itemId}`);
@@ -252,48 +349,6 @@ describe('Items Endpoints', () => {
       expect(response.header['content-type']).toContain('application/json');
       expect(response.statusCode).toBe(422);
       expect(responseBody.message).toBe('Requested item ID is not valid!');
-    });
-  });
-
-  describe('GET /api/items/filter', () => {
-    test('Should send only the items with the requested type', async () => {
-      const response = await request(server).get(
-        `/api/items/filter?type=Stationery`
-      );
-
-      const responseBody = response.body;
-
-      expect(response.header['content-type']).toContain('application/json');
-      expect(response.statusCode).toBe(200);
-      expect(responseBody.length).toBe(2);
-      expect(responseBody[0]).toMatchObject(trueItem);
-      expect(responseBody[1]).toMatchObject(trueItem3);
-    });
-
-    test('Should response with an error message when there are no items of the requested type', async () => {
-      const response = await request(server).get(
-        `/api/items/filter?type=InvalidType`
-      );
-
-      const responseBody = response.body;
-
-      expect(response.header['content-type']).toContain('application/json');
-      expect(response.statusCode).toBe(422);
-      expect(responseBody.message).toBeDefined();
-      expect(responseBody.message).toBe(
-        'There are no available items of type InvalidType!'
-      );
-    });
-
-    test('Should response with an error message when no type is provided', async () => {
-      const response = await request(server).get(`/api/items/filter`);
-
-      const responseBody = response.body;
-
-      expect(response.header['content-type']).toContain('application/json');
-      expect(response.statusCode).toBe(422);
-      expect(responseBody.message).toBeDefined();
-      expect(responseBody.message).toBe('Type query parameter is required!');
     });
   });
 });

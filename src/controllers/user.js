@@ -24,6 +24,7 @@ module.exports = {
       res.status(422).json({ message: err.message ?? err });
     }
   },
+
   updateUser: async (req, res) => {
     const { id } = req.params;
     try {
@@ -63,6 +64,12 @@ module.exports = {
     }
   },
   getAllDonators: async (req, res) => {
-    res.send('All donators');
+    try {
+      const donators = await UserModel.find({ isDonator: true });
+      if (donators.length <= 0) throw new Error('No donators found');
+      else res.json(donators);
+    } catch (err) {
+      res.status(422).json({ message: err.message ?? err });
+    }
   },
 };
