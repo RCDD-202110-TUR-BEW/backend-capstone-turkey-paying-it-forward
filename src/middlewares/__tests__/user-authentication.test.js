@@ -36,7 +36,7 @@ afterAll(() => {
   jest.clearAllMocks();
 });
 describe('user-authentication function middleware', () => {
-  it('Should authenticate for valid token with valid expiry time', () => {
+  test('Should authenticate for valid token with valid expiry time', () => {
     verify.mockImplementation(() => ({ user: mockUser }));
     const req = {
       cookies: {
@@ -45,21 +45,23 @@ describe('user-authentication function middleware', () => {
     };
 
     userAuthentication(req, res, next);
-    expect(verify).toHaveReturnedWith({ user: mockUser });
+    expect(req.user).toEqual(mockUser);
+    expect(req.user.id).toEqual(mockUser.id);
     expect(verify).toHaveBeenCalled();
     expect(verify).toHaveBeenCalledTimes(1);
-    expect(res.json).not.toHaveBeenCalled();
-    expect(verify).not.toThrow();
     expect(verify).toHaveBeenCalledWith(
       validTokenWithValidTime,
       process.env.JWT_SECRET
     );
+    expect(verify).not.toThrow();
+    expect(verify).toHaveReturnedWith({ user: mockUser });
     expect(next).toHaveBeenCalled();
-    expect(req.user).toEqual(mockUser);
-    expect(req.user.id).toEqual(mockUser.id);
+    expect(next).toHaveBeenCalledTimes(1);
+    expect(res.status).not.toHaveBeenCalled();
+    expect(res.json).not.toHaveBeenCalled();
   });
 
-  it('Should not authenticate for valid token with no valid expiry time', () => {
+  test('Should not authenticate for valid token with no valid expiry time', () => {
     verify.mockImplementation(() => {
       throw new Error('invalid token');
     });
@@ -70,20 +72,21 @@ describe('user-authentication function middleware', () => {
     };
 
     userAuthentication(req, res, next);
+    expect(req.user).toBeUndefined();
     expect(verify).toHaveBeenCalled();
-    expect(verify).toThrow();
     expect(verify).toHaveBeenCalledWith(
       validTokenWithNoValidTime,
       process.env.JWT_SECRET
     );
+    expect(verify).toThrow();
+    expect(res.clearCookie).toHaveBeenCalledWith('token');
     expect(res.status).toHaveBeenCalledWith(401);
     expect(res.json).toHaveBeenCalledWith({
       message: 'You are not authenticated',
     });
-    expect(res.clearCookie).toHaveBeenCalledWith('token');
   });
 
-  it('Should not authenticate for invalid token with valid expiry time', () => {
+  test('Should not authenticate for invalid token with valid expiry time', () => {
     verify.mockImplementation(() => {
       throw new Error('invalid token');
     });
@@ -99,14 +102,14 @@ describe('user-authentication function middleware', () => {
       invalidTokenWithValidTime,
       process.env.JWT_SECRET
     );
+    expect(res.clearCookie).toHaveBeenCalledWith('token');
     expect(res.status).toHaveBeenCalledWith(401);
     expect(res.json).toHaveBeenCalledWith({
       message: 'You are not authenticated',
     });
-    expect(res.clearCookie).toHaveBeenCalledWith('token');
   });
 
-  it('Should not authenticate for invalid token with no valid expiry time', () => {
+  test('Should not authenticate for invalid token with no valid expiry time', () => {
     verify.mockImplementation(() => {
       throw new Error('invalid token');
     });
@@ -117,19 +120,19 @@ describe('user-authentication function middleware', () => {
     };
 
     userAuthentication(req, res, next);
-    expect(verify).toThrow();
     expect(verify).toHaveBeenCalledWith(
       invalidTokenWithInvalidTime,
       process.env.JWT_SECRET
     );
+    expect(verify).toThrow();
+    expect(res.clearCookie).toHaveBeenCalledWith('token');
     expect(res.status).toHaveBeenCalledWith(401);
     expect(res.json).toHaveBeenCalledWith({
       message: 'You are not authenticated',
     });
-    expect(res.clearCookie).toHaveBeenCalledWith('token');
   });
 
-  it('Should not authenticate when no token is found', () => {
+  test('Should not authenticate when no token is found', () => {
     verify.mockImplementation(() => {
       throw new Error('invalid token');
     });
@@ -138,11 +141,12 @@ describe('user-authentication function middleware', () => {
     };
 
     userAuthentication(req, res, next);
+    expect(req.user).toBeUndefined();
     expect(verify).toThrow();
+    expect(res.clearCookie).toHaveBeenCalledWith('token');
     expect(res.status).toHaveBeenCalledWith(401);
     expect(res.json).toHaveBeenCalledWith({
       message: 'You are not authenticated',
     });
-    expect(res.clearCookie).toHaveBeenCalledWith('token');
   });
 });

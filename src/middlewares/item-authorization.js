@@ -1,5 +1,5 @@
-/* this middleware is called after the the user-authentication middleware to verify
- that user is allowed to access some item endpoints that need authorization to be accessed */
+/* this middleware is called after the user-authentication 
+to verify that user is authorized to access some protected item endpoints */
 const Item = require('../models/item');
 
 module.exports = async (req, res, next) => {

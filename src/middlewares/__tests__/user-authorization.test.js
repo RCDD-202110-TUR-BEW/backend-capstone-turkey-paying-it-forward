@@ -17,7 +17,7 @@ afterAll(() => {
   jest.resetAllMocks();
 });
 describe('user-authorization function middleware', () => {
-  it('Should authorize user when he tries to modify his information', () => {
+  test('Should authorize user when trying to modify own information', () => {
     const req = {
       user: mockUser,
       params: {
@@ -27,13 +27,14 @@ describe('user-authorization function middleware', () => {
     const next = jest.fn();
 
     userAuthorization(req, res, next);
+    expect(req.user).toEqual(mockUser);
     expect(next).toHaveBeenCalled();
     expect(next).toHaveBeenCalledTimes(1);
     expect(res.status).not.toHaveBeenCalled();
     expect(res.json).not.toHaveBeenCalled();
   });
 
-  it('should unauthorize user when he tries to modify another user information', () => {
+  test('Should unauthorize user when trying to modify another user information', () => {
     const req = {
       user: mockUser,
       params: {
@@ -48,11 +49,11 @@ describe('user-authorization function middleware', () => {
     expect(res.status).toHaveBeenCalledWith(401);
     expect(res.json).toHaveBeenCalled();
     expect(res.json).toHaveBeenCalledWith({
-      message: 'Unauthorized to to modify the requested user',
+      message: 'Unauthorized to modify the requested user',
     });
   });
 
-  it('should unauthorize user when user is not defined', () => {
+  test('Should unauthorize user when user ID is not found', () => {
     const req = {
       params: {
         id: 'anyId',
@@ -62,9 +63,10 @@ describe('user-authorization function middleware', () => {
 
     userAuthorization(req, res, next);
     expect(next).not.toHaveBeenCalled();
+    expect(res.status).toHaveBeenCalled();
     expect(res.status).toHaveBeenCalledWith(401);
     expect(res.json).toHaveBeenCalledWith({
-      message: 'Unauthorized to to modify the requested user',
+      message: 'Unauthorized to modify the requested user',
     });
   });
 });

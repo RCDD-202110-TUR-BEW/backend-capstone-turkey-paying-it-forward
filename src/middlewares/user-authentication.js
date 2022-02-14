@@ -1,4 +1,4 @@
-/* this middle is called in all routes except the global ones to authenticate user */
+/* this middleware is called on all routes except the global ones to verify that user is authenticated */
 
 const jwt = require('jsonwebtoken');
 

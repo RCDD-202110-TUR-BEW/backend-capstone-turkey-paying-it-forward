@@ -1,5 +1,5 @@
-/* this middleware is called after the the user-authentication middleware to verify
- that user is allowed to access some user endpoints that need authorization to be accessed */
+/*  this middleware is called after the user-authentication
+ to verify that user is authorized to access some protected user endpoints */
 
 module.exports = function (req, res, next) {
   try {
@@ -9,10 +9,10 @@ module.exports = function (req, res, next) {
     }
     return res
       .status(401)
-      .json({ message: 'Unauthorized to to modify the requested user' });
+      .json({ message: 'Unauthorized to modify the requested user' });
   } catch (error) {
     return res
       .status(401)
-      .json({ message: 'Unauthorized to to modify the requested user' });
+      .json({ message: 'Unauthorized to modify the requested user' });
   }
 };

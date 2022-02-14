@@ -27,7 +27,7 @@ afterAll(() => {
   jest.clearAllMocks();
 });
 describe('item-authorization function middleware ', () => {
-  it('Should authorize when requesting user is the owner of requested item', async () => {
+  test('Should authorize when requesting user is the owner of requested item', async () => {
     const req = {
       params: {
         id: correctItemId,
@@ -39,12 +39,14 @@ describe('item-authorization function middleware ', () => {
 
     const next = jest.fn();
     await itemAuthorization(req, res, next);
-    expect(next).toHaveBeenCalled();
     expect(Item.findById).toHaveBeenCalled();
+    expect(Item.findById).toHaveBeenCalledWith(correctItemId);
+    expect(next).toHaveBeenCalled();
     expect(res.status).not.toHaveBeenCalled();
+    expect(res.json).not.toHaveBeenCalled();
   });
 
-  it('Should unauthorize when requesting user is not the owner of requested item', async () => {
+  test('Should unauthorize when requesting user is not the owner of requested item', async () => {
     const req = {
       params: {
         id: correctItemId,
@@ -56,13 +58,18 @@ describe('item-authorization function middleware ', () => {
     const next = jest.fn();
 
     await itemAuthorization(req, res, next);
-    expect(next).not.toHaveBeenCalled();
     expect(Item.findById).toHaveBeenCalled();
     expect(Item.findById).toHaveBeenCalledWith(correctItemId);
+    expect(next).not.toHaveBeenCalled();
     expect(res.status).toHaveBeenCalled();
+    expect(res.status).toHaveBeenCalledWith(401);
+    expect(res.json).toHaveBeenCalled();
+    expect(res.json).toHaveBeenCalledWith({
+      message: 'unauthorized to modify requested item',
+    });
   });
 
-  it("should unauthorize when item doesn't exists", async () => {
+  test("Should unauthorize when item doesn't exists", async () => {
     const req = {
       params: {
         id: incorrectItemId,
@@ -74,16 +81,17 @@ describe('item-authorization function middleware ', () => {
     const next = jest.fn();
 
     await itemAuthorization(req, res, next);
-    expect(next).not.toHaveBeenCalled();
     expect(Item.findById).toHaveBeenCalled();
     expect(Item.findById).toHaveBeenCalledWith(incorrectItemId);
+    expect(next).not.toHaveBeenCalled();
     expect(res.status).toHaveBeenCalled();
+    expect(res.status).toHaveBeenCalledWith(401);
     expect(res.json).toHaveBeenCalledWith({
       message: 'unauthorized to modify requested item',
     });
   });
 
-  it('should unauthorize when user is undefined', async () => {
+  test('Should unauthorize when user ID is not provided', async () => {
     const req = {
       params: {
         id: correctItemId,
@@ -91,8 +99,9 @@ describe('item-authorization function middleware ', () => {
     };
     const next = jest.fn();
     await itemAuthorization(req, res, next);
+    expect(Item.findById).toHaveBeenCalledWith(correctItemId);
     expect(next).not.toHaveBeenCalled();
     expect(res.status).toHaveBeenCalled();
-    expect(Item.findById).toHaveBeenCalledWith(correctItemId);
+    expect(res.status).toHaveBeenCalledWith(401);
   });
 });
