@@ -394,4 +394,58 @@ describe('Items Endpoints', () => {
       expect(responseBody.message).toBe('Requested item ID is not valid!');
     });
   });
+
+  describe('PUT /api/items/:id', () => {
+    test('Should update name on matching item', async () => {
+      const response = await request(server)
+        .put(`/api/items/${itemId}`)
+        .send({ name: 'Couch' });
+
+      expect(response.header['content-type']).toContain('application/json');
+      expect(response.statusCode).toBe(200);
+      expect(response.body.name).toEqual('Couch');
+    });
+
+    test('Should update isAvailable field on matching item', async () => {
+      const response = await request(server)
+        .put(`/api/items/${itemId}`)
+        .send({ isAvailable: false });
+
+      expect(response.header['content-type']).toContain('application/json');
+      expect(response.statusCode).toBe(200);
+      expect(response.body.isAvailable).toEqual(false);
+    });
+
+    test('Should response with an error message when to be updated item ID not found', async () => {
+      const response = await request(server)
+        .put('/api/items/6208e47a5fe21cc475419234')
+        .send({ isAvailable: false });
+
+      expect(response.header['content-type']).toContain('application/json');
+      expect(response.statusCode).toBe(422);
+      expect(response.body.message).toBe(
+        'The item with the specified ID was not found.'
+      );
+    });
+  });
+
+  describe('DELETE /api/items/:id', () => {
+    test('Should delete matching item', async () => {
+      const response = await request(server).delete(`/api/items/${itemId}`);
+
+      expect(response.statusCode).toBe(204);
+    });
+
+    test('Should throw an error if there is no item with the specified ID', async () => {
+      const response = await request(server).delete(
+        '/api/items/6208e47a5fe21cc475419234'
+      );
+
+      expect(response.header['content-type']).toContain('application/json');
+      expect(response.statusCode).toBe(422);
+      expect(response.body.message).toBe(
+        'The item with the specified ID was not found.'
+      );
+    });
+  });
 });

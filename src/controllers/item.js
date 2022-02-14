@@ -86,6 +86,7 @@ module.exports = {
       } else {
         res.status(204).json({ message: 'The item is successfully deleted.' });
       }
+      res.status(204).end();
     } catch (err) {
       res.status(422).json({ message: err.message });
     }
