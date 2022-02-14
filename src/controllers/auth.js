@@ -9,13 +9,12 @@ const User = require('../models/user');
 module.exports = {
   signInUser: async (req, res) => {
     const { username, email, password, rememberMe } = req.body;
-    let cookieAge = 24 * 3600;
+    let cookieAge = 24 * 3600; // Default cookie expiry time is 1 day
     try {
       const user = await User.findOne({
-        $or: [{ email: email }, { username: username }],
+        $or: [{ email }, { username }],
       });
-      /* eslint object-shorthand: ["warn"] */
-      if (!user) throw new Error('Wrong username');
+      if (!user) throw new Error('Wrong username or password');
       const validPassword = await bcrypt.compare(password, user.password_hash);
       if (!validPassword) throw new Error('Wrong password');
 
@@ -27,7 +26,7 @@ module.exports = {
       };
 
       if (rememberMe) {
-        cookieAge = 14 * 24 * 3600;
+        cookieAge *= 14; // Remember me setting extends cookie expiry time to 2 weeks
       }
 
       /* eslint no-underscore-dangle: ["error", { "allow": ["_id"] }] */
@@ -54,7 +53,7 @@ module.exports = {
         username,
         email,
         password,
-        password2,
+        passwordConfirm,
         address,
         acceptTos,
       } = req.body;
@@ -62,7 +61,10 @@ module.exports = {
       if (await User.exists({ username })) {
         throw new Error('Username already used');
       }
-      if (password !== password2) {
+      if (await User.exists({ email })) {
+        throw new Error('Email already used');
+      }
+      if (password !== passwordConfirm) {
         throw new Error('Passwords do not match');
       }
 
@@ -86,7 +88,7 @@ module.exports = {
       res.clearCookie('_t');
       res.json({ success: true });
     } catch (err) {
-      res.status(422).json({ message: err.message });
+      res.status(422).json({ message: err.message ?? err });
     }
   },
 };

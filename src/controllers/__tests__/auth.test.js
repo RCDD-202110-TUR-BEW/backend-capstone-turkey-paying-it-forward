@@ -20,17 +20,17 @@ const mockUser = {
   lastName: 'Bing',
   email: 'chandlerbing@gmail.com',
   password: 'password1234',
-  password2: 'password1234',
+  passwordConfirm: 'password1234',
   address: 'Central Perk, New York',
   acceptTos: 'on',
 };
 
-const correctUser1 = {
+const correctUserWithUsername = {
   username: 'chandler.bing',
   password: 'password1234',
 };
 
-const correctUser2 = {
+const correctUserWithEmail = {
   email: 'chandlerbing@gmail.com',
   password: 'password1234',
 };
@@ -41,7 +41,7 @@ const userWithWrongPassword2 = {
   lastName: 'Tribbiani',
   email: 'joeyribbiani@gmail.com',
   password: 'password1234',
-  password2: 'password123',
+  passwordConfirm: 'password123',
   address: 'Central Perk, New York',
   acceptTos: 'on',
 };
@@ -74,6 +74,8 @@ describe('Auth Endpoints', () => {
     test('Should sign up a new user', async () => {
       const res = await request(server).post('/api/auth/signup').send(mockUser);
       expect(res.statusCode).toBe(200);
+      expect(res.body).toBeDefined();
+      expect(res.body.firstName).toBe(mockUser.firstName);
 
       const user = await mongoose.connection
         .collection('users')
@@ -91,9 +93,9 @@ describe('Auth Endpoints', () => {
         .collection('users')
         .findOne({ username: mockUser.username });
       expect(user).toBeDefined();
-      const valid =
+      const validHashedPassword =
         user && (await bcrypt.compare(mockUser.password, user.password_hash));
-      expect(valid).toBe(true);
+      expect(validHashedPassword).toBe(true);
     });
 
     test('Should throw an error if the username is already used', async () => {
@@ -114,10 +116,10 @@ describe('Auth Endpoints', () => {
   });
 
   describe('POST /api/auth/signin', () => {
-    test('Should sign in user with username and respond with status code 200', async () => {
+    test('Should sign in user with correct username and password', async () => {
       const res = await request(server)
         .post('/api/auth/signin')
-        .send(correctUser1);
+        .send(correctUserWithUsername);
       expect(res.header['content-type']).toBe(
         'application/json; charset=utf-8'
       );
@@ -125,10 +127,10 @@ describe('Auth Endpoints', () => {
       expect(res.text).toMatch(/successfully signed in/i);
     });
 
-    test('Should sign in user with email and respond with status code 200', async () => {
+    test('Should sign in user with correct email and password', async () => {
       const res = await request(server)
         .post('/api/auth/signin')
-        .send(correctUser2);
+        .send(correctUserWithEmail);
       expect(res.header['content-type']).toBe(
         'application/json; charset=utf-8'
       );
@@ -142,7 +144,7 @@ describe('Auth Endpoints', () => {
         .send(userWithWrongUsername);
       expect(res.header.location).toBe(undefined);
       expect(res.statusCode).toBe(422);
-      expect(res.text).toMatch(/wrong username/i);
+      expect(res.text).toMatch(/wrong username or password/i);
     });
 
     test('Should throw an error if the user is trying to sign in with wrong password', async () => {
@@ -154,7 +156,7 @@ describe('Auth Endpoints', () => {
       expect(res.text).toMatch(/wrong password/i);
     });
 
-    test('Should sign in and return token', async () => {
+    test('Should return valid token after sign in', async () => {
       const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9';
       jwt.sign = jest.fn().mockReturnValueOnce(token);
       bcrypt.compare = jest.fn().mockReturnValue(true);
@@ -162,28 +164,39 @@ describe('Auth Endpoints', () => {
       const spyOnSign = jest.spyOn(jwt, 'sign');
       const res = await request(server)
         .post('/api/auth/signin')
-        .send(correctUser1)
+        .send(correctUserWithUsername)
         .set('Authorization', `Bearer ${token}`);
 
-      const eat = new Date();
-      eat.setDate(eat.getDate() + 1);
+      const tokenExpiryDate = new Date();
+      tokenExpiryDate.setDate(tokenExpiryDate.getDate() + 1);
       const expectedTokenArray = [
-        `token=${token}; Max-Age=86400; Path=/; Expires=${eat.toGMTString()}; HttpOnly`,
+        `token=${token}; Max-Age=86400; Path=/; Expires=${tokenExpiryDate.toGMTString()}; HttpOnly`,
       ];
       expect(res.statusCode).toBe(200);
       expect(res.headers['set-cookie']).toEqual(expectedTokenArray);
       expect(spyOnCompare).toHaveBeenCalledTimes(1);
+      expect(spyOnCompare).toHaveBeenCalledWith(
+        'password1234',
+        expect.anything()
+      );
       expect(spyOnSign).toHaveBeenCalledTimes(1);
+      expect(spyOnCompare).toHaveBeenCalledWith(
+        'password1234',
+        expect.anything()
+      );
     });
   });
 
   describe('GET /api/auth/signout', () => {
-    test('Should clear the auth cookie and respond with status code 200', async () => {
-      const res = await request(server).get('/api/auth/signout');
+    const expectedClearedCookieInfo =
+      '_t=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    test('Should sign out and clear the auth cookie', async () => {
+      const res = await request(server).get('/api/auth/signout').send({});
       expect(res.header['content-type']).toBe(
         'application/json; charset=utf-8'
       );
       expect(res.statusCode).toBe(200);
+      expect(res.headers['set-cookie'][0]).toEqual(expectedClearedCookieInfo);
     });
   });
 });

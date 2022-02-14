@@ -1,6 +1,7 @@
 const UserModel = require('../models/user');
 
 module.exports = {
+  // Temporary code added, to be merged and updated in upcoming PR
   getAllUsers: async (req, res) => {
     try {
       const users = await UserModel.find();
@@ -12,6 +13,7 @@ module.exports = {
   getSingleUser: async (req, res) => {
     res.send('Single user');
   },
+  // Temporary code added, to be merged and updated in upcoming PR
   updateUser: async (req, res) => {
     const { id } = req.params;
     try {
