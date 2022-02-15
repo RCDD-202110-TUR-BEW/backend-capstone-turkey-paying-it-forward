@@ -12,7 +12,6 @@ module.exports = {
       res.status(422).json({ message: err.message ?? err });
     }
   },
-
   getSingleUser: async (req, res) => {
     const { id } = req.params;
     try {
@@ -64,7 +63,6 @@ module.exports = {
       res.status(422).json({ message: err.message ?? err });
     }
   },
-
   getAllDonators: async (req, res) => {
     try {
       const donators = await UserModel.find({ isDonator: true });
