@@ -274,6 +274,20 @@ describe('User Endpoints', () => {
         'Unauthorized to modify the requested user'
       );
     });
+
+    test('Should response with an error message when requested user ID does not exist', async () => {
+      const response = await request(server).get(
+        `/api/users/${notExistingUserId}`
+      );
+
+      const responseBody = response.body;
+
+      expect(response.header['content-type']).toContain('application/json');
+      expect(response.statusCode).toBe(422);
+      expect(responseBody.message).toBe(
+        "The user with the specified ID wasn't found"
+      );
+    });
   });
 
   describe('GET /api/global/donators', () => {
