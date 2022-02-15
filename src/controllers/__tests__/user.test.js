@@ -2,6 +2,8 @@ const request = require('supertest');
 
 const server = require('../../app');
 
+// jest.setTimeout(50000);
+
 const {
   closeDatabase,
   clearDatabase,
@@ -10,52 +12,54 @@ const {
 
 let userId;
 
+let userIdDonator;
+
 const invalidId = 'invalidId123';
 
 const notExistingUserId = '937c7f79bcf86ce7863f5d0a';
 
 const newValidUser = {
-  username: 'new.user',
-  firstName: 'New',
-  lastName: 'User',
-  email: 'email@domain.com',
-  password: 'testPassword',
-  password2: 'testPassword',
-  address: 'new address',
+  username: 'swarley',
+  firstName: 'Barney',
+  lastName: 'Stinson',
+  email: 'iamawesome@gmail.com',
+  password: 'suitup1A!',
+  passwordConfirm: 'suitup1A!',
+  address: '3rd Avenue Manhattan',
 };
 
 const newValidUser2 = {
-  username: 'new.user2',
-  firstName: 'New2',
-  lastName: 'User2',
-  email: 'email2@domain.com',
-  password: 'testPassword2',
-  password2: 'testPassword2',
-  address: 'new address2',
+  username: 'schmosby',
+  firstName: 'Ted',
+  lastName: 'Mosby',
+  email: 'mosbythearchitect@gmail.com',
+  password: 'haveyoumetme1A!',
+  passwordConfirm: 'haveyoumetme1A!',
+  address: '16 West 82nd Street',
 };
 
 const expectedValidUser = {
-  username: 'new.user',
-  firstName: 'New',
-  lastName: 'User',
-  email: 'email@domain.com',
-  address: 'new address',
+  username: 'swarley',
+  firstName: 'Barney',
+  lastName: 'Stinson',
+  email: 'iamawesome@gmail.com',
+  address: '3rd Avenue Manhattan',
 };
 
 const expectedValidUser2 = {
-  username: 'new.user2',
-  firstName: 'New2',
-  lastName: 'User2',
-  email: 'email2@domain.com',
-  address: 'new address2',
+  username: 'schmosby',
+  firstName: 'Ted',
+  lastName: 'Mosby',
+  email: 'mosbythearchitect@gmail.com',
+  address: '16 West 82nd Street',
 };
 
 const updatedUser = {
-  username: 'updated username',
-  firstName: 'New',
-  lastName: 'User',
-  email: 'email@domain.com',
-  address: 'new address',
+  username: 'goforbarney',
+  firstName: 'Barney',
+  lastName: 'Stinson',
+  email: 'iamawesome@gmail.com',
+  address: '3rd Avenue Manhattan',
 };
 
 const donatorUser = {
@@ -109,7 +113,7 @@ describe('User Endpoints', () => {
       expect(responseBody.message).toBe('There are no users at the moment!');
     });
 
-    test('Should send the all the users from database in the response', async () => {
+    test('Should send all the users from database in the response', async () => {
       await request(server)
         .post('/api/auth/signup')
         .set('Content-Type', 'application/json')
@@ -170,10 +174,10 @@ describe('User Endpoints', () => {
   });
 
   describe('PUT /api/users/:id', () => {
-    test('Should update a user and save it to database', async () => {
+    test('Should update the requested details of the correct user', async () => {
       const response = await request(server)
         .put(`/api/users/${userId}`)
-        .send({ username: 'updated username' });
+        .send({ username: 'goforbarney' });
 
       const responseBody = response.body;
 
@@ -195,6 +199,7 @@ describe('User Endpoints', () => {
         "The user with the specified ID wasn't found"
       );
     });
+
     test('Should response with an error message when requested user ID is not valid', async () => {
       const response = await request(server).get(`/api/users/${invalidId}`);
       const responseBody = response.body;
@@ -208,6 +213,19 @@ describe('User Endpoints', () => {
     test('Should delete the correct user from the database', async () => {
       const response = await request(server).delete(`/api/users/${userId}`);
       expect(response.statusCode).toBe(204);
+
+      const checkUserDeleted = await request(server).get(
+        `/api/users/${userId}`
+      );
+      const responseBody = checkUserDeleted.body;
+
+      expect(checkUserDeleted.header['content-type']).toContain(
+        'application/json'
+      );
+      expect(checkUserDeleted.statusCode).toBe(422);
+      expect(responseBody.message).toBe(
+        "The user with the specified ID wasn't found"
+      );
     });
 
     test('Should response with an error message when requested user ID is not valid', async () => {
@@ -217,10 +235,25 @@ describe('User Endpoints', () => {
       expect(response.statusCode).toBe(422);
       expect(responseBody.message).toBe('Requested user ID is not valid!');
     });
+
+    test('Should response with an error message when requested user ID does not exist', async () => {
+      const response = await request(server).get(
+        `/api/users/${notExistingUserId}`
+      );
+
+      const responseBody = response.body;
+
+      expect(response.header['content-type']).toContain('application/json');
+      expect(response.statusCode).toBe(422);
+      expect(responseBody.message).toBe(
+        "The user with the specified ID wasn't found"
+      );
+    });
   });
 
   describe('GET /api/global/donators', () => {
     test('Should response with an error message when there are no donators', async () => {
+      await clearDatabase();
       const response = await request(server).get('/api/global/donators');
 
       const responseBody = response.body;
@@ -248,11 +281,11 @@ describe('User Endpoints', () => {
       const responseBody = response.body;
 
       // eslint-disable-next-line no-underscore-dangle
-      userId = responseBody[0]._id;
+      userIdDonator = responseBody[0]._id;
 
       // Following endpoint is called to set isDonator field to true
       await request(server)
-        .put(`/api/users/${userId}`)
+        .put(`/api/users/${userIdDonator}`)
         .set('Content-Type', 'application/json')
         .send({ isDonator: true });
 
