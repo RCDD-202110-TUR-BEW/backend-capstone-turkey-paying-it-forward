@@ -49,7 +49,7 @@ module.exports = {
     }
   },
 
-  //   TODO: make sure to add authorization
+  //    TODO: make sure to add authorization
   deleteUser: async (req, res) => {
     const { id } = req.params;
     try {
