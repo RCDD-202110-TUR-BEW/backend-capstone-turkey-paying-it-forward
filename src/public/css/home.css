@@ -25,7 +25,7 @@ html {
 }
 
 ul {
-  width: 100%;
+  width: 70%;
   height: 100%;
   display: flex;
   justify-content: space-between;
@@ -35,19 +35,25 @@ ul {
 
 .auth-btn {
   display: flex;
-  margin-right: 10px;
+  margin-right: 20px;
+  height: 100%;
+  width: 8%;
   align-items: center;
   justify-content: space-between;
 }
 
 .sign-up {
   background-color: #23791c;
+  width: 70px;
+  height: 40px;
   color: white;
   cursor: pointer;
 }
 
 .sign-in {
   background-color: white;
+  width: 70px;
+  height: 40px;
   color: #23791c;
   cursor: pointer;
 }
@@ -195,11 +201,12 @@ footer {
   align-items: center;
   background-color: #3fa037;
   width: 100%;
-  height: 200px;
+  height: 300px;
 }
 
 .social-media-links{
   width: 25%;
+  height: 100%;
   display: flex;
   justify-content: space-around;
   align-items: center;
@@ -207,6 +214,7 @@ footer {
 
 .footer-links{
   width: 50%;
+  height: 100%;
   display: flex;
   justify-content: space-around;
   align-items: center;
@@ -221,6 +229,7 @@ footer {
 
 .company-name {
   margin-top: 10px;
+  height: 100%;
   display: flex;
   align-items: center;
 }
@@ -230,3 +239,19 @@ footer {
   color: white;
 }
 
+.project-structure {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-top: 50px;
+}
+
+.project-structure-img {
+  width: 600px;
+  height: 600px;
+} 
+
+.social-media-icon {
+  width: 30px;
+  height: 30px;
+}
