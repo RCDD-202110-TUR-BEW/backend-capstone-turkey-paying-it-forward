@@ -8,13 +8,7 @@ const bcrypt = require('bcrypt');
 
 const server = require('../../app');
 
-// jest.setTimeout(50000);
-
-const {
-  closeDatabase,
-  clearDatabase,
-  connectToMongo,
-} = require('../../db/connection');
+const { closeDatabase, clearDatabase } = require('../../db/connection');
 
 const mockUser = {
   username: 'chandler.bing',
@@ -59,7 +53,6 @@ const userWithWrongPassword = {
 };
 
 beforeAll(async () => {
-  connectToMongo();
   await clearDatabase();
 });
 
