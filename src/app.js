@@ -33,7 +33,6 @@ app.use('/api/auth', authRoutes);
 app.use('/api/items', itemRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/global', globalRoutes);
-
 app.use('/', (req, res) => {
   res.render('home');
 });
