@@ -2,11 +2,7 @@ const request = require('supertest');
 
 const server = require('../../app');
 
-const {
-  closeDatabase,
-  clearDatabase,
-  connectToMongo,
-} = require('../../db/connection');
+const { closeDatabase, clearDatabase } = require('../../db/connection');
 
 let userId;
 
@@ -41,7 +37,6 @@ const expectedDonatorResponse = {
 
 describe('User Endpoints', () => {
   beforeAll(async () => {
-    connectToMongo();
     await clearDatabase();
   });
 

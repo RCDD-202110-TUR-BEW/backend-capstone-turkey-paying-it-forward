@@ -1,10 +1,6 @@
 const request = require('supertest');
 const server = require('../../app');
-const {
-  closeDatabase,
-  clearDatabase,
-  connectToMongo,
-} = require('../../db/connection');
+const { closeDatabase, clearDatabase } = require('../../db/connection');
 
 let itemId;
 const trueItem = {
@@ -97,7 +93,6 @@ const noDescriptionItem = {
 
 describe('Items Endpoints', () => {
   beforeAll(async () => {
-    connectToMongo();
     await clearDatabase();
   });
 
@@ -126,7 +121,6 @@ describe('Items Endpoints', () => {
         .send(trueItem4);
 
       const response = await request(server).get('/api/global/all-items');
-      /* eslint-disable no-underscore-dangle */
       const responseBody = response.body;
       itemId = responseBody[0]._id;
 
@@ -176,7 +170,6 @@ describe('Items Endpoints', () => {
         .send(trueItem3);
 
       const response = await request(server).get('/api/items/available');
-      /* eslint-disable no-underscore-dangle */
       const responseBody = response.body;
       itemId = responseBody[0]._id;
 

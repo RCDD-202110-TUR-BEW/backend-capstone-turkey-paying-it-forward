@@ -8,11 +8,7 @@ const bcrypt = require('bcrypt');
 
 const server = require('../../app');
 
-const {
-  closeDatabase,
-  clearDatabase,
-  connectToMongo,
-} = require('../../db/connection');
+const { closeDatabase, clearDatabase } = require('../../db/connection');
 
 const mockUser = {
   username: 'chandler.bing',
@@ -55,10 +51,6 @@ const userWithWrongPassword = {
   username: 'chandler.bing',
   password: 'passwrd1234',
 };
-
-beforeAll(async () => {
-  connectToMongo();
-});
 
 afterAll(async () => {
   await closeDatabase();
