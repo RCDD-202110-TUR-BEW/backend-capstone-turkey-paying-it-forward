@@ -38,6 +38,9 @@ const userSchema = new Schema({
     type: Boolean,
     default: false,
   },
+  acceptTerms: {
+    type: Boolean,
+  },
 });
 
 const modelName = process.env.USER_MODEL_NAME;

@@ -4,7 +4,7 @@ const router = express.Router();
 
 const userController = require('../controllers/user');
 
-// GET route for /api/users
+// GET and POST routes for /api/users
 router.get('/', userController.getAllUsers);
 
 // GET, PUT, DELETE route for /api/users/:id
