@@ -1,5 +1,7 @@
 const request = require('supertest');
+
 const server = require('../../app');
+
 const { closeDatabase, clearDatabase } = require('../../db/connection');
 
 let itemId;
