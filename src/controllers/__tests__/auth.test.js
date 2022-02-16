@@ -8,6 +8,8 @@ const bcrypt = require('bcrypt');
 
 const server = require('../../app');
 
+// jest.setTimeout(50000);
+
 const {
   closeDatabase,
   clearDatabase,
