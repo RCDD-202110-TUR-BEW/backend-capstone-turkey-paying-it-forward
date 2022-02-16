@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const { Schema } = mongoose;
 
-const raterSchema = new Schema({
+const raterSchema = Schema({
   raterId: {
     type: Schema.Types.ObjectId,
     ref: process.env.USER_MODEL_NAME,
@@ -16,7 +16,7 @@ const raterSchema = new Schema({
   },
 });
 
-const ratingSchema = new Schema({
+const ratingSchema = Schema({
   user: {
     type: Schema.Types.ObjectId,
     ref: process.env.USER_MODEL_NAME,
