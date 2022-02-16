@@ -187,7 +187,7 @@ describe('User Endpoints', () => {
     });
 
     test('Should response with an error message when requested user ID does not exist', async () => {
-      const response = await request(server).get(
+      const response = await request(server).put(
         `/api/users/${notExistingUserId}`
       );
 
@@ -201,7 +201,7 @@ describe('User Endpoints', () => {
     });
 
     test('Should response with an error message when requested user ID is not valid', async () => {
-      const response = await request(server).get(`/api/users/${invalidId}`);
+      const response = await request(server).put(`/api/users/${invalidId}`);
       const responseBody = response.body;
       expect(response.header['content-type']).toContain('application/json');
       expect(response.statusCode).toBe(422);
@@ -229,7 +229,7 @@ describe('User Endpoints', () => {
     });
 
     test('Should response with an error message when requested user ID is not valid', async () => {
-      const response = await request(server).get(`/api/users/${invalidId}`);
+      const response = await request(server).delete(`/api/users/${invalidId}`);
       const responseBody = response.body;
       expect(response.header['content-type']).toContain('application/json');
       expect(response.statusCode).toBe(422);
@@ -237,7 +237,7 @@ describe('User Endpoints', () => {
     });
 
     test('Should response with an error message when requested user ID does not exist', async () => {
-      const response = await request(server).get(
+      const response = await request(server).delete(
         `/api/users/${notExistingUserId}`
       );
 

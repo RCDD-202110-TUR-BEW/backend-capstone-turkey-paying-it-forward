@@ -83,7 +83,6 @@ module.exports = {
       res.status(422).json({ message: err.message ?? err });
     }
   },
-
   signOutUser: (req, res) => {
     try {
       res.clearCookie('_t');
