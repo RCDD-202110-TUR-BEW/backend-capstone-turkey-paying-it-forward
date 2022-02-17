@@ -2,13 +2,7 @@ const request = require('supertest');
 
 const server = require('../../app');
 
-// jest.setTimeout(50000);
-
-const {
-  closeDatabase,
-  clearDatabase,
-  connectToMongo,
-} = require('../../db/connection');
+const { closeDatabase, clearDatabase } = require('../../db/connection');
 
 let userId;
 
@@ -93,7 +87,6 @@ const expectedDonatorResponse = {
 
 describe('User Endpoints', () => {
   beforeAll(async () => {
-    connectToMongo();
     await clearDatabase();
   });
 
@@ -128,7 +121,6 @@ describe('User Endpoints', () => {
 
       const responseBody = response.body;
 
-      // eslint-disable-next-line no-underscore-dangle
       userId = responseBody[0]._id;
 
       expect(response.header['content-type']).toContain('application/json');
@@ -280,7 +272,6 @@ describe('User Endpoints', () => {
 
       const responseBody = response.body;
 
-      // eslint-disable-next-line no-underscore-dangle
       userIdDonator = responseBody[0]._id;
 
       // Following endpoint is called to set isDonator field to true

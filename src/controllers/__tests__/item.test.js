@@ -2,13 +2,7 @@ const request = require('supertest');
 
 const server = require('../../app');
 
-// jest.setTimeout(50000);
-
-const {
-  closeDatabase,
-  clearDatabase,
-  connectToMongo,
-} = require('../../db/connection');
+const { closeDatabase, clearDatabase } = require('../../db/connection');
 
 let itemId;
 const trueItem = {
@@ -101,7 +95,6 @@ const noDescriptionItem = {
 
 describe('Items Endpoints', () => {
   beforeAll(async () => {
-    connectToMongo();
     await clearDatabase();
   });
 
@@ -130,7 +123,6 @@ describe('Items Endpoints', () => {
         .send(trueItem4);
 
       const response = await request(server).get('/api/global/all-items');
-      /* eslint-disable no-underscore-dangle */
       const responseBody = response.body;
       itemId = responseBody[0]._id;
 
@@ -146,12 +138,9 @@ describe('Items Endpoints', () => {
     test('Should response with an error message when there are no items', async () => {
       await clearDatabase();
       const response = await request(server).get('/api/global/all-items');
-
-      const responseBody = response.body;
-
       expect(response.header['content-type']).toContain('application/json');
       expect(response.statusCode).toBe(422);
-      expect(responseBody.message).toBe('No items found');
+      expect(response.body.message).toBe('No items found');
     });
   });
 
@@ -183,7 +172,6 @@ describe('Items Endpoints', () => {
         .send(trueItem3);
 
       const response = await request(server).get('/api/items/available');
-      /* eslint-disable no-underscore-dangle */
       const responseBody = response.body;
       itemId = responseBody[0]._id;
 
@@ -349,6 +337,70 @@ describe('Items Endpoints', () => {
       expect(response.header['content-type']).toContain('application/json');
       expect(response.statusCode).toBe(422);
       expect(responseBody.message).toBe('Requested item ID is not valid!');
+    });
+  });
+
+  describe('PUT /api/items/:id', () => {
+    test('Should update name on matching item', async () => {
+      const response = await request(server)
+        .put(`/api/items/${itemId}`)
+        .send({ name: 'Couch' });
+
+      expect(response.header['content-type']).toContain('application/json');
+      expect(response.statusCode).toBe(200);
+      expect(response.body.name).toEqual('Couch');
+    });
+
+    test('Should set matching item as not available', async () => {
+      const response = await request(server)
+        .put(`/api/items/${itemId}`)
+        .send({ isAvailable: false });
+
+      expect(response.header['content-type']).toContain('application/json');
+      expect(response.statusCode).toBe(200);
+      expect(response.body.isAvailable).toEqual(false);
+    });
+
+    test('Should response with an error message when to be updated item ID not found', async () => {
+      const response = await request(server)
+        .put('/api/items/6208e47a5fe21cc475419234')
+        .send({ isAvailable: false });
+
+      expect(response.header['content-type']).toContain('application/json');
+      expect(response.statusCode).toBe(422);
+      expect(response.body.message).toBe(
+        'The item with the specified ID was not found.'
+      );
+    });
+  });
+
+  describe('DELETE /api/items/:id', () => {
+    test('Should delete matching item', async () => {
+      const response = await request(server).delete(`/api/items/${itemId}`);
+
+      expect(response.statusCode).toBe(204);
+    });
+
+    test('Should not find item after deleting it', async () => {
+      const response = await request(server).get(`/api/items/${itemId}`);
+
+      expect(response.header['content-type']).toContain('application/json');
+      expect(response.statusCode).toBe(422);
+      expect(response.body.message).toBe(
+        'There is no item with the provided ID!'
+      );
+    });
+
+    test('Should throw an error if there is no item with the specified ID', async () => {
+      const response = await request(server).delete(
+        '/api/items/6208e47a5fe21cc475419234'
+      );
+
+      expect(response.header['content-type']).toContain('application/json');
+      expect(response.statusCode).toBe(422);
+      expect(response.body.message).toBe(
+        'The item with the specified ID was not found.'
+      );
     });
   });
 });
