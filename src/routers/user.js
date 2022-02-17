@@ -1,4 +1,6 @@
 const express = require('express');
+const userAuthenticationMiddleware = require('../middlewares/user-authentication');
+const userAuthorizationMiddleware = require('../middlewares/user-authorization');
 
 const router = express.Router();
 
@@ -12,7 +14,15 @@ router.get('/', userController.getAllUsers);
 router
   .route('/:id')
   .get(userController.getSingleUser)
-  .put(userController.updateUser)
-  .delete(userController.deleteUser);
+  .put(
+    userAuthenticationMiddleware,
+    userAuthorizationMiddleware,
+    userController.updateUser
+  )
+  .delete(
+    userAuthenticationMiddleware,
+    userAuthorizationMiddleware,
+    userController.deleteUser
+  );
 
 module.exports = router;
