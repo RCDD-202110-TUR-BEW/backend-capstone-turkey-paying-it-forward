@@ -5,6 +5,7 @@ const server = require('../../app');
 const { closeDatabase, clearDatabase } = require('../../db/connection');
 
 let itemId;
+
 const trueItem = {
   name: 'Sofa',
   description: 'A comfortable and medium size sofa',
