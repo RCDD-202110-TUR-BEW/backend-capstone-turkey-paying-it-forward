@@ -396,7 +396,7 @@ describe('Items Endpoints', () => {
       expect(response.body.name).toEqual('Couch');
     });
 
-    test('Should update isAvailable field on matching item', async () => {
+    test('Should set matching item as not available', async () => {
       const response = await request(server)
         .put(`/api/items/${itemId}`)
         .send({ isAvailable: false });
@@ -424,6 +424,16 @@ describe('Items Endpoints', () => {
       const response = await request(server).delete(`/api/items/${itemId}`);
 
       expect(response.statusCode).toBe(204);
+    });
+
+    test('Should not find item after deleting it', async () => {
+      const response = await request(server).get(`/api/items/${itemId}`);
+
+      expect(response.header['content-type']).toContain('application/json');
+      expect(response.statusCode).toBe(422);
+      expect(response.body.message).toBe(
+        'There is no item with the provided ID!'
+      );
     });
 
     test('Should throw an error if there is no item with the specified ID', async () => {
