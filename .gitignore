@@ -24,5 +24,4 @@ yarn-error.log*
 
 /.husky
 
-combined.log
-error.log
+logs
