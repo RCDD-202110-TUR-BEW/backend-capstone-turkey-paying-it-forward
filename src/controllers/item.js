@@ -6,7 +6,7 @@ module.exports = {
     try {
       const items = await ItemModel.find();
       if (items.length <= 0) throw new Error('No items found');
-      else res.json(items);
+      res.json(items);
     } catch (err) {
       res.status(422).json({ message: err.message ?? err });
     }
@@ -57,14 +57,11 @@ module.exports = {
         { new: true }
       );
       if (!updatedItem) {
-        res
-          .status(422)
-          .json({ message: 'The item with the specified ID was not found.' });
-      } else {
-        res.json(updatedItem);
+        throw new Error('The item with the specified ID was not found.');
       }
+      res.json(updatedItem);
     } catch (err) {
-      res.status(422).json({ message: err.message });
+      res.status(422).json({ message: err.message ?? err });
     }
   },
   addItem: async (req, res) => {
@@ -80,15 +77,11 @@ module.exports = {
     try {
       const item = await ItemModel.findByIdAndDelete(id);
       if (!item) {
-        res
-          .status(422)
-          .json({ message: 'The item with the specified ID was not found.' });
-      } else {
-        res.status(204).json({ message: 'The item is successfully deleted.' });
+        throw new Error('The item with the specified ID was not found.');
       }
       res.status(204).end();
     } catch (err) {
-      res.status(422).json({ message: err.message });
+      res.status(422).json({ message: err.message ?? err });
     }
   },
 };

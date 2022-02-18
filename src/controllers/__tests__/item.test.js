@@ -1,5 +1,4 @@
 const request = require('supertest');
-
 const server = require('../../app');
 const { closeDatabase, clearDatabase } = require('../../db/connection');
 
@@ -172,12 +171,9 @@ describe('Items Endpoints', () => {
     test('Should response with an error message when there are no items', async () => {
       await clearDatabase();
       const response = await request(server).get('/api/global/all-items');
-
-      const responseBody = response.body;
-
       expect(response.header['content-type']).toContain('application/json');
       expect(response.statusCode).toBe(422);
-      expect(responseBody.message).toBe('No items found');
+      expect(response.body.message).toBe('No items found');
     });
   });
 
