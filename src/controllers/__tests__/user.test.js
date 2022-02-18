@@ -283,9 +283,9 @@ describe('User Endpoints', () => {
       const responseBody = response.body;
 
       expect(response.header['content-type']).toContain('application/json');
-      expect(response.statusCode).toBe(401);
+      expect(response.statusCode).toBe(422);
       expect(responseBody.message).toBe(
-        'Unauthorized to modify the requested user'
+        "The user with the specified ID wasn't found"
       );
     });
   });
