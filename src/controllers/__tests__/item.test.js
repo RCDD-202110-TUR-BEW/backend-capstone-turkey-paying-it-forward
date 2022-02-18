@@ -390,6 +390,7 @@ describe('Items Endpoints', () => {
     test('Should update name on matching item', async () => {
       const response = await request(server)
         .put(`/api/items/${itemId}`)
+        .set('Cookie', authCookie)
         .send({ name: 'Couch' });
 
       expect(response.header['content-type']).toContain('application/json');
@@ -400,6 +401,7 @@ describe('Items Endpoints', () => {
     test('Should set matching item as not available', async () => {
       const response = await request(server)
         .put(`/api/items/${itemId}`)
+        .set('Cookie', authCookie)
         .send({ isAvailable: false });
 
       expect(response.header['content-type']).toContain('application/json');
@@ -410,19 +412,22 @@ describe('Items Endpoints', () => {
     test('Should response with an error message when to be updated item ID not found', async () => {
       const response = await request(server)
         .put('/api/items/6208e47a5fe21cc475419234')
+        .set('Cookie', authCookie)
         .send({ isAvailable: false });
 
       expect(response.header['content-type']).toContain('application/json');
-      expect(response.statusCode).toBe(422);
+      expect(response.statusCode).toBe(401);
       expect(response.body.message).toBe(
-        'The item with the specified ID was not found.'
+        'unauthorized to modify requested item'
       );
     });
   });
 
   describe('DELETE /api/items/:id', () => {
     test('Should delete matching item', async () => {
-      const response = await request(server).delete(`/api/items/${itemId}`);
+      const response = await request(server)
+        .delete(`/api/items/${itemId}`)
+        .set('Cookie', authCookie);
 
       expect(response.statusCode).toBe(204);
     });
@@ -438,14 +443,14 @@ describe('Items Endpoints', () => {
     });
 
     test('Should throw an error if there is no item with the specified ID', async () => {
-      const response = await request(server).delete(
-        '/api/items/6208e47a5fe21cc475419234'
-      );
+      const response = await request(server)
+        .delete('/api/items/6208e47a5fe21cc475419234')
+        .set('Cookie', authCookie);
 
       expect(response.header['content-type']).toContain('application/json');
-      expect(response.statusCode).toBe(422);
+      expect(response.statusCode).toBe(401);
       expect(response.body.message).toBe(
-        'The item with the specified ID was not found.'
+        'unauthorized to modify requested item'
       );
     });
   });
