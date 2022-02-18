@@ -6,7 +6,7 @@ module.exports = {
     try {
       const items = await ItemModel.find();
       if (items.length <= 0) throw new Error('No items found');
-      else res.json(items);
+      res.json(items);
     } catch (err) {
       res.status(422).json({ message: err.message ?? err });
     }
@@ -48,8 +48,21 @@ module.exports = {
       res.status(422).json({ message: err.message ?? err });
     }
   },
-  updateItem: (req, res) => {
-    res.send('Item with the specified ID has been updated');
+  updateItem: async (req, res) => {
+    const { id } = req.params;
+    try {
+      const updatedItem = await ItemModel.findByIdAndUpdate(
+        id,
+        { $set: req.body },
+        { new: true }
+      );
+      if (!updatedItem) {
+        throw new Error('The item with the specified ID was not found.');
+      }
+      res.json(updatedItem);
+    } catch (err) {
+      res.status(422).json({ message: err.message ?? err });
+    }
   },
   addItem: async (req, res) => {
     try {
@@ -59,7 +72,17 @@ module.exports = {
       res.status(422).json({ message: err.message });
     }
   },
-  deleteItem: (req, res) => {
-    res.send('Item with the specified ID has been deleted');
+  // @TODO: add auth middleware
+  deleteItem: async (req, res) => {
+    const { id } = req.params;
+    try {
+      const item = await ItemModel.findByIdAndDelete(id);
+      if (!item) {
+        throw new Error('The item with the specified ID was not found.');
+      }
+      res.status(204).end();
+    } catch (err) {
+      res.status(422).json({ message: err.message ?? err });
+    }
   },
 };

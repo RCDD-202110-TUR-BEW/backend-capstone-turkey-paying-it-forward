@@ -13,6 +13,8 @@ const userRoutes = require('./routers/user');
 
 const globalRoutes = require('./routers/global');
 
+const logger = require('./services/logger');
+
 const app = express();
 const port = process.env.NODE_LOCAL_PORT;
 
@@ -29,7 +31,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/global', globalRoutes);
 
 const server = app.listen(port, () => {
-  console.log(`Server listening on port ${port}`);
+  logger.log('info', `Server is running on port ${port}`);
   connectToMongo();
 });
 

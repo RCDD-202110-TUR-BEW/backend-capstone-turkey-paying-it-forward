@@ -6,7 +6,6 @@ module.exports = async (req, res, next) => {
   try {
     const itemId = req.params.id;
     const item = await Item.findById(itemId);
-    /* eslint-disable no-underscore-dangle */
     // check if item exists and if user is the owner of the item
     if (item && item.owner.toString() === req.user._id) {
       return next();

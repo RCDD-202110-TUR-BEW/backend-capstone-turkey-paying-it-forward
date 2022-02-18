@@ -3,7 +3,6 @@
 
 module.exports = function (req, res, next) {
   try {
-    // eslint-disable-next-line no-underscore-dangle
     if (req.user._id === req.params.id) {
       return next();
     }

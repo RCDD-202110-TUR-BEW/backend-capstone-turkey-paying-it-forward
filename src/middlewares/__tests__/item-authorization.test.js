@@ -15,7 +15,6 @@ const res = {
 };
 jest.mock('../../models/item', () => ({
   findById: jest.fn().mockImplementation((id) => {
-    // eslint-disable-next-line no-underscore-dangle
     if (id === item._id) {
       return Promise.resolve(item);
     }
