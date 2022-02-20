@@ -61,8 +61,8 @@ const donatorUser = {
   firstName: 'Anne',
   lastName: 'Frank',
   email: 'annefrank@gmail.com',
-  password: 'password123',
-  passwordConfirm: 'password123',
+  password: 'Password123',
+  passwordConfirm: 'Password123',
   address: 'Croissant Avenue, Paris',
 };
 
@@ -71,8 +71,8 @@ const notDonatorUser = {
   firstName: 'Aisha',
   lastName: 'Michael',
   email: 'aishamichael@yahoo.com',
-  password: '123password',
-  passwordConfirm: '123password',
+  password: '123Password',
+  passwordConfirm: '123Password',
   address: 'Gelato Avenue, Rome',
 };
 
