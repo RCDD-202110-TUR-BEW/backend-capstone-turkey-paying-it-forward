@@ -45,7 +45,7 @@ describe('sendEmail service function', () => {
     spyOnSendMail.mockRestore();
   });
 
-  test('Should throw an error if the there are no recipients', async () => {
+  test('Should throw an error if there are no recipients', async () => {
     jest.clearAllMocks();
     const emailOptions = {
       from: 'paying it forward',
