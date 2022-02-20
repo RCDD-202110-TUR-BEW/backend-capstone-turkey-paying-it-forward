@@ -4,7 +4,7 @@ const { sendEmail } = require('./mail');
 require('dotenv').config();
 const User = require('../models/user');
 const Item = require('../models/item');
-
+const logger = require('./logger');
 const { connectToMongo, closeDatabase } = require('../db/connection');
 
 function emailOptions(emails, availableItems) {
@@ -30,11 +30,9 @@ const checkServerStatusJob = () =>
     async () => {
       try {
         await axios.get('http://localhost:3000/status');
-        // @todo to replace with logger
-        console.log('Server is up');
+        logger.info('Server is up');
       } catch (error) {
-        // @todo to replace with logger
-        console.log('Server is down');
+        logger.error('Server is down');
       }
     },
     {
@@ -64,8 +62,7 @@ const newsLetterJob = () =>
 
         await sendEmail(Options);
       } catch (err) {
-        // @todo to replace with logger
-        console.log(err.message ?? err);
+        logger.error(err.message ?? err);
       } finally {
         await closeDatabase();
       }
