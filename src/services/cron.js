@@ -55,7 +55,7 @@ const newsLetterJob = () =>
           // eslint-disable-next-line no-throw-literal
           throw { message: 'email not sent' };
         // get all the emails from the users
-        users.forEach(async (user) => {
+        users.forEach((user) => {
           emails.push(user.email);
         });
         const Options = emailOptions(emails, availableItems);
