@@ -241,14 +241,14 @@ footer {
 
 .project-structure {
   display: flex;
-  justify-content: space-around;
+  flex-direction: column;
   align-items: center;
   margin-top: 50px;
 }
 
 .project-structure-img {
-  width: 600px;
-  height: 600px;
+  width: 1500px;
+  height: 900px;
 } 
 
 .social-media-icon {

@@ -29,6 +29,8 @@ app.set('views', path.join(__dirname, 'views'));
 
 app.use(express.static(path.join(__dirname, '/public')));
 
+app.use(express.static(path.join(__dirname, '/assets')));
+
 app.use('/api/auth', authRoutes);
 app.use('/api/items', itemRoutes);
 app.use('/api/users', userRoutes);
