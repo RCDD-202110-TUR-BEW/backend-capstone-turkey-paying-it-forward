@@ -2,22 +2,12 @@ const { createLogger, format, transports } = require('winston');
 
 const { combine, timestamp, prettyPrint } = format;
 
-/**
- *  
- *  levels: {
-    error: 0,
-    warn: 1,
-    info: 2
-    }
- * 
- * 
- */
 const logger = createLogger({
   level: 'info',
   format: combine(timestamp(), prettyPrint()),
   transports: [
-    new transports.File({ filename: 'error.log', level: 'error' }), // error
-    new transports.File({ filename: 'combined.log' }), // combined file for info and below
+    new transports.File({ filename: 'logs/error.log', level: 'error' }), // log file for error logs
+    new transports.File({ filename: 'logs/combined.log' }), // combined log file for info and verbose logs
   ],
 });
 

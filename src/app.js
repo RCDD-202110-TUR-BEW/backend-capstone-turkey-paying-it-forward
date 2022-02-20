@@ -4,6 +4,7 @@ const path = require('path');
 
 require('dotenv').config();
 
+const cookieParser = require('cookie-parser');
 const { connectToMongo } = require('./db/connection');
 
 const authRoutes = require('./routers/auth');
@@ -30,6 +31,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, '/public')));
 
 app.use(express.static(path.join(__dirname, '/assets')));
+app.use(cookieParser());
 
 app.use('/api/auth', authRoutes);
 app.use('/api/items', itemRoutes);

@@ -2,13 +2,7 @@ const request = require('supertest');
 
 const server = require('../../app');
 
-jest.setTimeout(50000);
-
-const {
-  closeDatabase,
-  clearDatabase,
-  connectToMongo,
-} = require('../../db/connection');
+const { closeDatabase, clearDatabase } = require('../../db/connection');
 
 let userId;
 
@@ -93,7 +87,6 @@ const expectedDonatorResponse = {
 
 describe('User Endpoints', () => {
   beforeAll(async () => {
-    connectToMongo();
     await clearDatabase();
   });
 
@@ -128,7 +121,6 @@ describe('User Endpoints', () => {
 
       const responseBody = response.body;
 
-      // eslint-disable-next-line no-underscore-dangle
       userId = responseBody[0]._id;
 
       expect(response.header['content-type']).toContain('application/json');
@@ -187,7 +179,7 @@ describe('User Endpoints', () => {
     });
 
     test('Should response with an error message when requested user ID does not exist', async () => {
-      const response = await request(server).get(
+      const response = await request(server).put(
         `/api/users/${notExistingUserId}`
       );
 
@@ -201,7 +193,7 @@ describe('User Endpoints', () => {
     });
 
     test('Should response with an error message when requested user ID is not valid', async () => {
-      const response = await request(server).get(`/api/users/${invalidId}`);
+      const response = await request(server).put(`/api/users/${invalidId}`);
       const responseBody = response.body;
       expect(response.header['content-type']).toContain('application/json');
       expect(response.statusCode).toBe(422);
@@ -229,7 +221,7 @@ describe('User Endpoints', () => {
     });
 
     test('Should response with an error message when requested user ID is not valid', async () => {
-      const response = await request(server).get(`/api/users/${invalidId}`);
+      const response = await request(server).delete(`/api/users/${invalidId}`);
       const responseBody = response.body;
       expect(response.header['content-type']).toContain('application/json');
       expect(response.statusCode).toBe(422);
@@ -237,7 +229,7 @@ describe('User Endpoints', () => {
     });
 
     test('Should response with an error message when requested user ID does not exist', async () => {
-      const response = await request(server).get(
+      const response = await request(server).delete(
         `/api/users/${notExistingUserId}`
       );
 
@@ -280,7 +272,6 @@ describe('User Endpoints', () => {
 
       const responseBody = response.body;
 
-      // eslint-disable-next-line no-underscore-dangle
       userIdDonator = responseBody[0]._id;
 
       // Following endpoint is called to set isDonator field to true

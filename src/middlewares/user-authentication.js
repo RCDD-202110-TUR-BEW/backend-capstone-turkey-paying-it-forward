@@ -1,6 +1,8 @@
+/* this middleware is called on all routes except the global ones to verify that user is authenticated */
+
 const jwt = require('jsonwebtoken');
 
-module.exports = async (req, res, next) => {
+module.exports = (req, res, next) => {
   const { token } = req.cookies;
   try {
     const { user } = jwt.verify(token, process.env.JWT_SECRET);
