@@ -1,0 +1,1142 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Paying It Forward",
+    "description": "",
+    "contact": {
+      "email": "payingItForward2022@hotmail.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000/api",
+      "description": "Internal Server"
+    },
+    {
+      "url": "http://payingitforward.com/api",
+      "description": "Production Server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Auth",
+      "description": "Authentication endpoints"
+    },
+    {
+      "name": "Users",
+      "description": "Users endpoints"
+    },
+    {
+      "name": "Items",
+      "description": "Items endpoints"
+    }
+  ],
+  "consumes": ["application/json"],
+  "produces": ["application/json"],
+  "paths": {
+    "/auth/signup": {
+      "post": {
+        "summary": "Registers new users",
+        "tags": ["Auth"],
+        "requestBody": {
+          "required": true,
+          "description": "User information",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "$ref": "#/definitions/PostUser"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Username already used"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/signin": {
+      "post": {
+        "summary": "Signs user in",
+        "tags": ["Auth"],
+        "requestBody": {
+          "required": true,
+          "description": "Signing in can be done by username or email",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "require": true,
+                    "example": "ammar.baki"
+                  },
+                  "password": {
+                    "type": "string",
+                    "required": true,
+                    "example": "superHardPassword123"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Successfully signed in"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Wrong username or email"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/signout": {
+      "get": {
+        "summary": "Signs user out and clears auth cookie",
+        "tags": ["Auth"],
+        "responses": {
+          "200": {
+            "description": "Successful Operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users": {
+      "get": {
+        "summary": "Sends all users in the response",
+        "tags": ["Users"],
+        "responses": {
+          "200": {
+            "description": "Successful Operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "$ref": "#/components/schemas/User"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Requested user ID is not valid!"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "summary": "Sends a user information with the specified ID",
+        "tags": ["Users"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "User ID",
+            "schema": {
+              "type": "string",
+              "example": "6212527f45b9ccd48e33860d"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "There are no users at the moment!"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Updates the user information with the specified ID",
+        "tags": ["Users"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "User ID",
+            "schema": {
+              "type": "string",
+              "example": "6212527f45b9ccd48e33860d"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "One or more fields that needs to be updated",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "firstName": {
+                    "type": "string",
+                    "example": "Jennifer"
+                  },
+                  "address": {
+                    "type": "string",
+                    "example": "425 Main Street, California, 10457"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "authCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "There are no users at the moment!"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthenticated or Unauthorized Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "You are not authenticated"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Deletes the user with the specified ID",
+        "tags": ["Users"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "User ID",
+            "schema": {
+              "type": "string",
+              "example": "62129b16ca8ad73083e24b98"
+            }
+          }
+        ],
+        "security": [
+          {
+            "authCookie": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Operation"
+          },
+          "401": {
+            "description": "Unauthenticated or Unauthorized to delete requested user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Unauthorized to modify the requested user"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/global/donators": {
+      "get": {
+        "summary": "Sends all donator users",
+        "tags": ["Users"],
+        "responses": {
+          "200": {
+            "description": "Successful Operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "$ref": "#/definitions/DonatorUser"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "No Donators",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "No donators found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/items": {
+      "post": {
+        "summary": "Posts new item",
+        "tags": ["Items"],
+        "requestBody": {
+          "required": true,
+          "description": "Item data",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "$ref": "#/definitions/PostItem"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "authCookie": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Item Created Successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Item created successfully."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "You are not authenticated"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Missing Fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Item validation failed"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/items/available": {
+      "get": {
+        "summary": "Sends all available items",
+        "tags": ["Items"],
+        "responses": {
+          "200": {
+            "description": "Successful Operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "$ref": "#/components/schemas/Item"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "No Available Items",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "There are no available items at the moment!"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/items/filter": {
+      "get": {
+        "summary": "Filter items according to a specific type",
+        "tags": ["Items"],
+        "parameters": [
+          {
+            "name": "type",
+            "in": "query",
+            "required": true,
+            "description": "Item type",
+            "schema": {
+              "type": "string",
+              "example": "Books"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "$ref": "#/components/schemas/Item"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "No Available Items or Wrong Item Type",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "There are no available items of type Books!"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/items/{id}": {
+      "get": {
+        "summary": "Sends item with the specified ID",
+        "tags": ["Items"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Item ID",
+            "schema": {
+              "type": "string",
+              "example": "6213921454b30d140000b395"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Item"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid ID or unavailable item ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "The item with the specified ID was not found."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Updates the item data with the specified ID",
+        "tags": ["Items"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Item ID",
+            "schema": {
+              "type": "string",
+              "example": "6213921454b30d140000b395"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "One or more fields that needs to be updated",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Sofa"
+                  },
+                  "type": {
+                    "type": "string",
+                    "example": "Stationery"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "authCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Item"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid ID or unavailable item ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "The item with the specified ID was not found."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthenticated or Unauthorized Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "unauthorized to modify requested item: only item owner can modify"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Updates the item data with the specified ID",
+        "tags": ["Items"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Item ID",
+            "schema": {
+              "type": "string",
+              "example": "6213921454b30d140000b395"
+            }
+          }
+        ],
+        "security": [
+          {
+            "authCookie": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Operation"
+          },
+          "422": {
+            "description": "Invalid ID or unavailable item ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "The item with the specified ID was not found."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthenticated or Unauthorized Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "unauthorized to modify requested item: only item owner can modify"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/global/all-items": {
+      "get": {
+        "summary": "Sends all items",
+        "tags": ["Items"],
+        "responses": {
+          "200": {
+            "description": "Successful Operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "$ref": "#/components/schemas/Item"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "No Items",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "No items found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "PostUser": {
+      "type": "object",
+      "required": [
+        "username",
+        "email",
+        "firstName",
+        "address",
+        "acceptTerms",
+        "password",
+        "passwordConfirm",
+        "lastName"
+      ],
+      "properties": {
+        "username": {
+          "type": "string",
+          "example": "anne.adams"
+        },
+        "email": {
+          "type": "string",
+          "example": "annadams@gmail.com"
+        },
+        "firstName": {
+          "type": "string",
+          "example": "Anne"
+        },
+        "lastName": {
+          "type": "string",
+          "example": "Adams"
+        },
+        "address": {
+          "type": "string",
+          "example": "123 Main Street, New York, NY 10030"
+        },
+        "password": {
+          "type": "string",
+          "example": "superHardPassword123"
+        },
+        "passwordConfirm": {
+          "type": "string",
+          "example": "superHardPassword123"
+        },
+        "acceptTerms": {
+          "type": "boolean",
+          "example": true
+        }
+      }
+    },
+    "DonatorUser": {
+      "type": "object",
+      "required": ["username", "email", "firstName", "address", "lastName"],
+      "properties": {
+        "_id": {
+          "type": "string",
+          "description": "Automatically generated ID, unique for each user",
+          "example": "6212527f45b9ccd48e33860d"
+        },
+        "username": {
+          "type": "string",
+          "description": "Usernames are unique for each user",
+          "example": "anne.adams"
+        },
+        "email": {
+          "type": "string",
+          "description": "Emails are unique for each user",
+          "example": "annadams@gmail.com"
+        },
+        "firstName": {
+          "type": "string",
+          "example": "Anne"
+        },
+        "lastName": {
+          "type": "string",
+          "example": "Adams"
+        },
+        "address": {
+          "type": "string",
+          "example": "123 Main Street, New York, NY 10030"
+        },
+        "isDonator": {
+          "type": "boolean",
+          "default": true
+        }
+      }
+    },
+    "PostItem": {
+      "type": "object",
+      "required": ["owner", "name", "description", "type", "photo"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "example": "Clean Code"
+        },
+        "description": {
+          "type": "string",
+          "example": "Clean Code book by Robert Cecil Marten"
+        },
+        "type": {
+          "type": "string",
+          "example": "Books",
+          "enum": [
+            "Books",
+            "Stationery",
+            "School Books",
+            "Novels",
+            "Test Books",
+            "Furniture"
+          ]
+        },
+        "photo": {
+          "type": "string",
+          "example": "https://images-na.ssl-images-amazon.com/images/I/41xShlnTZTL._SX376_BO1,204,203,200_.jpg",
+          "description": "A valid image URL"
+        },
+        "count": {
+          "type": "number",
+          "example": 3,
+          "default": 1,
+          "description": "Optional, if not provided it will default to 1"
+        },
+        "owner": {
+          "type": "string",
+          "description": "Owner reference",
+          "example": "6212527f45b9ccd48e33860d"
+        }
+      }
+    },
+    "Raters": {
+      "type": "object",
+      "required": ["raterId", "rating"],
+      "properties": {
+        "raterId": {
+          "type": "string",
+          "example": "6212527f45b9ccd48e33860d"
+        },
+        "rating": {
+          "type": "number",
+          "min": 0,
+          "max": 5,
+          "example": 4
+        }
+      }
+    }
+  },
+
+  "components": {
+    "securitySchemes": {
+      "authCookie": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "swaggerToken"
+      }
+    },
+    "schemas": {
+      "User": {
+        "type": "object",
+        "required": ["username", "email", "firstName", "address", "lastName"],
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Automatically generated ID, unique for each user",
+            "example": "6212527f45b9ccd48e33860d"
+          },
+          "username": {
+            "type": "string",
+            "description": "Usernames are unique for each user",
+            "example": "anne.adams"
+          },
+          "email": {
+            "type": "string",
+            "description": "Emails are unique for each user",
+            "example": "annadams@gmail.com"
+          },
+          "firstName": {
+            "type": "string",
+            "example": "Anne"
+          },
+          "lastName": {
+            "type": "string",
+            "example": "Adams"
+          },
+          "address": {
+            "type": "string",
+            "example": "123 Main Street, New York, NY 10030"
+          },
+          "isDonator": {
+            "type": "boolean",
+            "default": false
+          }
+        }
+      },
+      "Item": {
+        "type": "object",
+        "required": ["owner", "name", "description", "type", "photo"],
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Automatically generated ID, unique for each item",
+            "example": "62129b16ca8ad73083e24b98"
+          },
+          "name": {
+            "type": "string",
+            "example": "Clean Code"
+          },
+          "description": {
+            "type": "string",
+            "example": "Clean Code book by Robert Cecil Marten"
+          },
+          "type": {
+            "type": "string",
+            "example": "Books",
+            "enum": [
+              "Books",
+              "Stationery",
+              "School Books",
+              "Novels",
+              "Test Books",
+              "Furniture"
+            ]
+          },
+          "photo": {
+            "type": "string",
+            "example": "https://st.depositphotos.com/1500766/2998/i/950/depositphotos_29982203-stock-photo-sofa-furniture-isolated-on-white.jpg",
+            "description": "A valid image URL"
+          },
+          "isAvailable": {
+            "type": "boolean",
+            "example": true,
+            "default": true
+          },
+          "count": {
+            "type": "number",
+            "example": 3,
+            "default": 1
+          },
+          "borrowers": {
+            "type": "array",
+            "example": ["507f1f77bcf86cd799439011", "507f191e810c19729de860ea"],
+            "default": [],
+            "description": "An array of borrowers IDs"
+          },
+          "owner": {
+            "type": "string",
+            "description": "Owner reference",
+            "example": "6212527f45b9ccd48e33860d"
+          }
+        }
+      },
+      "Request": {
+        "type": "object",
+        "required": ["owner", "name", "description", "type"],
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Automatically generated ID, unique for each item",
+            "example": "62129b16ca8ad73083e24b98"
+          },
+          "name": {
+            "type": "string",
+            "example": "Clean Code"
+          },
+          "description": {
+            "type": "string",
+            "example": "Clean Code book by Robert Cecil Marten"
+          },
+          "type": {
+            "type": "string",
+            "example": "Books",
+            "enum": [
+              "Books",
+              "Stationery",
+              "School Books",
+              "Novels",
+              "Test Books",
+              "Furniture"
+            ]
+          },
+          "photo": {
+            "type": "string",
+            "example": "https://st.depositphotos.com/1500766/2998/i/950/depositphotos_29982203-stock-photo-sofa-furniture-isolated-on-white.jpg",
+            "description": "A valid image URL"
+          },
+          "owner": {
+            "type": "string",
+            "description": "Owner reference",
+            "example": "6212527f45b9ccd48e33860d"
+          }
+        }
+      },
+      "Rating": {
+        "type": "object",
+        "required": ["user"],
+        "properties": {
+          "user": {
+            "type": "string",
+            "description": "The rated user's ID",
+            "example": "62129b16ca8ad73083e24b98"
+          },
+          "raters": {
+            "type": "array",
+            "description": "An array of Raters objects consisting of rater's ID and rating value",
+            "items": {
+              "type": "object",
+              "$ref": "#/definitions/Raters"
+            },
+            "default": []
+          }
+        }
+      }
+    }
+  }
+}
