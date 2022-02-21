@@ -20,7 +20,7 @@ html {
   width: 100%;
   height: 80px;
   display: flex;
-  justify-content: space-between;
+  justify-content: space-evenly;
   align-items: center;
 }
 
@@ -62,7 +62,6 @@ ul {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  flex-wrap: wrap;
   margin-top: 50px;
 }
 
@@ -71,9 +70,14 @@ ul {
   height: 300px;
 }
 
+.items {
+  margin-left: 120px;
+  margin-right: 120px;
+}
+
 .item-list-wrapper {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-evenly;
   align-items: center;
   flex-wrap: wrap;
   margin-top: 50px;
@@ -99,6 +103,11 @@ ul {
 
 .item-title {
   margin-left: 52px;
+}
+
+.requests {
+  margin-left: 120px;
+  margin-right: 120px;
 }
 
 .request-list-wrapper {
@@ -139,6 +148,11 @@ ul {
   margin-top: 50px;
 }
 
+.donators {
+  margin-left: 120px;
+  margin-right: 120px;
+}
+
 .donator {
   display: flex;
   flex-direction: column;
@@ -152,6 +166,11 @@ ul {
 
 .donator-title {
   margin-left: 52px;
+}
+
+.technology {
+  margin-left: 120px;
+  margin-right: 120px;
 }
 
 .technology-list-wrapper {
@@ -169,6 +188,11 @@ ul {
 
 .technology-title {
   margin-left: 52px;
+}
+
+.teams {
+  margin-left: 120px;
+  margin-right: 120px;
 }
 
 .team-list-wrapper {
@@ -247,7 +271,7 @@ footer {
 }
 
 .project-structure-img {
-  width: 1500px;
+  width: 1200px;
   height: 900px;
 } 
 
