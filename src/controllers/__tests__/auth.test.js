@@ -52,7 +52,12 @@ const userWithWrongPassword = {
   password: 'passwrd1234',
 };
 
+beforeAll(async () => {
+  await clearDatabase();
+});
+
 afterAll(async () => {
+  await clearDatabase();
   await closeDatabase();
   server.close();
 });
@@ -181,7 +186,7 @@ describe('Auth Endpoints', () => {
 
   describe('GET /api/auth/signout', () => {
     const expectedClearedCookieInfo =
-      '_t=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT';
+      'token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT';
     test('Should sign out and clear the auth cookie', async () => {
       const res = await request(server).get('/api/auth/signout').send({});
       expect(res.header['content-type']).toBe(
