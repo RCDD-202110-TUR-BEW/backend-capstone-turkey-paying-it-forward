@@ -12,16 +12,29 @@ jest.mock('../../db/connection', () => ({
   connectToMongo: jest.fn(),
   closeDatabase: jest.fn(),
 }));
+jest.mock('../../models/item', () => ({
+  find: jest.fn().mockReturnThis(),
+  sort: jest.fn().mockReturnThis(),
+  limit: jest.fn(),
+}));
 jest.mock('../mail');
 
-const spyOnFindItem = jest.spyOn(Item, 'find');
+const spyOnLimitItem = jest.spyOn(Item, 'limit');
 const spyOnFindUser = jest.spyOn(User, 'find');
 const spyOnSchedule = jest.spyOn(cron, 'schedule');
 const spyOnAxiosGet = jest.spyOn(axios, 'get');
 const spyOnLoggerInfo = jest.spyOn(logger, 'info');
 const spyOnLoggerError = jest.spyOn(logger, 'error');
 
+spyOnSchedule.mockImplementation(
+  // eslint-disable-next-line no-return-await
+  async (frequency, callback) => await callback()
+);
+
 afterAll(() => {
+  jest.restoreAllMocks();
+});
+afterEach(() => {
   jest.clearAllMocks();
 });
 
@@ -29,10 +42,6 @@ describe('cron jobs service', () => {
   describe('server status job', () => {
     test('Should log server is up when server is working', async () => {
       spyOnAxiosGet.mockImplementation(() => Promise.resolve());
-      spyOnSchedule.mockImplementation(
-        // eslint-disable-next-line no-return-await
-        async (frequency, callback) => await callback()
-      );
 
       await checkServerStatusJob();
       expect(spyOnSchedule).toHaveBeenCalled();
@@ -53,19 +62,12 @@ describe('cron jobs service', () => {
       expect(spyOnLoggerInfo).toHaveBeenCalled();
       expect(spyOnLoggerInfo).toBeCalledTimes(1);
       expect(spyOnLoggerInfo).toBeCalledWith('Server is up');
-
-      spyOnAxiosGet.mockClear();
-      spyOnSchedule.mockClear();
-      spyOnLoggerInfo.mockClear();
     });
+
     test('Should log server is down when server is not working', async () => {
       spyOnAxiosGet.mockImplementation(() => {
         throw new Error('Server is down');
       });
-      spyOnSchedule.mockImplementation(
-        // eslint-disable-next-line no-return-await
-        async (frequency, callback) => await callback()
-      );
 
       await checkServerStatusJob();
       expect(spyOnSchedule).toHaveBeenCalled();
@@ -86,19 +88,11 @@ describe('cron jobs service', () => {
       expect(spyOnLoggerError).toHaveBeenCalled();
       expect(spyOnLoggerError).toBeCalledTimes(1);
       expect(spyOnLoggerError).toBeCalledWith('Server is down');
-
-      spyOnAxiosGet.mockRestore();
-      spyOnSchedule.mockClear();
     });
   });
   describe('news letter job', () => {
     test('Should send email to users when there are available items', async () => {
-      spyOnSchedule.mockImplementation(
-        // eslint-disable-next-line no-return-await
-        async (frequency, callback) => await callback()
-      );
-
-      spyOnFindItem.mockImplementation(() =>
+      spyOnLimitItem.mockImplementation(() =>
         Promise.resolve([
           {
             _id: '5e9f8f9f9f9f9f9f9f9f9f9',
@@ -128,29 +122,25 @@ describe('cron jobs service', () => {
       );
       expect(connection.connectToMongo).toHaveBeenCalled();
       expect(connection.connectToMongo).toHaveBeenCalledTimes(1);
-      expect(spyOnFindItem).toHaveBeenCalled();
-      expect(spyOnFindItem).toHaveBeenCalledTimes(1);
-      expect(spyOnFindItem).toHaveBeenCalledWith({ isAvailable: true });
+      expect(Item.find).toHaveBeenCalled();
+      expect(Item.find).toHaveBeenCalledTimes(1);
+      expect(Item.find).toHaveBeenCalledWith({ isAvailable: true });
+      expect(Item.sort).toHaveBeenCalledTimes(1);
+      expect(Item.sort).toHaveBeenCalledWith({ createdAt: -1 });
+      expect(spyOnLimitItem).toHaveBeenCalledTimes(1);
+      expect(spyOnLimitItem).toHaveBeenCalledWith(10);
       expect(spyOnFindUser).toHaveBeenCalled();
       expect(spyOnFindUser).toHaveBeenCalledTimes(1);
-      expect(spyOnFindUser).toHaveBeenCalledWith();
+      expect(spyOnFindUser).toHaveBeenCalledWith({}, { _id: 0, email: 1 });
       expect(mail.sendEmail).toHaveBeenCalled();
       expect(mail.sendEmail).toBeCalledTimes(1);
       expect(mail.sendEmail).toBeCalledWith(expect.any(Object));
       expect(connection.closeDatabase).toHaveBeenCalled();
       expect(connection.closeDatabase).toHaveBeenCalledTimes(1);
-      spyOnSchedule.mockClear();
-      spyOnFindItem.mockClear();
-      spyOnFindUser.mockClear();
-      mail.sendEmail.mockClear();
     });
-    test('Should not send email to users when there are no available items', async () => {
-      spyOnSchedule.mockImplementation(
-        // eslint-disable-next-line no-return-await
-        async (frequency, callback) => await callback()
-      );
 
-      spyOnFindItem.mockImplementation(() => Promise.resolve([]));
+    test('Should not send email to users when there are no available items', async () => {
+      spyOnLimitItem.mockImplementation(() => Promise.resolve([]));
       spyOnFindUser.mockImplementation(() =>
         Promise.resolve([
           {
@@ -172,31 +162,26 @@ describe('cron jobs service', () => {
         }
       );
       expect(connection.connectToMongo).toHaveBeenCalled();
-      expect(connection.connectToMongo).toHaveBeenCalledTimes(2);
-      expect(spyOnFindItem).toHaveBeenCalled();
-      expect(spyOnFindItem).toHaveBeenCalledTimes(1);
-      expect(spyOnFindItem).toHaveBeenCalledWith({ isAvailable: true });
+      expect(connection.connectToMongo).toHaveBeenCalledTimes(1);
+      expect(Item.find).toHaveBeenCalled();
+      expect(Item.find).toHaveBeenCalledTimes(1);
+      expect(Item.find).toHaveBeenCalledWith({ isAvailable: true });
+      expect(Item.sort).toHaveBeenCalledTimes(1);
+      expect(Item.sort).toHaveBeenCalledWith({ createdAt: -1 });
+      expect(spyOnLimitItem).toHaveBeenCalledTimes(1);
+      expect(spyOnLimitItem).toHaveBeenCalledWith(10);
       expect(spyOnFindUser).toHaveBeenCalled();
       expect(spyOnFindUser).toHaveBeenCalledTimes(1);
-      expect(spyOnFindUser).toHaveBeenCalledWith();
+      expect(spyOnFindUser).toHaveBeenCalledWith({}, { _id: 0, email: 1 });
       expect(mail.sendEmail).not.toHaveBeenCalled();
-      expect(spyOnLoggerError).toHaveBeenCalledTimes(2);
+      expect(spyOnLoggerError).toHaveBeenCalledTimes(1);
       expect(spyOnLoggerError).toHaveBeenCalledWith('email not sent');
       expect(connection.closeDatabase).toHaveBeenCalled();
-      expect(connection.closeDatabase).toHaveBeenCalledTimes(2);
-
-      spyOnSchedule.mockClear();
-      spyOnFindItem.mockClear();
-      spyOnFindUser.mockClear();
-      mail.sendEmail.mockClear();
+      expect(connection.closeDatabase).toHaveBeenCalledTimes(1);
     });
-    test('Should not send email when there are no users', async () => {
-      spyOnSchedule.mockImplementation(
-        // eslint-disable-next-line no-return-await
-        async (frequency, callback) => await callback()
-      );
 
-      spyOnFindItem.mockImplementation(() =>
+    test('Should not send email when there are no users', async () => {
+      spyOnLimitItem.mockImplementation(() =>
         Promise.resolve([
           {
             _id: '5e9f8f9f9f9f9f9f9f9f9f9',
@@ -218,18 +203,22 @@ describe('cron jobs service', () => {
         }
       );
       expect(connection.connectToMongo).toHaveBeenCalled();
-      expect(connection.connectToMongo).toHaveBeenCalledTimes(3);
-      expect(spyOnFindItem).toHaveBeenCalled();
-      expect(spyOnFindItem).toHaveBeenCalledTimes(1);
-      expect(spyOnFindItem).toHaveBeenCalledWith({ isAvailable: true });
+      expect(connection.connectToMongo).toHaveBeenCalledTimes(1);
+      expect(Item.find).toHaveBeenCalled();
+      expect(Item.find).toHaveBeenCalledTimes(1);
+      expect(Item.find).toHaveBeenCalledWith({ isAvailable: true });
+      expect(Item.sort).toHaveBeenCalledTimes(1);
+      expect(Item.sort).toHaveBeenCalledWith({ createdAt: -1 });
+      expect(spyOnLimitItem).toHaveBeenCalledTimes(1);
+      expect(spyOnLimitItem).toHaveBeenCalledWith(10);
       expect(spyOnFindUser).toHaveBeenCalled();
       expect(spyOnFindUser).toHaveBeenCalledTimes(1);
-      expect(spyOnFindUser).toHaveBeenCalledWith();
+      expect(spyOnFindUser).toHaveBeenCalledWith({}, { _id: 0, email: 1 });
       expect(mail.sendEmail).not.toHaveBeenCalled();
-      expect(spyOnLoggerError).toHaveBeenCalledTimes(3);
+      expect(spyOnLoggerError).toHaveBeenCalledTimes(1);
       expect(spyOnLoggerError).toHaveBeenCalledWith('email not sent');
       expect(connection.closeDatabase).toHaveBeenCalled();
-      expect(connection.closeDatabase).toHaveBeenCalledTimes(3);
+      expect(connection.closeDatabase).toHaveBeenCalledTimes(1);
     });
   });
 });
