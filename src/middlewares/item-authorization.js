@@ -7,15 +7,18 @@ module.exports = async (req, res, next) => {
     const itemId = req.params.id;
     const item = await Item.findById(itemId);
     // check if item exists and if user is the owner of the item
-    if (item && item.owner.toString() === req.user._id) {
+    if (!item)
+      throw new Error('unauthorized to modify requested item: item not found');
+    else if (item.owner.toString() === req.user._id) {
       return next();
     }
-    return res
-      .status(401)
-      .json({ message: 'unauthorized to modify requested item' });
+    return res.status(401).json({
+      message:
+        'unauthorized to modify requested item: only item owner can modify',
+    });
   } catch (error) {
-    return res
-      .status(401)
-      .json({ message: 'unauthorized to modify requested item' });
+    return res.status(401).json({
+      message: error.message ?? error,
+    });
   }
 };

@@ -1,15 +1,17 @@
 const request = require('supertest');
-
 const server = require('../../app');
-
 const { closeDatabase, clearDatabase } = require('../../db/connection');
 
+let ownerId;
+let authCookie;
 let itemId;
+const nonExistingItemId = '6208e47a5fe21cc475419234';
+const invalidItemId = 'invalidId123';
 
 const trueItem = {
   name: 'Sofa',
   description: 'A comfortable and medium size sofa',
-  owner: '507f191e810c19729de860ea',
+  owner: ownerId,
   count: 2,
   photo:
     'https://st.depositphotos.com/1500766/2998/i/950/depositphotos_29982203-stock-photo-sofa-furniture-isolated-on-white.jpg',
@@ -20,7 +22,7 @@ const trueItem2 = {
   name: 'Clean Code',
   description:
     "Even bad code can function. But if code isn't clean, it can bring a development organization to its knees.",
-  owner: '542c2b97bac0595474108b48',
+  owner: ownerId,
   count: 2,
   photo:
     'https://m.media-amazon.com/images/S/aplus-media-library-service-media/ca64f05b-34e9-4cf1-8e42-3e8ae26001fc.__CR0,0,300,600_PT0_SX150_V1___.jpg',
@@ -30,7 +32,7 @@ const trueItem2 = {
 const trueItem3 = {
   name: 'My Sofa',
   description: 'Another Sofa',
-  owner: '507c7f79bcf86cd7994f6c0e',
+  owner: ownerId,
   count: 2,
   photo:
     'https://www.ulcdn.net/images/products/215114/original/Apollo_Sofa_Set_FNSF51APDU30000SAAAA_slide_00.jpg?1538973284',
@@ -40,7 +42,7 @@ const trueItem3 = {
 const trueItem4 = {
   name: 'My Sofa',
   description: 'Another Sofa',
-  owner: '507c7f79bcf86cd7994f6c0e',
+  owner: ownerId,
   count: 2,
   photo:
     'https://www.ulcdn.net/images/products/215114/original/Apollo_Sofa_Set_FNSF51APDU30000SAAAA_slide_00.jpg?1538973284',
@@ -94,12 +96,45 @@ const noDescriptionItem = {
   type: 'Stationery',
 };
 
+const mockUser = {
+  username: 'chandler.bing',
+  firstName: 'Chandler',
+  lastName: 'Bing',
+  email: 'chandlerbing@gmail.com',
+  password: 'password1234',
+  passwordConfirm: 'password1234',
+  address: 'Central Perk, New York',
+  acceptTerms: true,
+};
+
 describe('Items Endpoints', () => {
   beforeAll(async () => {
     await clearDatabase();
+    /* 
+      authCookie is needed to authenticate requests made to post, put, and delete items endpoints,
+      without it, all the mentioned requests will not be able to pass the user-authentication middleware.
+      And the reason for assigning all true items owners for the authenticated user is to make sure they
+      pass the item-authorization middleware.
+    */
+    const signUpResponse = await request(server)
+      .post('/api/auth/signup')
+      .set('Content-Type', 'application/json')
+      .send(mockUser);
+    ownerId = signUpResponse.body._id;
+    trueItem.owner = ownerId;
+    trueItem2.owner = ownerId;
+    trueItem3.owner = ownerId;
+    trueItem4.owner = ownerId;
+    const signInResponse = await request(server)
+      .post(`/api/auth/signin`)
+      .set('Content-Type', 'application/json')
+      .send({ username: mockUser.username, password: mockUser.password });
+
+    [authCookie] = signInResponse.headers['set-cookie'];
   });
 
   afterAll(async () => {
+    await clearDatabase();
     await closeDatabase();
     server.close();
   });
@@ -109,18 +144,22 @@ describe('Items Endpoints', () => {
       await request(server)
         .post('/api/items')
         .set('Content-Type', 'application/json')
+        .set('Cookie', authCookie)
         .send(trueItem);
       await request(server)
         .post('/api/items')
         .set('Content-Type', 'application/json')
+        .set('Cookie', authCookie)
         .send(trueItem2);
       await request(server)
         .post('/api/items')
         .set('Content-Type', 'application/json')
+        .set('Cookie', authCookie)
         .send(trueItem3);
       await request(server)
         .post('/api/items')
         .set('Content-Type', 'application/json')
+        .set('Cookie', authCookie)
         .send(trueItem4);
 
       const response = await request(server).get('/api/global/all-items');
@@ -162,14 +201,17 @@ describe('Items Endpoints', () => {
       await request(server)
         .post('/api/items')
         .set('Content-Type', 'application/json')
+        .set('Cookie', authCookie)
         .send(trueItem);
       await request(server)
         .post('/api/items')
         .set('Content-Type', 'application/json')
+        .set('Cookie', authCookie)
         .send(trueItem2);
       await request(server)
         .post('/api/items')
         .set('Content-Type', 'application/json')
+        .set('Cookie', authCookie)
         .send(trueItem3);
 
       const response = await request(server).get('/api/items/available');
@@ -232,6 +274,7 @@ describe('Items Endpoints', () => {
       const response = await request(server)
         .post('/api/items')
         .set('Content-Type', 'application/json')
+        .set('Cookie', authCookie)
         .send(trueItem);
 
       expect(response.header['content-type']).toContain('application/json');
@@ -243,6 +286,7 @@ describe('Items Endpoints', () => {
       const response = await request(server)
         .post('/api/items')
         .set('Content-Type', 'application/json')
+        .set('Cookie', authCookie)
         .send(noOwnerItem);
 
       expect(response.header['content-type']).toContain('application/json');
@@ -255,6 +299,7 @@ describe('Items Endpoints', () => {
       const response = await request(server)
         .post('/api/items')
         .set('Content-Type', 'application/json')
+        .set('Cookie', authCookie)
         .send(invalidImageItem);
 
       expect(response.header['content-type']).toContain('application/json');
@@ -269,6 +314,7 @@ describe('Items Endpoints', () => {
       const response = await request(server)
         .post('/api/items')
         .set('Content-Type', 'application/json')
+        .set('Cookie', authCookie)
         .send(invalidTypeItem);
 
       expect(response.header['content-type']).toContain('application/json');
@@ -283,6 +329,7 @@ describe('Items Endpoints', () => {
       const response = await request(server)
         .post('/api/items')
         .set('Content-Type', 'application/json')
+        .set('Cookie', authCookie)
         .send(noNameItem);
 
       expect(response.header['content-type']).toContain('application/json');
@@ -295,6 +342,7 @@ describe('Items Endpoints', () => {
       const response = await request(server)
         .post('/api/items')
         .set('Content-Type', 'application/json')
+        .set('Cookie', authCookie)
         .send(noDescriptionItem);
 
       expect(response.header['content-type']).toContain('application/json');
@@ -318,7 +366,7 @@ describe('Items Endpoints', () => {
 
     test('Should response with an error message when requested item ID does not exist', async () => {
       const response = await request(server).get(
-        `/api/items/507f191e810c19729de860ea`
+        `/api/items/${nonExistingItemId}`
       );
 
       const responseBody = response.body;
@@ -331,7 +379,7 @@ describe('Items Endpoints', () => {
     });
 
     test('Should response with an error message when requested item ID is not valid', async () => {
-      const response = await request(server).get(`/api/items/invalidId123`);
+      const response = await request(server).get(`/api/items/${invalidItemId}`);
 
       const responseBody = response.body;
 
@@ -345,6 +393,7 @@ describe('Items Endpoints', () => {
     test('Should update name on matching item', async () => {
       const response = await request(server)
         .put(`/api/items/${itemId}`)
+        .set('Cookie', authCookie)
         .send({ name: 'Couch' });
 
       expect(response.header['content-type']).toContain('application/json');
@@ -355,6 +404,7 @@ describe('Items Endpoints', () => {
     test('Should set matching item as not available', async () => {
       const response = await request(server)
         .put(`/api/items/${itemId}`)
+        .set('Cookie', authCookie)
         .send({ isAvailable: false });
 
       expect(response.header['content-type']).toContain('application/json');
@@ -364,20 +414,23 @@ describe('Items Endpoints', () => {
 
     test('Should response with an error message when to be updated item ID not found', async () => {
       const response = await request(server)
-        .put('/api/items/6208e47a5fe21cc475419234')
+        .put(`/api/items/${nonExistingItemId}`)
+        .set('Cookie', authCookie)
         .send({ isAvailable: false });
 
       expect(response.header['content-type']).toContain('application/json');
-      expect(response.statusCode).toBe(422);
+      expect(response.statusCode).toBe(401);
       expect(response.body.message).toBe(
-        'The item with the specified ID was not found.'
+        'unauthorized to modify requested item: item not found'
       );
     });
   });
 
   describe('DELETE /api/items/:id', () => {
     test('Should delete matching item', async () => {
-      const response = await request(server).delete(`/api/items/${itemId}`);
+      const response = await request(server)
+        .delete(`/api/items/${itemId}`)
+        .set('Cookie', authCookie);
 
       expect(response.statusCode).toBe(204);
     });
@@ -393,14 +446,14 @@ describe('Items Endpoints', () => {
     });
 
     test('Should throw an error if there is no item with the specified ID', async () => {
-      const response = await request(server).delete(
-        '/api/items/6208e47a5fe21cc475419234'
-      );
+      const response = await request(server)
+        .delete(`/api/items/${nonExistingItemId}`)
+        .set('Cookie', authCookie);
 
       expect(response.header['content-type']).toContain('application/json');
-      expect(response.statusCode).toBe(422);
+      expect(response.statusCode).toBe(401);
       expect(response.body.message).toBe(
-        'The item with the specified ID was not found.'
+        'unauthorized to modify requested item: item not found'
       );
     });
   });

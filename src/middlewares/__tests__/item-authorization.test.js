@@ -64,7 +64,8 @@ describe('item-authorization function middleware ', () => {
     expect(res.status).toHaveBeenCalledWith(401);
     expect(res.json).toHaveBeenCalled();
     expect(res.json).toHaveBeenCalledWith({
-      message: 'unauthorized to modify requested item',
+      message:
+        'unauthorized to modify requested item: only item owner can modify',
     });
   });
 
@@ -86,7 +87,7 @@ describe('item-authorization function middleware ', () => {
     expect(res.status).toHaveBeenCalled();
     expect(res.status).toHaveBeenCalledWith(401);
     expect(res.json).toHaveBeenCalledWith({
-      message: 'unauthorized to modify requested item',
+      message: 'unauthorized to modify requested item: item not found',
     });
   });
 
