@@ -25,6 +25,7 @@
     "mongoose": "^6.1.8",
     "nodemailer": "^6.7.2",
     "supertest": "^6.2.2",
+    "swagger-ui-express": "^4.3.0",
     "winston": "^3.5.1",
     "yarn-upgrade-all": "^0.6.1"
   },
