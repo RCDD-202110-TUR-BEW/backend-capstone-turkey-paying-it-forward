@@ -3,7 +3,10 @@
 const jwt = require('jsonwebtoken');
 
 module.exports = (req, res, next) => {
-  const { token } = req.cookies;
+  let { token } = req.cookies;
+  if (req?.headers?.swaggerToken) {
+    token = req.headers.swaggerToken;
+  }
   try {
     const { user } = jwt.verify(token, process.env.JWT_SECRET);
     // if verified pass the user to the next function with the req object
