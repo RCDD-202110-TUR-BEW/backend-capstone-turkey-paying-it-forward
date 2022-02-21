@@ -15,15 +15,17 @@
     "postinstall": "husky install && husky add .husky/pre-commit \"yarn validate-staged\" && husky add .husky/pre-push \"yarn test\""
   },
   "dependencies": {
-    "cookie-parser": "^1.4.6",
     "bcrypt": "^5.0.1",
+    "cookie-parser": "^1.4.6",
     "dotenv": "^14.2.0",
+    "ejs": "^3.1.6",
     "express": "^4.17.2",
     "is-image-url": "^1.1.8",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.1.8",
     "nodemailer": "^6.7.2",
     "supertest": "^6.2.2",
+    "winston": "^3.5.1",
     "yarn-upgrade-all": "^0.6.1"
   },
   "devDependencies": {

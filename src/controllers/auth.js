@@ -29,7 +29,6 @@ module.exports = {
         cookieAge *= 14; // Remember me setting extends cookie expiry time to 2 weeks
       }
 
-      /* eslint no-underscore-dangle: ["error", { "allow": ["_id"] }] */
       const token = jwt.sign(payload, process.env.JWT_SECRET, {
         expiresIn: cookieAge,
         subject: user._id.toString(),
