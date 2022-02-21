@@ -6,6 +6,7 @@
     html: the html body of the email
 */
 const nodemailer = require('nodemailer');
+const logger = require('./logger');
 
 module.exports = {
   sendEmail: async (emailOptions) => {
@@ -20,6 +21,7 @@ module.exports = {
       const res = await transporter.sendMail(emailOptions);
       return res;
     } catch (error) {
+      logger.error(error);
       return error;
     }
   },

@@ -69,7 +69,6 @@ describe('sendEmail service function', () => {
     spyOnSendMail.mockRestore();
   });
 
-  // NOTE: I think this test is not necessary because invalid emails should be detected when user signs up
   test('Should return accepted and rejected emails', async () => {
     jest.clearAllMocks();
     const emailOptions = {
