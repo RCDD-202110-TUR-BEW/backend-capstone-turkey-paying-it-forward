@@ -47,19 +47,17 @@ const newsLetterJob = () =>
     async () => {
       try {
         connectToMongo();
-        const emails = [];
-        const availableItems = await Item.find({ isAvailable: true });
-        const users = await User.find();
+        const numberOfItems = 10;
+        const availableItems = await Item.find({ isAvailable: true })
+          .sort({ createdAt: -1 })
+          .limit(numberOfItems);
+        const users = await User.find({}, { email: 1, _id: 0 });
         // check if there are no users or available items
         if (availableItems.length <= 0 || users.length <= 0)
-          // eslint-disable-next-line no-throw-literal
-          throw { message: 'email not sent' };
-        // get all the emails from the users
-        users.forEach((user) => {
-          emails.push(user.email);
-        });
-        const Options = emailOptions(emails, availableItems);
+          throw new Error('email not sent');
 
+        const emails = users.map((user) => user.email);
+        const Options = emailOptions(emails, availableItems);
         await sendEmail(Options);
       } catch (err) {
         logger.error(err.message ?? err);
