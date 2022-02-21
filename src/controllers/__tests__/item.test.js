@@ -5,6 +5,8 @@ const { closeDatabase, clearDatabase } = require('../../db/connection');
 let ownerId;
 let authCookie;
 let itemId;
+const nonExistingItemId = '6208e47a5fe21cc475419234';
+const invalidItemId = 'invalidId123';
 
 const trueItem = {
   name: 'Sofa',
@@ -108,12 +110,17 @@ const mockUser = {
 describe('Items Endpoints', () => {
   beforeAll(async () => {
     await clearDatabase();
-    const response = await request(server)
+    /* 
+      authCookie is needed to authenticate requests made to post, put, and delete items endpoints,
+      without it, all the mentioned requests will not be able to pass the user-authentication middleware.
+      And the reason for assigning all true items owners for the authenticated user is to make sure they
+      pass the item-authorization middleware.
+    */
+    const signUpResponse = await request(server)
       .post('/api/auth/signup')
       .set('Content-Type', 'application/json')
       .send(mockUser);
-    /* eslint-disable no-underscore-dangle */
-    ownerId = response.body._id;
+    ownerId = signUpResponse.body._id;
     trueItem.owner = ownerId;
     trueItem2.owner = ownerId;
     trueItem3.owner = ownerId;
@@ -359,7 +366,7 @@ describe('Items Endpoints', () => {
 
     test('Should response with an error message when requested item ID does not exist', async () => {
       const response = await request(server).get(
-        `/api/items/507f191e810c19729de860ea`
+        `/api/items/${nonExistingItemId}`
       );
 
       const responseBody = response.body;
@@ -372,7 +379,7 @@ describe('Items Endpoints', () => {
     });
 
     test('Should response with an error message when requested item ID is not valid', async () => {
-      const response = await request(server).get(`/api/items/invalidId123`);
+      const response = await request(server).get(`/api/items/${invalidItemId}`);
 
       const responseBody = response.body;
 
@@ -407,14 +414,14 @@ describe('Items Endpoints', () => {
 
     test('Should response with an error message when to be updated item ID not found', async () => {
       const response = await request(server)
-        .put('/api/items/6208e47a5fe21cc475419234')
+        .put(`/api/items/${nonExistingItemId}`)
         .set('Cookie', authCookie)
         .send({ isAvailable: false });
 
       expect(response.header['content-type']).toContain('application/json');
       expect(response.statusCode).toBe(401);
       expect(response.body.message).toBe(
-        'unauthorized to modify requested item'
+        'unauthorized to modify requested item: item not found'
       );
     });
   });
@@ -440,13 +447,13 @@ describe('Items Endpoints', () => {
 
     test('Should throw an error if there is no item with the specified ID', async () => {
       const response = await request(server)
-        .delete('/api/items/6208e47a5fe21cc475419234')
+        .delete(`/api/items/${nonExistingItemId}`)
         .set('Cookie', authCookie);
 
       expect(response.header['content-type']).toContain('application/json');
       expect(response.statusCode).toBe(401);
       expect(response.body.message).toBe(
-        'unauthorized to modify requested item'
+        'unauthorized to modify requested item: item not found'
       );
     });
   });
