@@ -26,7 +26,7 @@ app.use(cookieParser());
 app.use('/api/auth', authRoutes);
 app.use('/api/items', itemRoutes);
 app.use('/api/users', userRoutes);
-app.use('/api/request', requestRoutes);
+app.use('/api/requests', requestRoutes);
 app.use('/api/global', globalRoutes);
 
 const server = app.listen(port, () => {
