@@ -2,7 +2,7 @@ const request = require('supertest');
 const server = require('../../app');
 const { closeDatabase, clearDatabase } = require('../../db/connection');
 
-jest.setTimeout(5000);
+jest.setTimeout(10000);
 
 let ownerId;
 let authCookie;
