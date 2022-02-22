@@ -60,9 +60,11 @@ ul {
 
 .overview {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   align-items: center;
   margin-top: 50px;
+  margin-left: 175px;
+  margin-right: 175px;
 }
 
 .overview-pic {
