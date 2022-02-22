@@ -3,6 +3,8 @@ const server = require('../../app');
 
 const { closeDatabase, clearDatabase } = require('../../db/connection');
 
+jest.setTimeout(5000);
+
 let authCookie;
 let userId;
 
