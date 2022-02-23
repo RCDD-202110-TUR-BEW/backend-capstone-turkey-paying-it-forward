@@ -29,7 +29,7 @@ const checkServerStatusJob = () =>
     process.env.SERVER_STATUS_CRON_JOB_SCHEDULE,
     async () => {
       try {
-        await axios.get(`${process.env.SERVER_BASE_URL}status`);
+        await axios.get(`${process.env.SERVER_BASE_URL}/status`);
         logger.info('Server is up');
       } catch (error) {
         logger.error('Server is down');
