@@ -4,7 +4,7 @@ require('dotenv').config();
 const connection = require('../../db/connection');
 const User = require('../../models/user');
 const Item = require('../../models/item');
-const { checkServerStatusJob, newsLetterJob } = require('../cron');
+const { checkServerStatusJob, newsletterJob } = require('../cron');
 const mail = require('../mail');
 const logger = require('../logger');
 
@@ -57,7 +57,7 @@ describe('cron jobs service', () => {
       expect(spyOnAxiosGet).toHaveBeenCalled();
       expect(spyOnAxiosGet).not.toThrow();
       expect(spyOnAxiosGet).toHaveBeenCalledWith(
-        'http://localhost:3000/status'
+        `${process.env.SERVER_BASE_URL}status`
       );
       expect(spyOnLoggerInfo).toHaveBeenCalled();
       expect(spyOnLoggerInfo).toBeCalledTimes(1);
@@ -83,7 +83,7 @@ describe('cron jobs service', () => {
       expect(spyOnAxiosGet).toHaveBeenCalled();
       expect(spyOnAxiosGet).toThrow();
       expect(spyOnAxiosGet).toHaveBeenCalledWith(
-        'http://localhost:3000/status'
+        `${process.env.SERVER_BASE_URL}status`
       );
       expect(spyOnLoggerError).toHaveBeenCalled();
       expect(spyOnLoggerError).toBeCalledTimes(1);
@@ -109,7 +109,7 @@ describe('cron jobs service', () => {
         ])
       );
 
-      await newsLetterJob();
+      await newsletterJob();
       expect(spyOnSchedule).toHaveBeenCalled();
       expect(spyOnSchedule).toHaveBeenCalledTimes(1);
       expect(spyOnSchedule).toHaveBeenCalledWith(
@@ -145,12 +145,12 @@ describe('cron jobs service', () => {
         Promise.resolve([
           {
             _id: '5e9f8f9f9f9f9f9f9f9f9f9',
-            email: ' ',
+            email: 'mockedmail@mail.com ',
           },
         ])
       );
 
-      await newsLetterJob();
+      await newsletterJob();
       expect(spyOnSchedule).toHaveBeenCalled();
       expect(spyOnSchedule).toHaveBeenCalledTimes(1);
       expect(spyOnSchedule).toHaveBeenCalledWith(
@@ -175,7 +175,9 @@ describe('cron jobs service', () => {
       expect(spyOnFindUser).toHaveBeenCalledWith({}, { _id: 0, email: 1 });
       expect(mail.sendEmail).not.toHaveBeenCalled();
       expect(spyOnLoggerError).toHaveBeenCalledTimes(1);
-      expect(spyOnLoggerError).toHaveBeenCalledWith('email not sent');
+      expect(spyOnLoggerError).toHaveBeenCalledWith(
+        'No available items or users for newsletter'
+      );
       expect(connection.closeDatabase).toHaveBeenCalled();
       expect(connection.closeDatabase).toHaveBeenCalledTimes(1);
     });
@@ -191,7 +193,7 @@ describe('cron jobs service', () => {
       );
       spyOnFindUser.mockImplementation(() => Promise.resolve([]));
 
-      await newsLetterJob();
+      await newsletterJob();
       expect(spyOnSchedule).toHaveBeenCalled();
       expect(spyOnSchedule).toHaveBeenCalledTimes(1);
       expect(spyOnSchedule).toHaveBeenCalledWith(
@@ -216,7 +218,9 @@ describe('cron jobs service', () => {
       expect(spyOnFindUser).toHaveBeenCalledWith({}, { _id: 0, email: 1 });
       expect(mail.sendEmail).not.toHaveBeenCalled();
       expect(spyOnLoggerError).toHaveBeenCalledTimes(1);
-      expect(spyOnLoggerError).toHaveBeenCalledWith('email not sent');
+      expect(spyOnLoggerError).toHaveBeenCalledWith(
+        'No available items or users for newsletter'
+      );
       expect(connection.closeDatabase).toHaveBeenCalled();
       expect(connection.closeDatabase).toHaveBeenCalledTimes(1);
     });

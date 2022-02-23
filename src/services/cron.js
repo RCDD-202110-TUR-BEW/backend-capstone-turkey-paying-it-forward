@@ -7,11 +7,11 @@ const Item = require('../models/item');
 const logger = require('./logger');
 const { connectToMongo, closeDatabase } = require('../db/connection');
 
-function emailOptions(emails, availableItems) {
+function buildEmailOptions(emails, availableItems) {
   return {
     from: process.env.EMAIL_USER,
     to: emails,
-    subject: 'NewsLetter',
+    subject: 'Paying it forward newsletter',
     html: ` <h1>Hi,</h1>
   <p>Here are the available items:</p>
   <ul>
@@ -29,7 +29,7 @@ const checkServerStatusJob = () =>
     process.env.SERVER_STATUS_CRON_JOB_SCHEDULE,
     async () => {
       try {
-        await axios.get('http://localhost:3000/status');
+        await axios.get(`${process.env.SERVER_BASE_URL}status`);
         logger.info('Server is up');
       } catch (error) {
         logger.error('Server is down');
@@ -41,7 +41,7 @@ const checkServerStatusJob = () =>
     }
   );
 // this job send the newsletter to the users every week
-const newsLetterJob = () =>
+const newsletterJob = () =>
   cron.schedule(
     process.env.NEWSLETTER_CRON_JOB_SCHEDULE,
     async () => {
@@ -54,11 +54,11 @@ const newsLetterJob = () =>
         const users = await User.find({}, { email: 1, _id: 0 });
         // check if there are no users or available items
         if (availableItems.length <= 0 || users.length <= 0)
-          throw new Error('email not sent');
+          throw new Error('No available items or users for newsletter');
 
         const emails = users.map((user) => user.email);
-        const Options = emailOptions(emails, availableItems);
-        await sendEmail(Options);
+        const emailOptions = buildEmailOptions(emails, availableItems);
+        await sendEmail(emailOptions);
       } catch (err) {
         logger.error(err.message ?? err);
       } finally {
@@ -71,4 +71,4 @@ const newsLetterJob = () =>
     }
   );
 
-module.exports = { checkServerStatusJob, newsLetterJob };
+module.exports = { checkServerStatusJob, newsletterJob };
