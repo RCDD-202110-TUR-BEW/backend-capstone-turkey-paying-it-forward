@@ -15,20 +15,114 @@ const mockUser = {
   firstName: 'Chandler',
   lastName: 'Bing',
   email: 'chandlerbing@gmail.com',
-  password: 'password1234',
-  passwordConfirm: 'password1234',
+  password: 'Password1234',
+  passwordConfirm: 'Password1234',
   address: 'Central Perk, New York',
   acceptTerms: true,
 };
 
+const userWithUsedEmail = {
+  username: 'chan.bing',
+  firstName: 'Chandler',
+  lastName: 'Bing',
+  email: 'chandlerbing@gmail.com',
+  password: 'Password1234',
+  passwordConfirm: 'Password1234',
+  address: 'Central Perk, New York',
+  acceptTerms: true,
+};
+
+const userWithEmptyUsername = {
+  username: '',
+  firstName: 'Chandler',
+  lastName: 'Bing',
+  email: 'chandlerbing@gmail.com',
+  password: 'Password1234',
+  passwordConfirm: 'Password1234',
+};
+
+const userWithEmptyEmail = {
+  username: 'chandler.bing',
+  firstName: 'Chandler',
+  lastName: 'Bing',
+  email: '',
+  password: 'Password1234',
+  passwordConfirm: 'Password1234',
+};
+
+const userWithNotValidUsername1 = {
+  username: 'cb',
+  firstName: 'Chandler',
+  lastName: 'Bing',
+  email: 'chandlerbing@gmail.com',
+  password: 'Password1234',
+  passwordConfirm: 'Password1234',
+};
+
+const userWithNotValidUsername2 = {
+  username: 'cb@!',
+  firstName: 'Chandler',
+  lastName: 'Bing',
+  email: 'chandlerbing@gmail.com',
+  password: 'Password1234',
+  passwordConfirm: 'Password1234',
+};
+
+const userWithNotValidEmail = {
+  username: 'chandler.bing',
+  firstName: 'Chandler',
+  lastName: 'Bing',
+  email: 'chandlerbing',
+  password: 'Password1234',
+  passwordConfirm: 'Password1234',
+};
+
+const userWithNotValidNameAndSurname = {
+  username: 'chandler.bing',
+  firstName: 'Chan123@',
+  lastName: 'Bing!!!',
+  email: 'chandlerbing@gmail.com',
+  password: 'Password1234',
+  passwordConfirm: 'Password1234',
+  address: 'Central Perk, New York',
+  acceptTerms: true,
+};
+
+const userWithoutUppercaseInPassword = {
+  username: 'chandler.bing',
+  firstName: 'Chandler',
+  lastName: 'Bing',
+  email: 'chandlerbing@gmail.com',
+  password: 'password1234',
+  passwordConfirm: 'password1234',
+};
+
+const userWithoutLowercaseInPassword = {
+  username: 'chandler.bing',
+  firstName: 'Chandler',
+  lastName: 'Bing',
+  email: 'chandlerbing@gmail.com',
+  password: 'PASSWORD1234',
+  passwordConfirm: 'PASSWORD1234',
+};
+
+const userWithoutNumberInPassword = {
+  username: 'chandler.bing',
+  firstName: 'Chandler',
+  lastName: 'Bing',
+  email: 'chandlerbing@gmail.com',
+  password: 'PASSword',
+  passwordConfirm: 'PASSword',
+};
+
 const correctUserWithUsername = {
   username: 'chandler.bing',
-  password: 'password1234',
+  password: 'Password1234',
 };
 
 const correctUserWithEmail = {
   email: 'chandlerbing@gmail.com',
-  password: 'password1234',
+  password: 'Password1234',
 };
 
 const userWithPasswordsNotMatching = {
@@ -36,23 +130,28 @@ const userWithPasswordsNotMatching = {
   firstName: 'Joey',
   lastName: 'Tribbiani',
   email: 'joeyribbiani@gmail.com',
-  password: 'password1234',
-  passwordConfirm: 'password123',
+  password: 'Password1234',
+  passwordConfirm: 'Password123',
   address: 'Central Perk, New York',
   acceptTerms: true,
 };
 
 const userWithWrongUsername = {
   username: 'chandler.bingg',
-  password: 'password1234',
+  password: 'Password1234',
 };
 
 const userWithWrongPassword = {
   username: 'chandler.bing',
-  password: 'passwrd1234',
+  password: 'Passwrd1234',
 };
 
+beforeAll(async () => {
+  await clearDatabase();
+});
+
 afterAll(async () => {
+  await clearDatabase();
   await closeDatabase();
   server.close();
 });
@@ -97,13 +196,121 @@ describe('Auth Endpoints', () => {
       expect(res.text).toMatch(/username already used/i);
     });
 
+    test('Should throw an error if the username is empty', async () => {
+      const res = await request(server)
+        .post('/api/auth/signup')
+        .send(userWithEmptyUsername);
+      expect(res.header.location).toBe(undefined);
+      expect(res.statusCode).toBe(422);
+      expect(res.text).toMatch(
+        '{"errors":[{"username":"Username should not be empty"}]}'
+      );
+    });
+
+    test('Should throw an error if the username is less than 3 characters', async () => {
+      const res = await request(server)
+        .post('/api/auth/signup')
+        .send(userWithNotValidUsername1);
+      expect(res.header.location).toBe(undefined);
+      expect(res.statusCode).toBe(422);
+      expect(res.text).toMatch(
+        '{"errors":[{"username":"Username must be more than three and less than 30 characters"}]}'
+      );
+    });
+
+    test('Should throw an error if the username contains special characters other than period and underscore', async () => {
+      const res = await request(server)
+        .post('/api/auth/signup')
+        .send(userWithNotValidUsername2);
+      expect(res.header.location).toBe(undefined);
+      expect(res.statusCode).toBe(422);
+      expect(res.text).toMatch(
+        '{"errors":[{"username":"Username can contain only alphanumeric characters, period and underscore"}]}'
+      );
+    });
+
+    test('Should throw an error if the email is already used', async () => {
+      const res = await request(server)
+        .post('/api/auth/signup')
+        .send(userWithUsedEmail);
+      expect(res.header.location).toBe(undefined);
+      expect(res.statusCode).toBe(422);
+      expect(res.text).toMatch(/email already used/i);
+    });
+
+    test('Should throw an error if the email is empty', async () => {
+      const res = await request(server)
+        .post('/api/auth/signup')
+        .send(userWithEmptyEmail);
+      expect(res.header.location).toBe(undefined);
+      expect(res.statusCode).toBe(422);
+      expect(res.text).toMatch(
+        '{"errors":[{"email":"Email should not be empty"}]}'
+      );
+    });
+
+    test('Should throw an error if the email is not valid', async () => {
+      const res = await request(server)
+        .post('/api/auth/signup')
+        .send(userWithNotValidEmail);
+      expect(res.header.location).toBe(undefined);
+      expect(res.statusCode).toBe(422);
+      expect(res.text).toMatch('{"errors":[{"email":"Not valid email"}]}');
+    });
+
+    test('Should throw an error if first name and last name contain non-alphabetic characters', async () => {
+      const res = await request(server)
+        .post('/api/auth/signup')
+        .send(userWithNotValidNameAndSurname);
+      expect(res.header.location).toBe(undefined);
+      expect(res.statusCode).toBe(422);
+      expect(res.text).toMatch(
+        '"errors":[{"firstName":"The first name must contain alpha characters only"},{"lastName":"The last name must contain alpha characters only"}]}'
+      );
+    });
+
+    test('Should throw an error if the password does not contain uppercase letter', async () => {
+      const res = await request(server)
+        .post('/api/auth/signup')
+        .send(userWithoutUppercaseInPassword);
+      expect(res.header.location).toBe(undefined);
+      expect(res.statusCode).toBe(422);
+      expect(res.text).toMatch(
+        '{"errors":[{"password":"Password must contain a number, uppercase and lowercase"}]}'
+      );
+    });
+
+    test('Should throw an error if the password does not contain lowercase letter', async () => {
+      const res = await request(server)
+        .post('/api/auth/signup')
+        .send(userWithoutLowercaseInPassword);
+      expect(res.header.location).toBe(undefined);
+      expect(res.statusCode).toBe(422);
+      expect(res.text).toMatch(
+        '{"errors":[{"password":"Password must contain a number, uppercase and lowercase"}]}'
+      );
+    });
+
+    test('Should throw an error if the password does not contain number', async () => {
+      const res = await request(server)
+        .post('/api/auth/signup')
+        .send(userWithoutNumberInPassword);
+      expect(res.header.location).toBe(undefined);
+      expect(res.statusCode).toBe(422);
+      expect(res.text).toMatch(
+        '{"errors":[{"password":"Password must contain a number, uppercase and lowercase"}]}'
+      );
+    });
+
     test('Should throw an error if the passwords do not match', async () => {
       const res = await request(server)
         .post('/api/auth/signup')
         .send(userWithPasswordsNotMatching);
       expect(res.header.location).toBe(undefined);
       expect(res.statusCode).toBe(422);
-      expect(res.text).toMatch(/passwords do not match/i);
+      expect(res.text).toMatch(
+        '{"errors":[{"password":"Passwords are not matching"}]}'
+      );
     });
   });
 
@@ -168,12 +375,12 @@ describe('Auth Endpoints', () => {
       expect(res.headers['set-cookie']).toEqual(expectedTokenArray);
       expect(spyOnCompare).toHaveBeenCalledTimes(1);
       expect(spyOnCompare).toHaveBeenCalledWith(
-        'password1234',
+        'Password1234',
         expect.anything()
       );
       expect(spyOnSign).toHaveBeenCalledTimes(1);
       expect(spyOnCompare).toHaveBeenCalledWith(
-        'password1234',
+        'Password1234',
         expect.anything()
       );
     });
@@ -181,7 +388,7 @@ describe('Auth Endpoints', () => {
 
   describe('GET /api/auth/signout', () => {
     const expectedClearedCookieInfo =
-      '_t=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT';
+      'token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT';
     test('Should sign out and clear the auth cookie', async () => {
       const res = await request(server).get('/api/auth/signout').send({});
       expect(res.header['content-type']).toBe(

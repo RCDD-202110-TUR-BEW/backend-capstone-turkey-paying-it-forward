@@ -1,4 +1,6 @@
 const express = require('express');
+const userAuthenticationMiddleware = require('../middlewares/user-authentication');
+const itemAuthenticationMiddleware = require('../middlewares/item-authorization');
 
 const router = express.Router();
 
@@ -11,13 +13,21 @@ router.get('/available', itemController.getAvailableItems);
 router.get('/filter', itemController.getFilteredItems);
 
 // POST route for /api/items
-router.post('/', itemController.addItem);
+router.post('/', userAuthenticationMiddleware, itemController.addItem);
 
 // GET, PUT and DELETE routes for /api/items/:id
 router
   .route('/:id')
   .get(itemController.getSingleItem)
-  .put(itemController.updateItem)
-  .delete(itemController.deleteItem);
+  .put(
+    userAuthenticationMiddleware,
+    itemAuthenticationMiddleware,
+    itemController.updateItem
+  )
+  .delete(
+    userAuthenticationMiddleware,
+    itemAuthenticationMiddleware,
+    itemController.deleteItem
+  );
 
 module.exports = router;

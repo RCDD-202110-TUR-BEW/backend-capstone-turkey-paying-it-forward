@@ -72,7 +72,6 @@ module.exports = {
       res.status(422).json({ message: err.message });
     }
   },
-  // @TODO: add auth middleware
   deleteItem: async (req, res) => {
     const { id } = req.params;
     try {

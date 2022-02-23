@@ -19,10 +19,13 @@ module.exports = {
       if (!validPassword) throw new Error('Wrong password');
 
       const payload = {
-        username,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
+        user: {
+          username: user.username,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          _id: user._id,
+        },
       };
 
       if (rememberMe) {
@@ -84,7 +87,7 @@ module.exports = {
   },
   signOutUser: (req, res) => {
     try {
-      res.clearCookie('_t');
+      res.clearCookie('token');
       res.json({ success: true });
     } catch (err) {
       res.status(422).json({ message: err.message ?? err });

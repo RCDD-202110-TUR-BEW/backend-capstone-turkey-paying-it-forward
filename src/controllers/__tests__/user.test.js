@@ -1,9 +1,9 @@
 const request = require('supertest');
-
 const server = require('../../app');
 
 const { closeDatabase, clearDatabase } = require('../../db/connection');
 
+let authCookie;
 let userId;
 
 let userIdDonator;
@@ -61,8 +61,8 @@ const donatorUser = {
   firstName: 'Anne',
   lastName: 'Frank',
   email: 'annefrank@gmail.com',
-  password: 'password123',
-  passwordConfirm: 'password123',
+  password: 'Password123',
+  passwordConfirm: 'Password123',
   address: 'Croissant Avenue, Paris',
 };
 
@@ -71,8 +71,8 @@ const notDonatorUser = {
   firstName: 'Aisha',
   lastName: 'Michael',
   email: 'aishamichael@yahoo.com',
-  password: '123password',
-  passwordConfirm: '123password',
+  password: '123Password',
+  passwordConfirm: '123Password',
   address: 'Gelato Avenue, Rome',
 };
 
@@ -91,6 +91,7 @@ describe('User Endpoints', () => {
   });
 
   afterAll(async () => {
+    await clearDatabase();
     await closeDatabase();
     server.close();
   });
@@ -167,8 +168,20 @@ describe('User Endpoints', () => {
 
   describe('PUT /api/users/:id', () => {
     test('Should update the requested details of the correct user', async () => {
+      // This request is sent to retrieve the auth cookie
+      const signInResponse = await request(server)
+        .post(`/api/auth/signin`)
+        .set('Content-Type', 'application/json')
+        .send({
+          username: newValidUser.username,
+          password: newValidUser.password,
+        });
+
+      [authCookie] = signInResponse.headers['set-cookie'];
+
       const response = await request(server)
         .put(`/api/users/${userId}`)
+        .set('Cookie', authCookie)
         .send({ username: 'goforbarney' });
 
       const responseBody = response.body;
@@ -179,31 +192,47 @@ describe('User Endpoints', () => {
     });
 
     test('Should response with an error message when requested user ID does not exist', async () => {
-      const response = await request(server).put(
-        `/api/users/${notExistingUserId}`
-      );
+      const response = await request(server)
+        .put(`/api/users/${notExistingUserId}`)
+        .set('Cookie', authCookie);
 
       const responseBody = response.body;
 
       expect(response.header['content-type']).toContain('application/json');
-      expect(response.statusCode).toBe(422);
+      expect(response.statusCode).toBe(401);
       expect(responseBody.message).toBe(
-        "The user with the specified ID wasn't found"
+        'Unauthorized to modify the requested user'
       );
     });
 
     test('Should response with an error message when requested user ID is not valid', async () => {
-      const response = await request(server).put(`/api/users/${invalidId}`);
+      const response = await request(server)
+        .put(`/api/users/${invalidId}`)
+        .set('Cookie', authCookie);
       const responseBody = response.body;
       expect(response.header['content-type']).toContain('application/json');
-      expect(response.statusCode).toBe(422);
-      expect(responseBody.message).toBe('Requested user ID is not valid!');
+      expect(response.statusCode).toBe(401);
+      expect(responseBody.message).toBe(
+        'Unauthorized to modify the requested user'
+      );
     });
   });
 
   describe('DELETE /api/users/:id', () => {
     test('Should delete the correct user from the database', async () => {
-      const response = await request(server).delete(`/api/users/${userId}`);
+      const signInResponse = await request(server)
+        .post(`/api/auth/signin`)
+        .set('Content-Type', 'application/json')
+        .send({
+          email: newValidUser.email,
+          password: newValidUser.password,
+        });
+
+      [authCookie] = signInResponse.headers['set-cookie'];
+
+      const response = await request(server)
+        .delete(`/api/users/${userId}`)
+        .set('Cookie', authCookie);
       expect(response.statusCode).toBe(204);
 
       const checkUserDeleted = await request(server).get(
@@ -221,15 +250,33 @@ describe('User Endpoints', () => {
     });
 
     test('Should response with an error message when requested user ID is not valid', async () => {
-      const response = await request(server).delete(`/api/users/${invalidId}`);
+      const response = await request(server)
+        .delete(`/api/users/${invalidId}`)
+        .set('Cookie', authCookie);
       const responseBody = response.body;
       expect(response.header['content-type']).toContain('application/json');
-      expect(response.statusCode).toBe(422);
-      expect(responseBody.message).toBe('Requested user ID is not valid!');
+      expect(response.statusCode).toBe(401);
+      expect(responseBody.message).toBe(
+        'Unauthorized to modify the requested user'
+      );
     });
 
     test('Should response with an error message when requested user ID does not exist', async () => {
-      const response = await request(server).delete(
+      const response = await request(server)
+        .delete(`/api/users/${notExistingUserId}`)
+        .set('Cookie', authCookie);
+
+      const responseBody = response.body;
+
+      expect(response.header['content-type']).toContain('application/json');
+      expect(response.statusCode).toBe(401);
+      expect(responseBody.message).toBe(
+        'Unauthorized to modify the requested user'
+      );
+    });
+
+    test('Should response with an error message when requested user ID does not exist', async () => {
+      const response = await request(server).get(
         `/api/users/${notExistingUserId}`
       );
 
@@ -274,10 +321,20 @@ describe('User Endpoints', () => {
 
       userIdDonator = responseBody[0]._id;
 
+      const signInResponse = await request(server)
+        .post(`/api/auth/signin`)
+        .set('Content-Type', 'application/json')
+        .send({
+          username: donatorUser.username,
+          password: donatorUser.password,
+        });
+
+      [authCookie] = signInResponse.headers['set-cookie'];
       // Following endpoint is called to set isDonator field to true
       await request(server)
         .put(`/api/users/${userIdDonator}`)
         .set('Content-Type', 'application/json')
+        .set('Cookie', authCookie)
         .send({ isDonator: true });
 
       const res = await request(server).get('/api/global/donators');
