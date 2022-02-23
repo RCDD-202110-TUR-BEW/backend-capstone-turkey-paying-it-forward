@@ -44,32 +44,6 @@ ul {
   list-style-type: none;
 }
 
-.auth-btn {
-  display: flex;
-  margin-right: 20px;
-  height: 100%;
-  width: 10%;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.sign-up {
-  background-color: #23791c;
-  font-size: 15px;
-  width: 90px;
-  height: 60px;
-  color: white;
-  cursor: pointer;
-}
-
-.sign-in {
-  background-color: white;
-  font-size: 15px;
-  width: 90px;
-  height: 60px;
-  color: #23791c;
-  cursor: pointer;
-}
 
 .overview {
   display: flex;
@@ -288,17 +262,6 @@ footer {
   margin-top: 50px;
 }
 
-.project-structure-img {
-  width: 1200px;
-  max-width: 100%;
-  height: 900px;
-} 
-
-.project-structure-img-docs {
-  width: 1200px;
-  max-width: 100%;
-  height: 2500px;
-} 
 
 .social-media-icon {
   width: 30px;
