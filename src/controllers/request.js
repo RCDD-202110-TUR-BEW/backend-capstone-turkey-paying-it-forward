@@ -13,8 +13,9 @@ module.exports = {
   },
   createRequest: async (req, res) => {
     try {
+      req.body.owner = req.user._id;
       await requestModel.create(req.body);
-      res.status(201).json({ message: 'request created successfully.' });
+      res.status(201).json({ message: 'Request created successfully' });
     } catch (err) {
       res.status(422).json({ message: err.message });
     }
