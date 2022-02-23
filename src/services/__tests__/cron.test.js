@@ -57,7 +57,7 @@ describe('cron jobs service', () => {
       expect(spyOnAxiosGet).toHaveBeenCalled();
       expect(spyOnAxiosGet).not.toThrow();
       expect(spyOnAxiosGet).toHaveBeenCalledWith(
-        `${process.env.SERVER_BASE_URL}status`
+        `${process.env.SERVER_BASE_URL}/status`
       );
       expect(spyOnLoggerInfo).toHaveBeenCalled();
       expect(spyOnLoggerInfo).toBeCalledTimes(1);
@@ -83,7 +83,7 @@ describe('cron jobs service', () => {
       expect(spyOnAxiosGet).toHaveBeenCalled();
       expect(spyOnAxiosGet).toThrow();
       expect(spyOnAxiosGet).toHaveBeenCalledWith(
-        `${process.env.SERVER_BASE_URL}status`
+        `${process.env.SERVER_BASE_URL}/status`
       );
       expect(spyOnLoggerError).toHaveBeenCalled();
       expect(spyOnLoggerError).toBeCalledTimes(1);
