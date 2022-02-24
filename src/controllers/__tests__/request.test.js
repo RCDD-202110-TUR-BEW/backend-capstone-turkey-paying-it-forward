@@ -34,6 +34,13 @@ const noDescriptionRequest = {
   owner: ownerId,
   type: 'Stationery',
 };
+const invalidPhotoRequest = {
+  name: 'Sofa',
+  description: 'A comfortable and medium size sofa',
+  owner: ownerId,
+  type: 'Stationery',
+  photo: 'invalidImage',
+};
 const mockUser = {
   username: 'mock.user',
   firstName: 'mock',
@@ -45,31 +52,32 @@ const mockUser = {
   acceptTerms: true,
 };
 
+beforeAll(async () => {
+  await clearDatabase();
+  const signUpResponse = await request(server)
+    .post('/api/auth/signup')
+    .set('Content-Type', 'application/json')
+    .send(mockUser);
+  ownerId = signUpResponse.body._id;
+  trueRequest.owner = ownerId;
+  trueRequest2.owner = ownerId;
+  noNameRequest.owner = ownerId;
+  noDescriptionRequest.owner = ownerId;
+  invalidPhotoRequest.owner = ownerId;
+  const signInResponse = await request(server)
+    .post(`/api/auth/signin`)
+    .set('Content-Type', 'application/json')
+    .send({ username: mockUser.username, password: mockUser.password });
+  [authCookie] = signInResponse.headers['set-cookie'];
+});
+
+afterAll(async () => {
+  await clearDatabase();
+  await closeDatabase();
+  server.close();
+});
+
 describe('Request Endpoints', () => {
-  beforeAll(async () => {
-    await clearDatabase();
-    const signUpResponse = await request(server)
-      .post('/api/auth/signup')
-      .set('Content-Type', 'application/json')
-      .send(mockUser);
-    ownerId = signUpResponse.body._id;
-    trueRequest.owner = ownerId;
-    trueRequest2.owner = ownerId;
-    noNameRequest.owner = ownerId;
-    noDescriptionRequest.owner = ownerId;
-    const signInResponse = await request(server)
-      .post(`/api/auth/signin`)
-      .set('Content-Type', 'application/json')
-      .send({ username: mockUser.username, password: mockUser.password });
-    [authCookie] = signInResponse.headers['set-cookie'];
-  });
-
-  afterAll(async () => {
-    await clearDatabase();
-    await closeDatabase();
-    server.close();
-  });
-
   describe('GET /api/requests/', () => {
     test('Should response with an error message when there are no requests', async () => {
       await clearDatabase();
@@ -115,7 +123,7 @@ describe('Request Endpoints', () => {
       expect(responseBody.message).toBe('Request created successfully');
     });
 
-    test('Should not create a new request when type is not valid', async () => {
+    test('Should not create a new request when type is invalid', async () => {
       const response = await request(server)
         .post('/api/requests/')
         .set('Cookie', authCookie)
@@ -155,6 +163,19 @@ describe('Request Endpoints', () => {
       expect(responseBody.message).toBeDefined();
       expect(responseBody.message).toContain('Description is required');
     });
+
+    test('Should not create a new request when image url is invalid', async () => {
+      const response = await request(server)
+        .post('/api/requests/')
+        .set('Cookie', authCookie)
+        .send(invalidPhotoRequest);
+      const responseBody = response.body;
+
+      expect(response.header['content-type']).toContain('application/json');
+      expect(response.statusCode).toBe(422);
+      expect(responseBody.message).toBeDefined();
+      expect(responseBody.message).toContain('Please enter a valid image URL!');
+    });
   });
 
   describe('GET /api/requests/:id', () => {
@@ -168,13 +189,14 @@ describe('Request Endpoints', () => {
       expect(responseBody._id.toString()).toBe(RequestId.toString());
     });
 
-    test('Should respond with error message when the request id is not a valid ObjectId', async () => {
+    test('Should respond with an error message when the request id is not a valid ObjectId', async () => {
       const response = await request(server).get(
         `/api/requests/${invalidRequestId}`
       );
       const responseBody = response.body;
 
       expect(response.statusCode).toBe(422);
+      expect(responseBody.message).toBeDefined();
       expect(responseBody.message).toBe('Requested request ID is not valid!');
     });
 
@@ -185,8 +207,71 @@ describe('Request Endpoints', () => {
       const responseBody = response.body;
 
       expect(response.statusCode).toBe(422);
+      expect(responseBody.message).toBeDefined();
       expect(responseBody.message).toBe(
-        'There is no request with the provided ID!'
+        'The request with the specified ID was not found.'
+      );
+    });
+  });
+
+  describe('PUT /api/requests/:id', () => {
+    test('Should update name on matching request', async () => {
+      const response = await request(server)
+        .put(`/api/requests/${RequestId}`)
+        .set('Cookie', authCookie)
+        .send({ name: 'Updated name' });
+      const responseBody = response.body;
+
+      expect(response.header['content-type']).toContain('application/json');
+      expect(response.statusCode).toBe(200);
+      expect(responseBody.name).toBe('Updated name');
+    });
+
+    test('Should update description on matching request', async () => {
+      const response = await request(server)
+        .put(`/api/requests/${RequestId}`)
+        .set('Cookie', authCookie)
+        .send({ description: 'Updated description' });
+      const responseBody = response.body;
+
+      expect(response.header['content-type']).toContain('application/json');
+      expect(response.statusCode).toBe(200);
+      expect(responseBody.description).toBe('Updated description');
+    });
+
+    test('Should respond with an error message when to be updated request ID not found', async () => {
+      const response = await request(server)
+        .put(`/api/requests/${nonExistingRequestId}`)
+        .set('Cookie', authCookie);
+      const responseBody = response.body;
+
+      expect(response.statusCode).toBe(422);
+      expect(responseBody.message).toBeDefined();
+      expect(responseBody.message).toBe(
+        'The request with the specified ID was not found.'
+      );
+    });
+  });
+
+  describe('DELETE /api/requests/:id', () => {
+    test('Should delete a request', async () => {
+      const response = await request(server)
+        .delete(`/api/requests/${RequestId}`)
+        .set('Cookie', authCookie);
+
+      expect(response.statusCode).toBe(204);
+    });
+
+    test('Should respond with an error message when the request does not exist', async () => {
+      const response = await request(server)
+        .delete(`/api/requests/${nonExistingRequestId}`)
+        .set('Cookie', authCookie);
+      const responseBody = response.body;
+
+      expect(response.statusCode).toBe(422);
+      expect(responseBody.message).toBeDefined();
+      expect(responseBody.message).toBe(
+        'The request with the specified ID was not found.'
       );
     });
   });
