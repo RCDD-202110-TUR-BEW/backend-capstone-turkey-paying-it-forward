@@ -27,7 +27,7 @@ module.exports = {
         throw new Error('Requested request ID is not valid!');
       const request = await requestModel.findById(requestId);
       if (!request)
-        throw new Error('There is no request with the provided ID!');
+        throw new Error('The request with the specified ID was not found.');
       res.json(request);
     } catch (err) {
       res.status(422).json({ message: err.message ?? err });
