@@ -12,7 +12,7 @@ module.exports = async (req, res, next) => {
       return next();
     }
     return res.status(401).json({
-      message: 'unauthorized to modify requested item',
+      message: 'unauthorized to modify the requested request',
     });
   } catch (error) {
     return res.status(401).json({
