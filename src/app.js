@@ -33,6 +33,9 @@ app.use(express.static(path.join(__dirname, '/public')));
 app.use(express.static(path.join(__dirname, '/assets')));
 app.use(cookieParser());
 
+app.get('/status', (req, res) => {
+  res.send('OK');
+});
 app.use('/api/auth', authRoutes);
 app.use('/api/items', itemRoutes);
 app.use('/api/users', userRoutes);
