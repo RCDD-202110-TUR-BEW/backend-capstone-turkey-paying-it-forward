@@ -1,5 +1,8 @@
 const { ObjectId } = require('mongoose').Types;
+
 const UserModel = require('../models/user');
+
+const RatingModel = require('../models/rating');
 
 module.exports = {
   getAllUsers: async (req, res) => {
@@ -68,6 +71,29 @@ module.exports = {
       const donators = await UserModel.find({ isDonator: true });
       if (donators.length <= 0) throw new Error('No donators found');
       res.json(donators);
+    } catch (err) {
+      res.status(422).json({ message: err.message ?? err });
+    }
+  },
+  rateUser: async (req, res) => {
+    const { userid } = req.params;
+    try {
+      if (String(new ObjectId(userid)) !== userid.toString())
+        throw new Error('Requested user ID is not valid!');
+      const user = await UserModel.findById(userid);
+      if (!user) throw new Error("The user with the specified ID wasn't found");
+      const newRatingData = {
+        user: userid,
+        raters: {
+          raterId: req.user._id,
+          rating: req.body.rating,
+        },
+      };
+      const newRating = await RatingModel.create(newRatingData);
+      user.rating.push(newRating.id);
+      await user.save();
+      console.log(user.rating);
+      res.status(201).json(newRating);
     } catch (err) {
       res.status(422).json({ message: err.message ?? err });
     }
