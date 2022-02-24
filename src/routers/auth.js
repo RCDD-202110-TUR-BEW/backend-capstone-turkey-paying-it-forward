@@ -1,10 +1,9 @@
 const express = require('express');
+const passport = require('passport');
+const authController = require('../controllers/auth');
+const { userValidationRules, validate } = require('../middlewares/validators');
 
 const router = express.Router();
-
-const authController = require('../controllers/auth');
-
-const { userValidationRules, validate } = require('../middlewares/validators');
 
 // POST route for /api/auth/signin
 router.post('/signin', authController.signInUser);
@@ -19,5 +18,16 @@ router.post(
 
 // GET route for /api/auth/signout
 router.get('/signout', authController.signOutUser);
+
+// GET routes for google authentication
+router.get(
+  '/google',
+  passport.authenticate('google', { scope: ['profile', 'email', 'openid'] })
+);
+router.get(
+  '/google/callback',
+  passport.authenticate('google', { failureRedirect: '/', session: false }),
+  authController.googleCallback
+);
 
 module.exports = router;
