@@ -52,6 +52,7 @@ const mockUser = {
   acceptTerms: true,
 };
 
+jest.setTimeout(30000);
 beforeAll(async () => {
   await clearDatabase();
   const signUpResponse = await request(server)
@@ -80,7 +81,6 @@ afterAll(async () => {
 describe('Request Endpoints', () => {
   describe('GET /api/requests/', () => {
     test('Should response with an error message when there are no requests', async () => {
-      await clearDatabase();
       const response = await request(server).get('/api/requests/');
 
       expect(response.header['content-type']).toContain('application/json');
@@ -224,6 +224,7 @@ describe('Request Endpoints', () => {
 
       expect(response.header['content-type']).toContain('application/json');
       expect(response.statusCode).toBe(200);
+      expect(responseBody._id).toBe(RequestId);
       expect(responseBody.name).toBe('Updated name');
     });
 
@@ -236,6 +237,7 @@ describe('Request Endpoints', () => {
 
       expect(response.header['content-type']).toContain('application/json');
       expect(response.statusCode).toBe(200);
+      expect(responseBody._id).toBe(RequestId);
       expect(responseBody.description).toBe('Updated description');
     });
 
@@ -265,6 +267,19 @@ describe('Request Endpoints', () => {
     test('Should respond with an error message when the request does not exist', async () => {
       const response = await request(server)
         .delete(`/api/requests/${nonExistingRequestId}`)
+        .set('Cookie', authCookie);
+      const responseBody = response.body;
+
+      expect(response.statusCode).toBe(422);
+      expect(responseBody.message).toBeDefined();
+      expect(responseBody.message).toBe(
+        'The request with the specified ID was not found.'
+      );
+    });
+
+    test('Should respond with an error message when to be deleted request is not found', async () => {
+      const response = await request(server)
+        .delete(`/api/requests/${RequestId}`)
         .set('Cookie', authCookie);
       const responseBody = response.body;
 
