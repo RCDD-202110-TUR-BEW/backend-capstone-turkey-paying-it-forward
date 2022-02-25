@@ -103,8 +103,8 @@ const mockUser = {
   firstName: 'Chandler',
   lastName: 'Bing',
   email: 'chandlerbing@gmail.com',
-  password: 'password1234',
-  passwordConfirm: 'password1234',
+  password: 'Password1234',
+  passwordConfirm: 'Password1234',
   address: 'Central Perk, New York',
   acceptTerms: true,
 };
