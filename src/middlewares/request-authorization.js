@@ -8,7 +8,12 @@ module.exports = async (req, res, next) => {
     const requestId = req.params.id;
     const request = await Request.findById(requestId);
     // check if request exists and if user is the owner of the request
-    if (request && request.owner.toString() === req.user._id) {
+    if (!request)
+      return res.status(422).json({
+        message: 'The request with the specified ID was not found.',
+      });
+
+    if (request.owner.toString() === req.user._id) {
       return next();
     }
     return res.status(401).json({
