@@ -1,5 +1,6 @@
 const passwordGenerator = require('generate-password');
 const bcrypt = require('bcrypt');
+const genUsername = require('unique-username-generator');
 const { sendEmail } = require('./services/mail');
 const User = require('./models/user');
 
@@ -20,14 +21,7 @@ const afterGoogleLogin = async function (
   try {
     let user = await User.findOne({ email: profile._json.email });
     if (!user) {
-      const username = `${
-        profile._json.email.split('@')[0]
-      }_${passwordGenerator.generate({
-        length: 3,
-        numbers: true,
-        lowercase: false,
-        uppercase: false,
-      })}`;
+      const username = genUsername.generateFromEmail(profile._json.email, 3);
 
       const password = passwordGenerator.generate({
         length: 10,
@@ -48,7 +42,7 @@ const afterGoogleLogin = async function (
         to: profile._json.email,
         subject: 'Paying it forward password',
         html: ` <h1>Hi ${profile._json.given_name},</h1>
-  <p>Here is your automatically generated password: ${password}</p>
+  <p>Here is your username and automatically generated password: <br> Username: <b>${username}</b> <br> Password: <b>${password}</b></p>
   <p>Please feel free to change it anytime you want</p>
   <p>Also please don't forget to add your address, it is set by default to "address"</p>
   <p>Have a nice day!</p>
@@ -56,7 +50,7 @@ const afterGoogleLogin = async function (
   <p>Your friend,</p>
   <p>Paying it forward Team</p>`,
       };
-      sendEmail(emailOptions);
+      await sendEmail(emailOptions);
     }
 
     cb(null, user.toJSON());
