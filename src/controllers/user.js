@@ -77,7 +77,6 @@ module.exports = {
   },
   rateUser: async (req, res) => {
     const { userid } = req.params;
-    console.log(userid);
     try {
       if (String(new ObjectId(userid)) !== userid.toString())
         throw new Error('Requested user ID is not valid!');
