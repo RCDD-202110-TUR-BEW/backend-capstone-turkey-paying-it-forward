@@ -105,10 +105,48 @@ module.exports = {
           rating: req.body.rating,
         };
         const rating = await RatingModel.findById(user.rating);
+        /* eslint no-restricted-syntax: ["off"] */
+        /* eslint prefer-const: "off" */
+        for (let rater of user.rating.raters) {
+          if (rater.raterId.toString() === req.user._id.toString())
+            throw new Error('You had already rated this user');
+        }
         rating.raters.push(newRater);
         await rating.save();
         res.status(201).json(rating);
       }
+    } catch (err) {
+      res.status(422).json({ message: err.message ?? err });
+    }
+  },
+  updateUserRating: async (req, res) => {
+    const { userid } = req.params;
+    try {
+      if (String(new ObjectId(userid)) !== userid.toString())
+        throw new Error('Requested user ID is not valid!');
+      const user = await UserModel.findById(userid).populate(
+        'rating',
+        'raters'
+      );
+      if (!user) throw new Error("The user with the specified ID wasn't found");
+      const rating = await RatingModel.findById(user.rating);
+      if (!rating) throw new Error('The user does not have any rating');
+      const userRaters = user.rating.raters;
+      let raterExists = false;
+      let indexOfRater = 0;
+      /* eslint no-restricted-syntax: ["off"] */
+      /* eslint prefer-const: "off" */
+      for (let rater of userRaters) {
+        if (rater.raterId.toString() === req.user._id.toString()) {
+          raterExists = true;
+          rating.raters[indexOfRater].rating = req.body.rating;
+        }
+        indexOfRater += 1;
+      }
+      if (!raterExists) throw new Error('You do not have a rating to update');
+      await rating.save();
+      await user.save();
+      res.json(rating);
     } catch (err) {
       res.status(422).json({ message: err.message ?? err });
     }

@@ -29,16 +29,7 @@ router
 // POST, PUT, DELETE routes for /api/users/rating/:id
 router
   .route('/rating/:userid')
-  .post(userAuthenticationMiddleware, userController.rateUser);
-// .put(
-//   userAuthenticationMiddleware,
-//   userAuthorizationMiddleware,
-//   userController.updateUserRating
-// )
-// .delete(
-//   userAuthenticationMiddleware,
-//   userAuthorizationMiddleware,
-//   userController.deleteUserRating
-// );
+  .post(userAuthenticationMiddleware, userController.rateUser)
+  .put(userAuthenticationMiddleware, userController.updateUserRating);
 
 module.exports = router;
