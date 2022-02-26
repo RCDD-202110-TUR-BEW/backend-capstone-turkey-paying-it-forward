@@ -31,8 +31,8 @@ const userSchema = new Schema({
     required: [true, 'Password is required'],
   },
   rating: {
-    type: [{ type: Schema.Types.ObjectId, ref: process.env.RATING_MODEL_NAME }],
-    default: [],
+    type: Schema.Types.ObjectId,
+    ref: process.env.RATING_MODEL_NAME,
   },
   isDonator: {
     type: Boolean,

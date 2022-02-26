@@ -345,4 +345,59 @@ describe('User Endpoints', () => {
       expect(res.body[0]).toMatchObject(expectedDonatorResponse);
     });
   });
+
+  describe('GET /api/users/rating/:userid', () => {
+    test('Should create a new rating if it does not exist', async () => {
+      const res = await request(server).get(`/api/users/`);
+      const toBeRatedUserId = res.body[1]._id;
+      const response = await request(server)
+        .post(`/api/users/rating/${toBeRatedUserId}`)
+        .set('Content-Type', 'application/json')
+        .set('Cookie', authCookie)
+        .send({ rating: 5 });
+
+      expect(response.header['content-type']).toContain('application/json');
+      expect(response.statusCode).toBe(201);
+      expect(response.body.averageRating).toBe(5);
+      expect(response.body.raters[0].rating).toBe(5);
+    });
+
+    test('Should add a new rating to the existing one and calculate average rating', async () => {
+      const res = await request(server).get(`/api/users/`);
+      const toBeRatedUserId = res.body[1]._id;
+      const response = await request(server)
+        .post(`/api/users/rating/${toBeRatedUserId}`)
+        .set('Content-Type', 'application/json')
+        .set('Cookie', authCookie)
+        .send({ rating: 3 });
+
+      expect(response.header['content-type']).toContain('application/json');
+      expect(response.statusCode).toBe(201);
+      expect(response.body.raters.length).toBe(2);
+      expect(response.body.averageRating).toBe(4);
+      expect(response.body.raters[1].rating).toBe(3);
+    });
+
+    test('Should response with an error message when requested user ID does not exist', async () => {
+      const response = await request(server).get(
+        `/api/users/${notExistingUserId}`
+      );
+
+      const responseBody = response.body;
+
+      expect(response.header['content-type']).toContain('application/json');
+      expect(response.statusCode).toBe(422);
+      expect(responseBody.message).toBe(
+        "The user with the specified ID wasn't found"
+      );
+    });
+
+    test('Should response with an error message when requested user ID is not valid', async () => {
+      const response = await request(server).get(`/api/users/${invalidId}`);
+      const responseBody = response.body;
+      expect(response.header['content-type']).toContain('application/json');
+      expect(response.statusCode).toBe(422);
+      expect(responseBody.message).toBe('Requested user ID is not valid!');
+    });
+  });
 });

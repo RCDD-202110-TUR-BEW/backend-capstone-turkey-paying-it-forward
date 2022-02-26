@@ -77,23 +77,39 @@ module.exports = {
   },
   rateUser: async (req, res) => {
     const { userid } = req.params;
+    console.log(userid);
     try {
       if (String(new ObjectId(userid)) !== userid.toString())
         throw new Error('Requested user ID is not valid!');
-      const user = await UserModel.findById(userid);
+      const user = await UserModel.findById(userid).populate(
+        'rating',
+        'raters'
+      );
       if (!user) throw new Error("The user with the specified ID wasn't found");
-      const newRatingData = {
-        user: userid,
-        raters: {
+      if (!user.rating) {
+        const newRatingData = {
+          user: userid,
+          raters: [
+            {
+              raterId: req.user._id,
+              rating: req.body.rating,
+            },
+          ],
+        };
+        const newRating = await RatingModel.create(newRatingData);
+        user.rating = newRating.id;
+        await user.save();
+        res.status(201).json(newRating);
+      } else {
+        const newRater = {
           raterId: req.user._id,
           rating: req.body.rating,
-        },
-      };
-      const newRating = await RatingModel.create(newRatingData);
-      user.rating.push(newRating.id);
-      await user.save();
-      console.log(user.rating);
-      res.status(201).json(newRating);
+        };
+        const rating = await RatingModel.findById(user.rating);
+        rating.raters.push(newRater);
+        await rating.save();
+        res.status(201).json(rating);
+      }
     } catch (err) {
       res.status(422).json({ message: err.message ?? err });
     }
