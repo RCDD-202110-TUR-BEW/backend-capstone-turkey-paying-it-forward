@@ -26,7 +26,7 @@ router
     userController.deleteUser
   );
 
-// POST, PUT, DELETE routes for /api/users/rating/:id
+// POST and PUT routes for /api/users/rating/:id
 router
   .route('/rating/:userid')
   .post(userAuthenticationMiddleware, userController.rateUser)
