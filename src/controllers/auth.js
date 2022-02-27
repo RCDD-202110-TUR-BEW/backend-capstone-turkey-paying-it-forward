@@ -80,6 +80,7 @@ module.exports = {
         acceptTerms,
         address,
       });
+      delete newUser.password_hash;
       res.json(newUser);
     } catch (err) {
       res.status(422).json({ message: err.message ?? err });
