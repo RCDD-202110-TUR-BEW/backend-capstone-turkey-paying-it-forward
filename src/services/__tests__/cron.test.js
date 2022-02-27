@@ -8,6 +8,8 @@ const { checkServerStatusJob, newsletterJob } = require('../cron');
 const mail = require('../mail');
 const logger = require('../logger');
 
+jest.useFakeTimers();
+
 jest.mock('../../db/connection', () => ({
   connectToMongo: jest.fn(),
   closeDatabase: jest.fn(),

@@ -9,6 +9,9 @@ const item = {
   _id: 'correctId',
   owner: '123456',
 };
+
+jest.useFakeTimers();
+
 const res = {
   status: jest.fn().mockReturnThis(),
   json: jest.fn().mockReturnThis(),
@@ -22,9 +25,10 @@ jest.mock('../../models/item', () => ({
   }),
 }));
 
-// afterAll(() => {
-//   jest.clearAllMocks();
-// });
+afterAll(() => {
+  jest.clearAllMocks();
+});
+
 describe('item-authorization function middleware ', () => {
   test('Should authorize when requesting user is the owner of requested item', async () => {
     const req = {
