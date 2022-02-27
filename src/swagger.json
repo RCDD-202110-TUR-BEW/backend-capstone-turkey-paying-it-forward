@@ -3,7 +3,7 @@
   "info": {
     "version": "1.0.0",
     "title": "Paying It Forward",
-    "description": "This is the documentation for Paying It Forward API. To access the paths that have a lock symbol next to it, you can send a signin request under Auth tab and copy the token from the `authorizationToken` response header and paste it in the `Authorize 🔒` section.",
+    "description": "This is the documentation for Paying It Forward API. To access the paths that have a lock symbol next to them, you need to <b>sign in</b> first.",
     "contact": {
       "email": "payingItForward2022@hotmail.com"
     }
@@ -97,7 +97,7 @@
                   "username": {
                     "type": "string",
                     "require": true,
-                    "example": "ammar.baki"
+                    "example": "anne.adams"
                   },
                   "password": {
                     "type": "string",
@@ -731,7 +731,7 @@
         }
       },
       "delete": {
-        "summary": "Updates the item data with the specified ID",
+        "summary": "Deletes the item with the specified ID",
         "tags": ["Items"],
         "parameters": [
           {
