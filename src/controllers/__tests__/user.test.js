@@ -96,8 +96,6 @@ const expectedDonatorResponse = {
   isDonator: true,
 };
 
-jest.useFakeTimers();
-
 describe('User Endpoints', () => {
   beforeAll(async () => {
     await clearDatabase();
