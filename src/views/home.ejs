@@ -1,271 +1,354 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="css/home.css" />
+    <title>Paying It Forward</title>
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="css/home.css" />
-  <title>Paying It Forward</title>
-</head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-light">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#"
+          ><img class="logo-pic" src="logo.jpg" alt="logo"
+        /></a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link" href="#overview">Overview</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#tech">Technologies</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#items">Items</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#donators">Donators</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#docs">API Documentation</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#teams">teams</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <section class="project-structure" id="docs">
+      <h2>Database Schema</h2>
+      <iframe
+        style="border: 1px solid rgba(0, 0, 0, 0.1)"
+        width="800"
+        height="450"
+        src="https://www.figma.com/embed?embed_host=share&url=https%3A%2F%2Fwww.figma.com%2Ffile%2F4JrXnr9l4iFoqywmLESh5M%2FDatabase%3Fnode-id%3D0%253A1"
+        allowfullscreen
+      ></iframe>
 
-<body>
-  <section class="navbar">
-    <img class="logo-pic" src="logo.jpg" alt="logo" />
+      <h2>System Architecture Design</h2>
+      <iframe
+        style="border: 1px solid rgba(0, 0, 0, 0.1)"
+        width="800"
+        height="450"
+        src="https://www.figma.com/embed?embed_host=share&url=https%3A%2F%2Fwww.figma.com%2Ffile%2FOKOvFTfchMSMxxsRuQXa90%2FSystem-Design"
+        allowfullscreen
+      ></iframe>
+    </section>
+    <hr />
+    <section class="overview" id="overview">
+      <div>
+        <h2>Overview</h2>
+      </div>
+      <div>
+        <div class="overview-txt">
+          <p>
+            Reduce the inequality in Turkish education system <br />
+            by enabling donation for the students who couldn't afford <br />
+            basic education needs
+          </p>
 
-    <ul>
-      <li><a class="nav-items" href="#overview">Overview</a></li>
-      <li><a class="nav-items" href="#tech">Technologies</a></li>
-      <li><a class="nav-items" href="#items">Items</a></li>
-      <li><a class="nav-items" href="#donators">Donators</a></li>
-      <li><a class="nav-items" href="#docs">API Documentation</a></li>
-      <li><a class="nav-items" href="#teams">Team</a></li>
-    </ul>
+          <button>Learn More</button>
+        </div>
+        <div>
+          <img class="overview-pic" src="donation.jpg" alt="overview-pic" />
+        </div>
+      </div>
+    </section>
+    <hr />
+    <section class="items" id="items">
+      <div class="item-title">
+        <h2>Items</h2>
+      </div>
+      <div class="item-list-wrapper">
+        <div class="item">
+          <img class="item-pic" src="item1.jpg" alt="item" />
+          <h3>Course Books</h3>
+          <p>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit.
+            <br />Laboriosam,explicabo reiciendis molestias, doloremque<br />
+            saepe repellat cumque molestiae quis dicta voluptatem.
+          </p>
+          <a class="learn-more-item" href="#">Learn More</a>
+        </div>
+        <div class="item">
+          <img class="item-pic" src="item2.jpg" alt="item" />
+          <h3>Scientific Calculator</h3>
+          <p>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit.
+            <br />Laboriosam,explicabo reiciendis molestias, doloremque<br />
+            saepe repellat cumque molestiae quis dicta voluptatem.
+          </p>
+          <a class="learn-more-item" href="#">Learn More</a>
+        </div>
+        <div class="item">
+          <img class="item-pic" src="item3.jpg" alt="item" />
+          <h3>Backpack</h3>
+          <p>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit.
+            <br />Laboriosam,explicabo reiciendis molestias, doloremque<br />
+            saepe repellat cumque molestiae quis dicta voluptatem.
+          </p>
+          <a class="learn-more-item" href="#">Learn More</a>
+        </div>
+        <div class="item">
+          <img class="item-pic" src="item4.jpg" alt="item" />
+          <h3>Stationary</h3>
+          <p>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit.
+            <br />Laboriosam,explicabo reiciendis molestias, doloremque<br />
+            saepe repellat cumque molestiae quis dicta voluptatem.
+          </p>
+          <a class="learn-more-item" href="#">Learn More</a>
+        </div>
+      </div>
+    </section>
+    <hr />
+    <section class="requests">
+      <div class="request-title">
+        <h2>Requests</h2>
+      </div>
+      <div class="request-list-wrapper">
+        <div class="request">
+          <img class="request-pic" src="request1.jpg" alt="request" />
+          <h3>T-square</h3>
+          <p>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit.
+            <br />Laboriosam,explicabo reiciendis molestias, doloremque<br />
+            saepe repellat cumque molestiae quis dicta voluptatem.
+          </p>
+          <a class="learn-more-request" href="#">Learn More</a>
+        </div>
+        <div class="request">
+          <img class="request-pic" src="request2.jpg" alt="request" />
+          <h3>Lamp</h3>
+          <p>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit.
+            <br />Laboriosam,explicabo reiciendis molestias, doloremque<br />
+            saepe repellat cumque molestiae quis dicta voluptatem.
+          </p>
+          <a class="learn-more-request" href="#">Learn More</a>
+        </div>
+        <div class="request">
+          <img class="request-pic" src="request3.jpg" alt="request" />
+          <h3>Book Shelf</h3>
+          <p>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit.
+            <br />Laboriosam,explicabo reiciendis molestias, doloremque<br />
+            saepe repellat cumque molestiae quis dicta voluptatem.
+          </p>
+          <a class="learn-more-request" href="#">Learn More</a>
+        </div>
+        <div class="request">
+          <img class="request-pic" src="request4.jpg" alt="request" />
+          <h3>Chair</h3>
+          <p>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit.
+            <br />Laboriosam,explicabo reiciendis molestias, doloremque<br />
+            saepe repellat cumque molestiae quis dicta voluptatem.
+          </p>
+          <a class="learn-more-request" href="#">Learn More</a>
+        </div>
+      </div>
+    </section>
+    <hr />
+    <section class="donators" id="donators">
+      <div class="donator-title">
+        <h2>Donators</h2>
+      </div>
+      <div class="donator-list-wrapper">
+        <div class="donator">
+          <img class="donator-pic" src="donator1.jpg" alt="donator" />
+          <h3>Jim Gates, CEO of Macrosoft</h3>
+          <p>Brief Intro</p>
+          <p>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit.
+            <br />Laboriosam,explicabo reiciendis molestias, doloremque<br />
+            saepe repellat cumque molestiae quis dicta voluptatem.
+          </p>
+        </div>
+        <div class="donator">
+          <img class="donator-pic" src="donator3.jpg" alt="donator" />
+          <h3>Lilly Wojcickim, CEO of ITube</h3>
+          <p>Brief Intro</p>
+          <p>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit.
+            <br />Laboriosam,explicabo reiciendis molestias, doloremque<br />
+            saepe repellat cumque molestiae quis dicta voluptatem.
+          </p>
+        </div>
+        <div class="donator">
+          <img class="donator-pic" src="donator2.png" alt="donator" />
+          <h3>Evelyn Mask, CEO of Edison</h3>
+          <p>Brief Intro</p>
+          <p>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit.
+            <br />Laboriosam,explicabo reiciendis molestias, doloremque<br />
+            saepe repellat cumque molestiae quis dicta voluptatem.
+          </p>
+        </div>
+        <div class="donator">
+          <img class="donator-pic" src="donator4.jpg" alt="donator" />
+          <h3>Amy Lang, CEO of Tea Meets Simit</h3>
+          <p>Brief Intro</p>
+          <p>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit.
+            <br />Laboriosam,explicabo reiciendis molestias, doloremque<br />
+            saepe repellat cumque molestiae quis dicta voluptatem.
+          </p>
+        </div>
+      </div>
+    </section>
+    <hr />
+    <section class="technology" id="tech">
+      <div class="technology-title">
+        <h2>Technologies</h2>
+      </div>
+      <div class="technology-list-wrapper">
+        <div>
+          <img class="technology-pic" src="js.png" alt="js" />
+        </div>
+        <div>
+          <img class="technology-pic" src="nodejs.png" alt="nodejs" />
+        </div>
+        <div>
+          <img class="technology-pic" src="express.png" alt="express" />
+        </div>
+        <div>
+          <img class="technology-pic" src="mongo.jpg" alt="mongo" />
+        </div>
+        <div>
+          <img class="technology-pic" src="mongoose.jpeg" alt="mongoose" />
+        </div>
+        <div>
+          <img class="technology-pic" src="npm.jpg" alt="npm" />
+        </div>
+        <div>
+          <img class="technology-pic" src="eslint.png" alt="npm" />
+        </div>
+        <div>
+          <img class="technology-pic" src="prettier.png" alt="npm" />
+        </div>
+        <div>
+          <img class="technology-pic" src="jest.jpeg" alt="npm" />
+        </div>
+        <div>
+          <img class="technology-pic" src="nginx.jpeg" alt="npm" />
+        </div>
+        <div>
+          <img class="technology-pic" src="aws.png" alt="npm" />
+        </div>
+        <div>
+          <img class="technology-pic" src="mailer.png" alt="mailer" />
+        </div>
+      </div>
+    </section>
+    <hr />
+    <section class="teams" id="teams">
+      <div class="team-title">
+        <h2>Team</h2>
+      </div>
+      <div class="team-list-wrapper">
+        <div class="leads row">
+          <div class="team col-md-6">
+            <img class="team-pic" src="ammar-sammour.jpeg" alt="team" />
+            <h3>Ammar</h3>
+            <p>Team Lead</p>
+          </div>
+          <div class="team col-md-6">
+            <img class="team-pic" src="shrreya.jpeg" alt="team" />
+            <h3>Shrreya</h3>
+            <p>Code Reviewer</p>
+          </div>
+        </div>
+        <div class="engineers row">
+          <div class="team col-md-3">
+            <img class="team-pic" src="mahmoud.jpeg" alt="team" />
+            <h3>Mahmoud</h3>
+            <p>Junior Backend Engineer</p>
+          </div>
+          <div class="team col-md-3">
+            <img class="team-pic" src="mehmet.jpg" alt="team" />
+            <h3>Mehmet</h3>
+            <p>Junior Backend Engineer</p>
+          </div>
+          <div class="team col-md-3">
+            <img class="team-pic" src="peri.jpeg" alt="team" />
+            <h3>Perizat</h3>
+            <p>Junior Backend Engineer</p>
+          </div>
+          <div class="team col-md-3">
+            <img class="team-pic" src="ammar-abdulbaki.jpg" alt="team" />
+            <h3>Ammar</h3>
+            <p>Junior Backend Engineer</p>
+          </div>
+        </div>
+      </div>
+    </section>
 
-  </section>
+    <footer>
+      <div class="footer-links">
+        <a class="footer-link" href="#overview">Overview</a>
 
-  <section class="project-structure" id="docs">
-    <h2>Database Schema</h2>
-    <iframe style="border: 1px solid rgba(0, 0, 0, 0.1);" width="800" height="450"
-      src="https://www.figma.com/embed?embed_host=share&url=https%3A%2F%2Fwww.figma.com%2Ffile%2F4JrXnr9l4iFoqywmLESh5M%2FDatabase%3Fnode-id%3D0%253A1"
-      allowfullscreen></iframe>
+        <a class="footer-link" href="#tech">Technologies</a>
 
-    <h2>System Architecture Design</h2>
-    <iframe style="border: 1px solid rgba(0, 0, 0, 0.1);" width="800" height="450"
-      src="https://www.figma.com/embed?embed_host=share&url=https%3A%2F%2Fwww.figma.com%2Ffile%2FOKOvFTfchMSMxxsRuQXa90%2FSystem-Design"
-      allowfullscreen></iframe>
-  </section>
+        <a class="footer-link" href="#items">Items</a>
 
-  <section class="overview" id="overview">
-    <div class="overview-txt">
-      <h2>Overview</h2>
-      <p>
-        Reduce the inequality in Turkish education system <br />
-        by enabling donation for the students who couldn't afford <br />
-        basic education needs
+        <a class="footer-link" href="#donators">Donators</a>
 
-      </p>
+        <a class="footer-link" href="#docs">API Documentation</a>
 
-      <button>Learn More</button>
-    </div>
-
-    <img class="overview-pic" src="donation.jpg" alt="overview-pic" />
-  </section>
-
-  <section class="items" id="items">
-    <div class="item-title">
-      <h2>Items</h2>
-    </div>
-    <div class="item-list-wrapper">
-      <div class="item">
-        <img class="item-pic" src="item1.jpg" alt="item" />
-        <h3>Course Books</h3>
-        <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit.
-          <br />Laboriosam,explicabo reiciendis molestias, doloremque<br />
-          saepe repellat cumque molestiae quis dicta voluptatem.
+        <a class="footer-link" href="#teams">teams</a>
+      </div>
+      <div class="company-name">
+        <p class="company-name-txt">
+          &copy; Paying It Forward | Re:Coded, 2022
         </p>
-        <a class="learn-more-item" href="#">Learn More</a>
       </div>
-      <div class="item">
-        <img class="item-pic" src="item2.jpg" alt="item" />
-        <h3>Scientific Calculator</h3>
-        <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit.
-          <br />Laboriosam,explicabo reiciendis molestias, doloremque<br />
-          saepe repellat cumque molestiae quis dicta voluptatem.
-        </p>
-        <a class="learn-more-item" href="#">Learn More</a>
-      </div>
-      <div class="item">
-        <img class="item-pic" src="item3.jpg" alt="item" />
-        <h3>Backpack</h3>
-        <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit.
-          <br />Laboriosam,explicabo reiciendis molestias, doloremque<br />
-          saepe repellat cumque molestiae quis dicta voluptatem.
-        </p>
-        <a class="learn-more-item" href="#">Learn More</a>
-      </div>
-      <div class="item">
-        <img class="item-pic" src="item4.jpg" alt="item" />
-        <h3>Stationary</h3>
-        <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit.
-          <br />Laboriosam,explicabo reiciendis molestias, doloremque<br />
-          saepe repellat cumque molestiae quis dicta voluptatem.
-        </p>
-        <a class="learn-more-item" href="#">Learn More</a>
-      </div>
-    </div>
-  </section>
-
-  <section class="requests">
-    <div class="request-title">
-      <h2>Requests</h2>
-    </div>
-    <div class="request-list-wrapper">
-      <div class="request">
-        <img class="request-pic" src="request1.jpg" alt="request" />
-        <h3>T-square</h3>
-        <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit.
-          <br />Laboriosam,explicabo reiciendis molestias, doloremque<br />
-          saepe repellat cumque molestiae quis dicta voluptatem.
-        </p>
-        <a class="learn-more-request" href="#">Learn More</a>
-      </div>
-      <div class="request">
-        <img class="request-pic" src="request2.jpg" alt="request" />
-        <h3>Lamp</h3>
-        <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit.
-          <br />Laboriosam,explicabo reiciendis molestias, doloremque<br />
-          saepe repellat cumque molestiae quis dicta voluptatem.
-        </p>
-        <a class="learn-more-request" href="#">Learn More</a>
-      </div>
-      <div class="request">
-        <img class="request-pic" src="request3.jpg" alt="request" />
-        <h3>Book Shelf</h3>
-        <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit.
-          <br />Laboriosam,explicabo reiciendis molestias, doloremque<br />
-          saepe repellat cumque molestiae quis dicta voluptatem.
-        </p>
-        <a class="learn-more-request" href="#">Learn More</a>
-      </div>
-      <div class="request">
-        <img class="request-pic" src="request4.jpg" alt="request" />
-        <h3>Chair</h3>
-        <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit.
-          <br />Laboriosam,explicabo reiciendis molestias, doloremque<br />
-          saepe repellat cumque molestiae quis dicta voluptatem.
-        </p>
-        <a class="learn-more-request" href="#">Learn More</a>
-      </div>
-    </div>
-  </section>
-
-  <section class="donators" id="donators">
-    <div class="donator-title">
-      <h2>Donators</h2>
-    </div>
-    <div class="donator-list-wrapper">
-      <div class="donator">
-        <img class="donator-pic" src="donator1.jpg" alt="donator" />
-        <h3>Jim Gates, CEO of Macrosoft</h3>
-        <p>Brief Intro</p>
-        <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit.
-          <br />Laboriosam,explicabo reiciendis molestias, doloremque<br />
-          saepe repellat cumque molestiae quis dicta voluptatem.
-        </p>
-      </div>
-      <div class="donator">
-        <img class="donator-pic" src="donator3.jpg" alt="donator" />
-        <h3>Lilly Wojcickim, CEO of ITube</h3>
-        <p>Brief Intro</p>
-        <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit.
-          <br />Laboriosam,explicabo reiciendis molestias, doloremque<br />
-          saepe repellat cumque molestiae quis dicta voluptatem.
-        </p>
-      </div>
-      <div class="donator">
-        <img class="donator-pic" src="donator2.png" alt="donator" />
-        <h3>Evelyn Mask, CEO of Edison</h3>
-        <p>Brief Intro</p>
-        <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit.
-          <br />Laboriosam,explicabo reiciendis molestias, doloremque<br />
-          saepe repellat cumque molestiae quis dicta voluptatem.
-        </p>
-      </div>
-      <div class="donator">
-        <img class="donator-pic" src="donator4.jpg" alt="donator" />
-        <h3>Amy Lang, CEO of Tea Meets Simit</h3>
-        <p>Brief Intro</p>
-        <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit.
-          <br />Laboriosam,explicabo reiciendis molestias, doloremque<br />
-          saepe repellat cumque molestiae quis dicta voluptatem.
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <section class="technology" id="tech">
-    <div class="technology-title">
-      <h2>Technologies</h2>
-    </div>
-    <div class="technology-list-wrapper">
-      <img class="technology-pic" src="nodejs.png" alt="nodejs" />
-
-      <img class="technology-pic" src="js.png" alt="js" />
-
-      <img class="technology-pic" src="mongo.jpg" alt="mongo" />
-
-      <img class="technology-pic" src="npm.jpg" alt="npm" />
-
-      <img class="technology-pic" src="mailer.png" alt="mailer" />
-    </div>
-  </section>
-
-  <section class="teams" id="teams">
-    <div class="team-title">
-      <h2>Team</h2>
-    </div>
-    <div class="team-list-wrapper">
-      <div class="team">
-        <img class="team-pic" src="ammar-sammour.jpeg" alt="team" />
-        <h3>Ammar</h3>
-      </div>
-      <div class="team">
-        <img class="team-pic" src="shrreya.jpeg" alt="team" />
-        <h3>Shrreya</h3>
-      </div>
-      <div class="team">
-        <img class="team-pic" src="mahmoud.jpeg" alt="team" />
-        <h3>Mahmoud</h3>
-      </div>
-      <div class="team">
-        <img class="team-pic" src="mehmet.jpg" alt="team" />
-        <h3>Mehmet</h3>
-      </div>
-      <div class="team">
-        <img class="team-pic" src="peri.jpeg" alt="team" />
-        <h3>Perizat</h3>
-      </div>
-      <div class="team">
-        <img class="team-pic" src="ammar-abdulbaki.jpg" alt="team" />
-        <h3>Ammar</h3>
-      </div>
-    </div>
-  </section>
-
-  <footer>
-    <div class="social-media-links">
-      <a href="#"><img class="social-media-icon" src="twitterlogo.png" alt="twitter" /></a>
-      <a href="#">
-        <img class="social-media-icon" src="googlelogo.png" alt="google" />
-      </a>
-      <a href="#">
-        <img class="social-media-icon" src="facebooklogo.png" alt="facebook" />
-      </a>
-
-    </div>
-    <div class="footer-links">
-      <a class="footer-link" href="#">Items</a>
-      <a class="footer-link" href="#">Donate</a>
-      <a class="footer-link" href="#">Request</a>
-      <a class="footer-link" href="#">Contact Us</a>
-    </div>
-    <div class="company-name">
-      <p class="company-name-txt">&copy; Paying It Forward | Re:Coded, 2022</p>
-    </div>
-  </footer>
-</body>
-
+    </footer>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+      crossorigin="anonymous"
+    ></script>
+  </body>
 </html>
