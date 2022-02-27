@@ -9,8 +9,7 @@ const itemRoutes = require('./routers/item');
 const userRoutes = require('./routers/user');
 const globalRoutes = require('./routers/global');
 const logger = require('./services/logger');
-const { googleConfigs } = require('./passport');
-const { afterGoogleLogin } = require('./passport');
+const { googleConfigs, afterGoogleLogin } = require('./passport');
 
 const app = express();
 const port = process.env.NODE_LOCAL_PORT;

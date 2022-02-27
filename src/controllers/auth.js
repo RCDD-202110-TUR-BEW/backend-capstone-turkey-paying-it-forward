@@ -117,6 +117,6 @@ module.exports = {
       httpOnly: true,
     });
 
-    res.redirect('/api/users');
+    res.redirect('/');
   },
 };

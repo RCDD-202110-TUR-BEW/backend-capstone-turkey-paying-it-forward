@@ -9,7 +9,7 @@ const saltRounds = 10;
 const googleConfigs = {
   clientID: process.env.GAPP_CLIENT_ID,
   clientSecret: process.env.GAPP_CLIENT_SECRET,
-  callbackURL: 'http://localhost:3000/api/auth/google/callback',
+  callbackURL: `${process.env.SERVER_BASE_URL}/api/auth/google/callback`,
 };
 
 const afterGoogleLogin = async function (
