@@ -1,8 +1,6 @@
 const nodemailer = require('nodemailer');
 const { sendEmail } = require('../mail');
 
-jest.useFakeTimers();
-
 const spyOnCreateTransport = jest.spyOn(nodemailer, 'createTransport');
 
 afterAll(() => {

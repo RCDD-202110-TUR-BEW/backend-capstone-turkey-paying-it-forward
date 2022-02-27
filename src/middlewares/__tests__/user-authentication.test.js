@@ -23,8 +23,6 @@ const mockUser = {
   email: 'someemail@gmail.com',
 };
 
-jest.useFakeTimers();
-
 const res = {
   status: jest.fn().mockReturnThis(),
   json: jest.fn().mockReturnThis(),

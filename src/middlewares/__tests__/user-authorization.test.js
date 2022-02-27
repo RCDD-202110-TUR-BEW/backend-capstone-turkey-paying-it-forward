@@ -2,9 +2,6 @@ const userAuthorization = require('../user-authorization');
 
 const incorrectUserId = 'IncorrectUserId';
 const correctUserId = 'CorrectUserId';
-
-jest.useFakeTimers();
-
 const mockUser = {
   _id: 'CorrectUserId',
   username: 'John',
