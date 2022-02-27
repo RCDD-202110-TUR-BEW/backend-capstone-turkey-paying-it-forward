@@ -41,8 +41,7 @@ module.exports = {
         maxAge: cookieAge * 1000,
         httpOnly: true,
       });
-      // This header is set for swagger users to access the token easily
-      res.setHeader('authorizationToken', token);
+
       res.json({ message: 'Successfully signed in' });
     } catch (err) {
       res.status(422).json({ message: err.message ?? err });
