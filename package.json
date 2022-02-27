@@ -9,7 +9,7 @@
     "app": "nodemon src/app.js",
     "cron": "nodemon src/services/cronServer.js",
     "start": "npm-run-all --parallel app cron",
-    "test": "export IS_JEST=1 && yarn validate && jest --passWithNoTests --runInBand",
+    "test": "export IS_JEST=1 && yarn validate && jest --passWithNoTests --runInBand --detectOpenHandles",
     "lint": "eslint --ignore-path .gitignore .",
     "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|json)\"",
     "validate": "yarn format && yarn lint",
