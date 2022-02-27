@@ -423,6 +423,17 @@ describe('User Endpoints', () => {
       expect(responseBody.message).toBe('Requested user ID is not valid!');
     });
 
+    test('Should response with an error message if the user is not authenticated', async () => {
+      const response = await request(server)
+        .put(`/api/users/rating/${toBeRatedUserId}`)
+        .set('Content-Type', 'application/json')
+        .send({ rating: 3 });
+
+      expect(response.header['content-type']).toContain('application/json');
+      expect(response.statusCode).toBe(401);
+      expect(response.body.message).toBe('You are not authenticated');
+    });
+
     test('Should response with an error message if the rater already rated user before', async () => {
       const response = await request(server)
         .post(`/api/users/rating/${toBeRatedUserId}`)
@@ -480,6 +491,17 @@ describe('User Endpoints', () => {
       expect(response.header['content-type']).toContain('application/json');
       expect(response.statusCode).toBe(422);
       expect(response.body.message).toBe('The user does not have any rating');
+    });
+
+    test('Should response with an error message if the user is not authenticated', async () => {
+      const response = await request(server)
+        .put(`/api/users/rating/${toBeRatedUserId}`)
+        .set('Content-Type', 'application/json')
+        .send({ rating: 4 });
+
+      expect(response.header['content-type']).toContain('application/json');
+      expect(response.statusCode).toBe(401);
+      expect(response.body.message).toBe('You are not authenticated');
     });
 
     test('Should response with an error message if the rater is trying to update a rating before even adding any rate', async () => {
