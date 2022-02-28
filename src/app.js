@@ -4,6 +4,7 @@ require('dotenv').config();
 const cookieParser = require('cookie-parser');
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const session = require('express-session');
 const { connectToMongo } = require('./db/connection');
 const authRoutes = require('./routers/auth');
 const itemRoutes = require('./routers/item');
@@ -16,6 +17,13 @@ const app = express();
 
 const port = process.env.NODE_LOCAL_PORT;
 
+app.use(
+  session({
+    secret: process.env.JWT_SECRET,
+    resave: true,
+    saveUninitialized: true,
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
