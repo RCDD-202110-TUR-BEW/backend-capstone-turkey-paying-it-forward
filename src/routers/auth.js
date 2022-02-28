@@ -2,6 +2,7 @@ const express = require('express');
 const passport = require('passport');
 const authController = require('../controllers/auth');
 const { userValidationRules, validate } = require('../middlewares/validators');
+const getOriginalUrl = require('../middlewares/get-original-url');
 
 const router = express.Router();
 
@@ -22,6 +23,7 @@ router.get('/signout', authController.signOutUser);
 // GET routes for google authentication
 router.get(
   '/google',
+  getOriginalUrl,
   passport.authenticate('google', { scope: ['profile', 'email', 'openid'] })
 );
 router.get(

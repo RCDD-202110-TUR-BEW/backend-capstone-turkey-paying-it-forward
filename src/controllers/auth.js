@@ -118,6 +118,9 @@ module.exports = {
       httpOnly: true,
     });
 
-    res.redirect('/');
+    const { returnTo } = req.session;
+    delete req.session.returnTo;
+
+    res.redirect(returnTo || '/');
   },
 };
