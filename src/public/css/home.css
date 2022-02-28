@@ -50,15 +50,6 @@ h3 {
   background-color: #3fa037;
 }
 
-/* ul {
-  width: 70%;
-  height: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  list-style-type: none;
-} */
-
 .overview {
   display: flex;
   flex-direction: column;
@@ -76,7 +67,6 @@ h3 {
 
 .overview-pic {
   width: 500px;
-  /* height: 300px; */
 }
 
 .items {
