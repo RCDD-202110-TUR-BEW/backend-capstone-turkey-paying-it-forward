@@ -100,10 +100,6 @@ h3 {
   height: 200px;
 }
 
-.item-title {
-  margin-left: 52px;
-}
-
 .requests {
   margin-left: 120px;
   margin-right: 120px;
@@ -135,18 +131,6 @@ h3 {
   height: 200px;
 }
 
-.request-title {
-  margin-left: 52px;
-}
-
-.donator-list-wrapper {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  flex-wrap: wrap;
-  margin-top: 50px;
-}
-
 .donators {
   margin-left: 120px;
   margin-right: 120px;
@@ -159,13 +143,9 @@ h3 {
 }
 
 .donator-pic {
-  width: 200px;
+  width: 50%;
   /* height: 200px; */
   border-radius: 50%;
-}
-
-.donator-title {
-  margin-left: 52px;
 }
 
 .technology {
@@ -191,23 +171,11 @@ h3 {
   height: 150px;
 }
 
-.technology-title {
-  margin-left: 52px;
-}
-
 .teams {
   margin-top: 50px;
   margin-left: 120px;
   margin-right: 120px;
 }
-
-/* .team-list-wrapper > div {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  flex-wrap: wrap;
-  margin-top: 50px;
-} */
 
 .team {
   display: flex;
@@ -218,10 +186,6 @@ h3 {
 .team-pic {
   width: 200px;
   border-radius: 50%;
-}
-
-.team-title {
-  margin-left: 52px;
 }
 
 footer {
