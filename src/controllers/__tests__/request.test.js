@@ -63,44 +63,45 @@ const mockUser2 = {
   acceptTerms: true,
 };
 
+jest.setTimeout(30000);
+beforeAll(async () => {
+  await clearDatabase();
+  const signUpResponse = await request(server)
+    .post('/api/auth/signup')
+    .set('Content-Type', 'application/json')
+    .send(mockUser);
+  const signInResponse = await request(server)
+    .post(`/api/auth/signin`)
+    .set('Content-Type', 'application/json')
+    .send({ username: mockUser.username, password: mockUser.password });
+
+  ownerId = signUpResponse.body._id;
+  trueRequest.owner = ownerId;
+  trueRequest2.owner = ownerId;
+  noNameRequest.owner = ownerId;
+  noDescriptionRequest.owner = ownerId;
+  invalidPhotoRequest.owner = ownerId;
+  [authCookie] = signInResponse.headers['set-cookie'];
+
+  await request(server)
+    .post('/api/auth/signup')
+    .set('Content-Type', 'application/json')
+    .send(mockUser2);
+  const signInResponse2 = await request(server)
+    .post(`/api/auth/signin`)
+    .set('Content-Type', 'application/json')
+    .send({ username: mockUser2.username, password: mockUser2.password });
+
+  [authCookie2] = signInResponse2.headers['set-cookie'];
+});
+
+afterAll(async () => {
+  await clearDatabase();
+  await closeDatabase();
+  server.close();
+});
+
 describe('Request Endpoints', () => {
-  beforeAll(async () => {
-    await clearDatabase();
-    const signUpResponse = await request(server)
-      .post('/api/auth/signup')
-      .set('Content-Type', 'application/json')
-      .send(mockUser);
-    const signInResponse = await request(server)
-      .post(`/api/auth/signin`)
-      .set('Content-Type', 'application/json')
-      .send({ username: mockUser.username, password: mockUser.password });
-
-    ownerId = signUpResponse.body._id;
-    trueRequest.owner = ownerId;
-    trueRequest2.owner = ownerId;
-    noNameRequest.owner = ownerId;
-    noDescriptionRequest.owner = ownerId;
-    invalidPhotoRequest.owner = ownerId;
-    [authCookie] = signInResponse.headers['set-cookie'];
-
-    await request(server)
-      .post('/api/auth/signup')
-      .set('Content-Type', 'application/json')
-      .send(mockUser2);
-    const signInResponse2 = await request(server)
-      .post(`/api/auth/signin`)
-      .set('Content-Type', 'application/json')
-      .send({ username: mockUser2.username, password: mockUser2.password });
-
-    [authCookie2] = signInResponse2.headers['set-cookie'];
-  });
-
-  afterAll(async () => {
-    await clearDatabase();
-    await closeDatabase();
-    server.close();
-  });
-
   describe('GET /api/requests/', () => {
     test('Should response with an error message when there are no requests', async () => {
       const response = await request(server).get('/api/requests/');
