@@ -10,6 +10,8 @@ const authRoutes = require('./routers/auth');
 const itemRoutes = require('./routers/item');
 const userRoutes = require('./routers/user');
 const globalRoutes = require('./routers/global');
+const requestRoutes = require('./routers/request');
+
 const logger = require('./services/logger');
 const { googleConfigs, afterGoogleLogin } = require('./passport');
 
@@ -46,6 +48,7 @@ app.get('/status', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/items', itemRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/requests', requestRoutes);
 app.use('/api/global', globalRoutes);
 app.use('/', (req, res) => {
   res.render('home');
