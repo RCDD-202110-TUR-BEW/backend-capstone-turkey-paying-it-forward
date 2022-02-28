@@ -52,15 +52,6 @@ const trueItem4 = {
   isAvailable: false,
 };
 
-const noOwnerItem = {
-  name: 'Sofa',
-  description: 'A comfortable and medium size sofa',
-  count: 2,
-  photo:
-    'https://www.ulcdn.net/images/products/215114/original/Apollo_Sofa_Set_FNSF51APDU30000SAAAA_slide_00.jpg?1538973284',
-  type: 'Stationery',
-};
-
 const invalidImageItem = {
   name: 'Sofa',
   description: 'A comfortable and medium size sofa',
@@ -282,19 +273,6 @@ describe('Items Endpoints', () => {
       expect(response.header['content-type']).toContain('application/json');
       expect(response.statusCode).toBe(201);
       expect(response.body.message).toBe('Item created successfully.');
-    });
-
-    test('Should not create a new item when owner ID is missing', async () => {
-      const response = await request(server)
-        .post('/api/items')
-        .set('Content-Type', 'application/json')
-        .set('Cookie', authCookie)
-        .send(noOwnerItem);
-
-      expect(response.header['content-type']).toContain('application/json');
-      expect(response.statusCode).toBe(422);
-      expect(response.body.message).toBeDefined();
-      expect(response.body.message).toContain('Owner reference is required');
     });
 
     test('Should not create a new item when image URL is invalid', async () => {
