@@ -99,7 +99,7 @@ module.exports = {
 
       const user = await UserModel.findById(borrowerId);
       if (!user)
-        throw new Error('Borrower with the specified ID was not found!');
+        throw new Error('The borrower with the specified ID was not found.');
 
       const item = await ItemModel.findById(donateItemId).populate('owner', {
         password_hash: 0,
