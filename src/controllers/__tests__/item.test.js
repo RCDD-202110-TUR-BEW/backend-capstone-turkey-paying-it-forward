@@ -100,6 +100,8 @@ const mockUser = {
   acceptTerms: true,
 };
 
+jest.setTimeout(30000);
+
 describe('Items Endpoints', () => {
   beforeAll(async () => {
     await clearDatabase();
