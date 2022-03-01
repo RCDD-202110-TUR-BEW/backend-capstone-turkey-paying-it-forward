@@ -52,9 +52,6 @@ app.use('/api/items', itemRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/requests', requestRoutes);
 app.use('/api/global', globalRoutes);
-app.use('/', (req, res) => {
-  res.render('home');
-});
 
 const options = {
   customCss: '.swagger-ui .topbar { display: none }',
@@ -65,6 +62,9 @@ app.use(
   swaggerUi.serve,
   swaggerUi.setup(swaggerDocument, options)
 );
+app.use('/', (req, res) => {
+  res.render('home');
+});
 
 const server = app.listen(port, () => {
   logger.log('info', `Server is running on port ${port}`);
