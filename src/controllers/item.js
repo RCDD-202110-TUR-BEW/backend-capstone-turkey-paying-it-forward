@@ -4,7 +4,9 @@ const ItemModel = require('../models/item');
 module.exports = {
   getAllItems: async (req, res) => {
     try {
-      const items = await ItemModel.find();
+      const items = await ItemModel.find().populate('owner', {
+        password_hash: 0,
+      });
       if (items.length <= 0) throw new Error('No items found');
       res.json(items);
     } catch (err) {
@@ -16,7 +18,9 @@ module.exports = {
       const itemId = req.params.id;
       if (String(new ObjectId(itemId)) !== itemId.toString())
         throw new Error('Requested item ID is not valid!');
-      const item = await ItemModel.findById(itemId);
+      const item = await ItemModel.findById(itemId).populate('owner', {
+        password_hash: 0,
+      });
       if (!item) throw new Error('There is no item with the provided ID!');
       res.json(item);
     } catch (err) {
@@ -25,7 +29,11 @@ module.exports = {
   },
   getAvailableItems: async (req, res) => {
     try {
-      const availableItems = await ItemModel.find({ isAvailable: true });
+      const availableItems = await ItemModel.find({
+        isAvailable: true,
+      }).populate('owner', {
+        password_hash: 0,
+      });
       if (availableItems.length <= 0)
         throw new Error('There are no available items at the moment!');
       res.json(availableItems);
@@ -40,6 +48,8 @@ module.exports = {
       const filteredItems = await ItemModel.find({
         type: typeQuery,
         isAvailable: true,
+      }).populate('owner', {
+        password_hash: 0,
       });
       if (filteredItems.length <= 0)
         throw new Error(`There are no available items of type ${typeQuery}!`);
@@ -57,7 +67,9 @@ module.exports = {
         id,
         { $set: req.body },
         { new: true }
-      );
+      ).populate('owner', {
+        password_hash: 0,
+      });
       if (!updatedItem) {
         throw new Error('The item with the specified ID was not found.');
       }
