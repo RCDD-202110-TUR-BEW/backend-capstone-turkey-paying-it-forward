@@ -4,9 +4,12 @@ const { closeDatabase, clearDatabase } = require('../../db/connection');
 
 jest.setTimeout(10000);
 
+let owner;
 let ownerId;
+let borrowerId;
 let authCookie;
 let itemId;
+let donateItemId;
 const nonExistingItemId = '6208e47a5fe21cc475419234';
 const invalidItemId = 'invalidId123';
 
@@ -98,6 +101,51 @@ const noDescriptionItem = {
   type: 'Stationery',
 };
 
+const availableAndInStockItem = {
+  name: 'chair',
+  description: 'An ergonomic chair',
+  owner,
+  count: 3,
+  photo:
+    'https://st.depositphotos.com/1572973/1969/i/950/depositphotos_19690343-stock-photo-wooden-chair.jpg',
+  type: 'Furniture',
+  isAvailable: true,
+};
+
+const inStockButNotAvailableItem = {
+  name: 'chair',
+  description: 'An ergonomic chair',
+  owner,
+  count: 2,
+  photo:
+    'https://st.depositphotos.com/1572973/1969/i/950/depositphotos_19690343-stock-photo-wooden-chair.jpg',
+  type: 'Furniture',
+  isAvailable: false,
+};
+
+const outOfStockItem = {
+  name: 'chair',
+  description: 'An ergonomic chair',
+  owner,
+  count: 0,
+  photo:
+    'https://st.depositphotos.com/1572973/1969/i/950/depositphotos_19690343-stock-photo-wooden-chair.jpg',
+  type: 'Furniture',
+  isAvailable: false,
+};
+
+const donatedItem = {
+  name: 'chair',
+  description: 'An ergonomic chair',
+  owner,
+  count: 2,
+  photo:
+    'https://st.depositphotos.com/1572973/1969/i/950/depositphotos_19690343-stock-photo-wooden-chair.jpg',
+  type: 'Furniture',
+  isAvailable: true,
+  borrowers: [],
+};
+
 const mockUser = {
   username: 'chandler.bing',
   firstName: 'Chandler',
@@ -106,6 +154,17 @@ const mockUser = {
   password: 'Password1234',
   passwordConfirm: 'Password1234',
   address: 'Central Perk, New York',
+  acceptTerms: true,
+};
+
+const borrowerUser = {
+  username: 'swarley',
+  firstName: 'Barney',
+  lastName: 'Stinson',
+  email: 'barney.stinson@gmail.com',
+  password: 'Password4321?',
+  passwordConfirm: 'Password4321?',
+  address: '3rd Avenue Manhattan',
   acceptTerms: true,
 };
 
@@ -118,6 +177,7 @@ beforeAll(async () => {
     And the reason for assigning all true items owners for the authenticated user is to make sure they
     pass the item-authorization middleware.
   */
+
   const signUpResponse = await request(server)
     .post('/api/auth/signup')
     .set('Content-Type', 'application/json')
@@ -457,6 +517,105 @@ describe('Items Endpoints', () => {
       expect(response.statusCode).toBe(401);
       expect(response.body.message).toBe(
         'unauthorized to modify requested item: item not found'
+      );
+    });
+  });
+
+  describe('PUT /api/items/donate', () => {
+    beforeAll(async () => {
+      await clearDatabase();
+      // add a borrower user
+      const borrowerRes = await request(server)
+        .post('/api/auth/signup')
+        .set('Content-Type', 'application/json')
+        .send(borrowerUser);
+      borrowerId = borrowerRes.body._id;
+
+      const signUpResponse = await request(server)
+        .post('/api/auth/signup')
+        .set('Content-Type', 'application/json')
+        .send(mockUser);
+      owner = signUpResponse.body;
+
+      availableAndInStockItem.owner = owner;
+      inStockButNotAvailableItem.owner = owner;
+      outOfStockItem.owner = owner;
+      donatedItem.owner = owner;
+      const signInResponse = await request(server)
+        .post(`/api/auth/signin`)
+        .set('Content-Type', 'application/json')
+        .send({ username: mockUser.username, password: mockUser.password });
+
+      [authCookie] = signInResponse.headers['set-cookie'];
+    });
+
+    test('Should donate the specified item to the specified borrower', async () => {
+      await request(server)
+        .post('/api/items')
+        .set('Content-Type', 'application/json')
+        .set('Cookie', authCookie)
+        .send(availableAndInStockItem);
+      await request(server)
+        .post('/api/items')
+        .set('Content-Type', 'application/json')
+        .set('Cookie', authCookie)
+        .send(inStockButNotAvailableItem);
+      await request(server)
+        .post('/api/items')
+        .set('Content-Type', 'application/json')
+        .set('Cookie', authCookie)
+        .send(outOfStockItem);
+
+      const re = await request(server).get('/api/global/all-items');
+      const responseBody = re.body;
+      donateItemId = responseBody[0]._id;
+
+      const response = await request(server)
+        .put('/api/items/donate')
+        .set('Content-Type', 'application/json')
+        .set('Cookie', authCookie)
+        .send({ donateItemId, borrowerId });
+
+      donatedItem.borrowers.push(borrowerId);
+
+      expect(response.header['content-type']).toContain('application/json');
+      expect(response.statusCode).toBe(200);
+      expect(response.body).toMatchObject(donatedItem);
+    });
+
+    test('Should throw an error if the item is not available', async () => {
+      const re = await request(server).get('/api/global/all-items');
+      const responseBody = re.body;
+      donateItemId = responseBody[1]._id;
+
+      const response = await request(server)
+        .put('/api/items/donate')
+        .set('Content-Type', 'application/json')
+        .set('Cookie', authCookie)
+        .send({ donateItemId, borrowerId });
+
+      expect(response.header['content-type']).toContain('application/json');
+      expect(response.statusCode).toBe(422);
+      expect(response.body.message).toBe(
+        'The item with the specified ID is not available for donation.'
+      );
+    });
+
+    test('Should throw an error if the item is out of stock', async () => {
+      const re = await request(server).get('/api/global/all-items');
+      const responseBody = re.body;
+      donateItemId = responseBody[2]._id;
+
+      const response = await request(server)
+        .put('/api/items/donate')
+        .set('Content-Type', 'application/json')
+        .set('Cookie', authCookie)
+        .send({ donateItemId, borrowerId });
+
+      expect(response.header['content-type']).toContain('application/json');
+      expect(response.statusCode).toBe(422);
+      expect(response.body.message).toBe(
+        'The item with the specified ID is not available for donation.'
       );
     });
   });
