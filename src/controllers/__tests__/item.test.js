@@ -158,7 +158,6 @@ describe('Items Endpoints', () => {
 
       const response = await request(server).get('/api/global/all-items');
       const responseBody = response.body;
-      itemId = responseBody[0]._id;
 
       expect(response.header['content-type']).toContain('application/json');
       expect(response.statusCode).toBe(200);
@@ -171,6 +170,8 @@ describe('Items Endpoints', () => {
 
     test('Should response with an error message when there are no items', async () => {
       await clearDatabase();
+      // Because we are clearing the database for this test, the owner is being removed from the database as well and
+      // it is becoming undefined, so we have to signup the user and assign the item owner here again
       const signUpResponse = await request(server)
         .post('/api/auth/signup')
         .set('Content-Type', 'application/json')
