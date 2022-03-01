@@ -45,7 +45,7 @@ module.exports = {
 
       if (!updatedUser)
         throw new Error("The user with the specified ID wasn't found");
-      delete updatedUser.password_hash;
+      updatedUser.password_hash = undefined;
       res.json(updatedUser);
     } catch (err) {
       res.status(422).json({ message: err.message ?? err });
