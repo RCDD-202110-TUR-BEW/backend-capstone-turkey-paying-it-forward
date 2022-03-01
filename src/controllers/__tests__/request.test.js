@@ -4,6 +4,7 @@ const { closeDatabase, clearDatabase } = require('../../db/connection');
 
 let ownerId;
 let authCookie;
+let authCookie2;
 let RequestId;
 const nonExistingRequestId = '5e9f8f9b9b8f8e0e8c8b4567';
 const invalidRequestId = 'invalidId123';
@@ -51,6 +52,16 @@ const mockUser = {
   address: 'Central Perk, New York',
   acceptTerms: true,
 };
+const mockUser2 = {
+  username: 'mock.userTwo',
+  firstName: 'mockTwo',
+  lastName: 'userTwo',
+  email: 'mockuser2@gmail.com',
+  password: 'Password1234',
+  passwordConfirm: 'Password1234',
+  address: 'Central Perk, New York',
+  acceptTerms: true,
+};
 
 jest.setTimeout(30000);
 beforeAll(async () => {
@@ -59,17 +70,29 @@ beforeAll(async () => {
     .post('/api/auth/signup')
     .set('Content-Type', 'application/json')
     .send(mockUser);
+  const signInResponse = await request(server)
+    .post(`/api/auth/signin`)
+    .set('Content-Type', 'application/json')
+    .send({ username: mockUser.username, password: mockUser.password });
+
   ownerId = signUpResponse.body._id;
   trueRequest.owner = ownerId;
   trueRequest2.owner = ownerId;
   noNameRequest.owner = ownerId;
   noDescriptionRequest.owner = ownerId;
   invalidPhotoRequest.owner = ownerId;
-  const signInResponse = await request(server)
+  [authCookie] = signInResponse.headers['set-cookie'];
+
+  await request(server)
+    .post('/api/auth/signup')
+    .set('Content-Type', 'application/json')
+    .send(mockUser2);
+  const signInResponse2 = await request(server)
     .post(`/api/auth/signin`)
     .set('Content-Type', 'application/json')
-    .send({ username: mockUser.username, password: mockUser.password });
-  [authCookie] = signInResponse.headers['set-cookie'];
+    .send({ username: mockUser2.username, password: mockUser2.password });
+
+  [authCookie2] = signInResponse2.headers['set-cookie'];
 });
 
 afterAll(async () => {
@@ -253,9 +276,36 @@ describe('Request Endpoints', () => {
         'The request with the specified ID was not found.'
       );
     });
+
+    test('Should respond with an error message when user is unauthorized to update the request', async () => {
+      const response = await request(server)
+        .put(`/api/requests/${RequestId}`)
+        .set('Cookie', authCookie2)
+        .send({ name: 'Updated name' });
+      const responseBody = response.body;
+
+      expect(response.statusCode).toBe(401);
+      expect(responseBody.message).toBeDefined();
+      expect(responseBody.message).toBe(
+        'unauthorized to modify the requested request'
+      );
+    });
   });
 
   describe('DELETE /api/requests/:id', () => {
+    test('Should respond with an error message when user is unauthorized to delete the request', async () => {
+      const response = await request(server)
+        .delete(`/api/requests/${RequestId}`)
+        .set('Cookie', authCookie2);
+      const responseBody = response.body;
+
+      expect(response.statusCode).toBe(401);
+      expect(responseBody.message).toBeDefined();
+      expect(responseBody.message).toBe(
+        'unauthorized to modify the requested request'
+      );
+    });
+
     test('Should delete a request', async () => {
       const response = await request(server)
         .delete(`/api/requests/${RequestId}`)
