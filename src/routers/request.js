@@ -1,5 +1,6 @@
 const express = require('express');
 const userAuthenticationMiddleware = require('../middlewares/user-authentication');
+const requestAuthorizationMiddleware = require('../middlewares/request-authorization');
 const requestController = require('../controllers/request');
 
 const router = express.Router();
@@ -13,6 +14,7 @@ router
 router
   .get('/:id', requestController.getRequestById)
   .use('/:id', userAuthenticationMiddleware)
+  .use('/:id', requestAuthorizationMiddleware)
   .put('/:id', requestController.updateRequest)
   .delete('/:id', requestController.deleteRequest);
 
