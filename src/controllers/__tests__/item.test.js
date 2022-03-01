@@ -100,38 +100,39 @@ const mockUser = {
   acceptTerms: true,
 };
 
+jest.setTimeout(30000);
+beforeAll(async () => {
+  await clearDatabase();
+  /* 
+    authCookie is needed to authenticate requests made to post, put, and delete items endpoints,
+    without it, all the mentioned requests will not be able to pass the user-authentication middleware.
+    And the reason for assigning all true items owners for the authenticated user is to make sure they
+    pass the item-authorization middleware.
+  */
+  const signUpResponse = await request(server)
+    .post('/api/auth/signup')
+    .set('Content-Type', 'application/json')
+    .send(mockUser);
+  ownerId = signUpResponse.body._id;
+  trueItem.owner = ownerId;
+  trueItem2.owner = ownerId;
+  trueItem3.owner = ownerId;
+  trueItem4.owner = ownerId;
+  const signInResponse = await request(server)
+    .post(`/api/auth/signin`)
+    .set('Content-Type', 'application/json')
+    .send({ username: mockUser.username, password: mockUser.password });
+
+  [authCookie] = signInResponse.headers['set-cookie'];
+});
+
+afterAll(async () => {
+  await clearDatabase();
+  await closeDatabase();
+  server.close();
+});
+
 describe('Items Endpoints', () => {
-  beforeAll(async () => {
-    await clearDatabase();
-    /* 
-      authCookie is needed to authenticate requests made to post, put, and delete items endpoints,
-      without it, all the mentioned requests will not be able to pass the user-authentication middleware.
-      And the reason for assigning all true items owners for the authenticated user is to make sure they
-      pass the item-authorization middleware.
-    */
-    const signUpResponse = await request(server)
-      .post('/api/auth/signup')
-      .set('Content-Type', 'application/json')
-      .send(mockUser);
-    ownerId = signUpResponse.body._id;
-    trueItem.owner = ownerId;
-    trueItem2.owner = ownerId;
-    trueItem3.owner = ownerId;
-    trueItem4.owner = ownerId;
-    const signInResponse = await request(server)
-      .post(`/api/auth/signin`)
-      .set('Content-Type', 'application/json')
-      .send({ username: mockUser.username, password: mockUser.password });
-
-    [authCookie] = signInResponse.headers['set-cookie'];
-  });
-
-  afterAll(async () => {
-    await clearDatabase();
-    await closeDatabase();
-    server.close();
-  });
-
   describe('GET /api/global/all-items', () => {
     test('Should send all items in the response, including not available ones', async () => {
       await request(server)
