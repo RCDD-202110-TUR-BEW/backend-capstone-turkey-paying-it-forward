@@ -10,6 +10,8 @@ const server = require('../../app');
 
 const { closeDatabase, clearDatabase } = require('../../db/connection');
 
+jest.setTimeout(10000);
+
 const mockUser = {
   username: 'chandler.bing',
   firstName: 'Chandler',
@@ -372,7 +374,9 @@ describe('Auth Endpoints', () => {
         `token=${token}; Max-Age=86400; Path=/; Expires=${tokenExpiryDate.toGMTString()}; HttpOnly`,
       ];
       expect(res.statusCode).toBe(200);
-      expect(res.headers['set-cookie']).toEqual(expectedTokenArray);
+      expect(res.headers['set-cookie']).toEqual(
+        expect.arrayContaining(expectedTokenArray)
+      );
       expect(spyOnCompare).toHaveBeenCalledTimes(1);
       expect(spyOnCompare).toHaveBeenCalledWith(
         'Password1234',

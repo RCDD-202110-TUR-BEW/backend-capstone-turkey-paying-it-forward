@@ -81,6 +81,7 @@ module.exports = {
         acceptTerms,
         address,
       });
+      delete newUser.password_hash;
       res.json(newUser);
     } catch (err) {
       res.status(422).json({ message: err.message ?? err });
@@ -93,5 +94,34 @@ module.exports = {
     } catch (err) {
       res.status(422).json({ message: err.message ?? err });
     }
+  },
+  googleCallback: async (req, res) => {
+    const cookieAge = 14 * 24 * 3600 * 1000; // 14 days in milliseconds
+    const { _id, username, email, firstName, lastName } = req.user;
+
+    const payload = {
+      user: {
+        username,
+        email,
+        firstName,
+        lastName,
+        _id,
+      },
+    };
+
+    const token = jwt.sign(payload, process.env.JWT_SECRET, {
+      expiresIn: cookieAge,
+      subject: _id.toString(),
+    });
+
+    res.cookie('token', token, {
+      maxAge: cookieAge,
+      httpOnly: true,
+    });
+
+    const { returnTo } = req.session;
+    delete req.session.returnTo;
+
+    res.redirect(returnTo || '/');
   },
 };
