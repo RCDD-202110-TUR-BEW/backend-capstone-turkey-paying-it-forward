@@ -2,9 +2,7 @@ const request = require('supertest');
 const server = require('../../app');
 const { closeDatabase, clearDatabase } = require('../../db/connection');
 
-jest.setTimeout(10000);
-
-let owner;
+let ownerId;
 let authCookie;
 let itemId;
 const nonExistingItemId = '6208e47a5fe21cc475419234';
@@ -13,7 +11,7 @@ const invalidItemId = 'invalidId123';
 const trueItem = {
   name: 'Sofa',
   description: 'A comfortable and medium size sofa',
-  owner,
+  owner: ownerId,
   count: 2,
   photo:
     'https://st.depositphotos.com/1500766/2998/i/950/depositphotos_29982203-stock-photo-sofa-furniture-isolated-on-white.jpg',
@@ -24,7 +22,7 @@ const trueItem2 = {
   name: 'Clean Code',
   description:
     "Even bad code can function. But if code isn't clean, it can bring a development organization to its knees.",
-  owner,
+  owner: ownerId,
   count: 2,
   photo:
     'https://m.media-amazon.com/images/S/aplus-media-library-service-media/ca64f05b-34e9-4cf1-8e42-3e8ae26001fc.__CR0,0,300,600_PT0_SX150_V1___.jpg',
@@ -34,7 +32,7 @@ const trueItem2 = {
 const trueItem3 = {
   name: 'My Sofa',
   description: 'Another Sofa',
-  owner,
+  owner: ownerId,
   count: 2,
   photo:
     'https://www.ulcdn.net/images/products/215114/original/Apollo_Sofa_Set_FNSF51APDU30000SAAAA_slide_00.jpg?1538973284',
@@ -44,12 +42,21 @@ const trueItem3 = {
 const trueItem4 = {
   name: 'My Sofa',
   description: 'Another Sofa',
-  owner,
+  owner: ownerId,
   count: 2,
   photo:
     'https://www.ulcdn.net/images/products/215114/original/Apollo_Sofa_Set_FNSF51APDU30000SAAAA_slide_00.jpg?1538973284',
   type: 'Stationery',
   isAvailable: false,
+};
+
+const noOwnerItem = {
+  name: 'Sofa',
+  description: 'A comfortable and medium size sofa',
+  count: 2,
+  photo:
+    'https://www.ulcdn.net/images/products/215114/original/Apollo_Sofa_Set_FNSF51APDU30000SAAAA_slide_00.jpg?1538973284',
+  type: 'Stationery',
 };
 
 const invalidImageItem = {
@@ -100,39 +107,38 @@ const mockUser = {
   acceptTerms: true,
 };
 
-jest.setTimeout(30000);
-beforeAll(async () => {
-  await clearDatabase();
-  /* 
-    authCookie is needed to authenticate requests made to post, put, and delete items endpoints,
-    without it, all the mentioned requests will not be able to pass the user-authentication middleware.
-    And the reason for assigning all true items owners for the authenticated user is to make sure they
-    pass the item-authorization middleware.
-  */
-  const signUpResponse = await request(server)
-    .post('/api/auth/signup')
-    .set('Content-Type', 'application/json')
-    .send(mockUser);
-  owner = signUpResponse.body;
-  trueItem.owner = owner;
-  trueItem2.owner = owner;
-  trueItem3.owner = owner;
-  trueItem4.owner = owner;
-  const signInResponse = await request(server)
-    .post(`/api/auth/signin`)
-    .set('Content-Type', 'application/json')
-    .send({ username: mockUser.username, password: mockUser.password });
-
-  [authCookie] = signInResponse.headers['set-cookie'];
-});
-
-afterAll(async () => {
-  await clearDatabase();
-  await closeDatabase();
-  server.close();
-});
-
 describe('Items Endpoints', () => {
+  beforeAll(async () => {
+    await clearDatabase();
+    /* 
+      authCookie is needed to authenticate requests made to post, put, and delete items endpoints,
+      without it, all the mentioned requests will not be able to pass the user-authentication middleware.
+      And the reason for assigning all true items owners for the authenticated user is to make sure they
+      pass the item-authorization middleware.
+    */
+    const signUpResponse = await request(server)
+      .post('/api/auth/signup')
+      .set('Content-Type', 'application/json')
+      .send(mockUser);
+    ownerId = signUpResponse.body._id;
+    trueItem.owner = ownerId;
+    trueItem2.owner = ownerId;
+    trueItem3.owner = ownerId;
+    trueItem4.owner = ownerId;
+    const signInResponse = await request(server)
+      .post(`/api/auth/signin`)
+      .set('Content-Type', 'application/json')
+      .send({ username: mockUser.username, password: mockUser.password });
+
+    [authCookie] = signInResponse.headers['set-cookie'];
+  });
+
+  afterAll(async () => {
+    await clearDatabase();
+    await closeDatabase();
+    server.close();
+  });
+
   describe('GET /api/global/all-items', () => {
     test('Should send all items in the response, including not available ones', async () => {
       await request(server)
@@ -158,6 +164,7 @@ describe('Items Endpoints', () => {
 
       const response = await request(server).get('/api/global/all-items');
       const responseBody = response.body;
+      itemId = responseBody[0]._id;
 
       expect(response.header['content-type']).toContain('application/json');
       expect(response.statusCode).toBe(200);
@@ -170,24 +177,6 @@ describe('Items Endpoints', () => {
 
     test('Should response with an error message when there are no items', async () => {
       await clearDatabase();
-      // Because we are clearing the database for this test, the owner is being removed from the database as well and
-      // it is becoming undefined, so we have to signup the user and assign the item owner here again
-      const signUpResponse = await request(server)
-        .post('/api/auth/signup')
-        .set('Content-Type', 'application/json')
-        .send(mockUser);
-      owner = signUpResponse.body;
-      trueItem.owner = owner;
-      trueItem2.owner = owner;
-      trueItem3.owner = owner;
-      trueItem4.owner = owner;
-      const signInResponse = await request(server)
-        .post(`/api/auth/signin`)
-        .set('Content-Type', 'application/json')
-        .send({ username: mockUser.username, password: mockUser.password });
-
-      [authCookie] = signInResponse.headers['set-cookie'];
-
       const response = await request(server).get('/api/global/all-items');
       expect(response.header['content-type']).toContain('application/json');
       expect(response.statusCode).toBe(422);
@@ -291,6 +280,19 @@ describe('Items Endpoints', () => {
       expect(response.header['content-type']).toContain('application/json');
       expect(response.statusCode).toBe(201);
       expect(response.body.message).toBe('Item created successfully.');
+    });
+
+    test('Should not create a new item when owner ID is missing', async () => {
+      const response = await request(server)
+        .post('/api/items')
+        .set('Content-Type', 'application/json')
+        .set('Cookie', authCookie)
+        .send(noOwnerItem);
+
+      expect(response.header['content-type']).toContain('application/json');
+      expect(response.statusCode).toBe(422);
+      expect(response.body.message).toBeDefined();
+      expect(response.body.message).toContain('Owner reference is required');
     });
 
     test('Should not create a new item when image URL is invalid', async () => {
