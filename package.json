@@ -25,6 +25,7 @@
     "express": "^4.17.2",
     "express-session": "^1.17.2",
     "express-validator": "^6.14.0",
+    "generate-password": "^1.7.0",
     "is-image-url": "^1.1.8",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.1.8",
@@ -34,6 +35,7 @@
     "passport": "^0.5.2",
     "passport-google-oauth20": "^2.0.0",
     "supertest": "^6.2.2",
+    "unique-username-generator": "^1.0.1",
     "winston": "^3.5.1",
     "yarn-upgrade-all": "^0.6.1"
   },
