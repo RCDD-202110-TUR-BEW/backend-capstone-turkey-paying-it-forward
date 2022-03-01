@@ -51,6 +51,8 @@ module.exports = {
   updateItem: async (req, res) => {
     const { id } = req.params;
     try {
+      // the following line is to make sure that the owner of the item does not get updated
+      req.body.owner = req.user._id;
       const updatedItem = await ItemModel.findByIdAndUpdate(
         id,
         { $set: req.body },
@@ -66,6 +68,7 @@ module.exports = {
   },
   addItem: async (req, res) => {
     try {
+      req.body.owner = req.user._id;
       await ItemModel.create(req.body);
       res.status(201).json({ message: 'Item created successfully.' });
     } catch (err) {
