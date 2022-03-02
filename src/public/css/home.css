@@ -249,3 +249,17 @@ hr {
   height: 5px;
   margin: 50px auto;
 }
+
+.googleSignIn {
+  background-color: aliceblue;
+  color: #000 !important;
+  text-decoration: none;
+  border-radius: 15px;
+  text-align: center;
+  font-weight: bold;
+  margin-right: 5px;
+  padding: 5px;
+}
+#googleLogo {
+  width: 30px;
+}

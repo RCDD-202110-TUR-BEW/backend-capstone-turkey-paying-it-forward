@@ -1,10 +1,12 @@
 const express = require('express');
-const path = require('path');
 require('dotenv').config();
 const cookieParser = require('cookie-parser');
+const swaggerUi = require('swagger-ui-express');
+const path = require('path');
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const session = require('express-session');
+const swaggerDocument = require('./swagger.json');
 const { connectToMongo } = require('./db/connection');
 const authRoutes = require('./routers/auth');
 const itemRoutes = require('./routers/item');
@@ -50,6 +52,16 @@ app.use('/api/items', itemRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/requests', requestRoutes);
 app.use('/api/global', globalRoutes);
+
+const options = {
+  customCss: '.swagger-ui .topbar { display: none }',
+};
+
+app.use(
+  '/api/docs',
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerDocument, options)
+);
 app.use('/', (req, res) => {
   res.render('home');
 });

@@ -41,6 +41,7 @@ module.exports = {
         maxAge: cookieAge * 1000,
         httpOnly: true,
       });
+
       res.json({ message: 'Successfully signed in' });
     } catch (err) {
       res.status(422).json({ message: err.message ?? err });
