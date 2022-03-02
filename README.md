@@ -154,9 +154,9 @@ Paying it forward will help to reduce inequality in the education system in Turk
 
 <!-- Documentation -->
 
-## Documentation
+## Website and Documentation
 
-Explore our interactive API documentation [here](http://ec2-52-91-101-102.compute-1.amazonaws.com/api/docs/)
+Check out our [website](http://ec2-52-91-101-102.compute-1.amazonaws.com). Explore our interactive API documentation [here](http://ec2-52-91-101-102.compute-1.amazonaws.com/api/docs/).
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
