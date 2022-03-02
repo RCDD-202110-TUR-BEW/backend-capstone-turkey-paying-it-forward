@@ -10,12 +10,12 @@
   },
   "servers": [
     {
-      "url": "http://localhost:3000/api",
-      "description": "Internal Server"
+      "url": "https://ec2-52-91-101-102.compute-1.amazonaws.com/api",
+      "description": "Production Server"
     },
     {
-      "url": "http://payingitforward.com/api",
-      "description": "Production Server"
+      "url": "http://localhost:3000/api",
+      "description": "Internal Server"
     }
   ],
   "tags": [
