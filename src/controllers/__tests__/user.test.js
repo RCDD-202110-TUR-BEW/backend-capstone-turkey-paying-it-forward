@@ -359,12 +359,12 @@ describe('User Endpoints', () => {
     });
   });
 
-  describe('POST /api/users/rating/:userid', () => {
+  describe('POST /api/users/:userid/rating', () => {
     test('Should create a new rating if it does not exist', async () => {
       const res = await request(server).get(`/api/users/`);
       toBeRatedUserId = res.body[1]._id;
       const response = await request(server)
-        .post(`/api/users/rating/${toBeRatedUserId}`)
+        .post(`/api/users/${toBeRatedUserId}/rating`)
         .set('Content-Type', 'application/json')
         .set('Cookie', authCookie)
         .send({ rating: 5 });
@@ -393,7 +393,7 @@ describe('User Endpoints', () => {
       [newAuthCookie] = signInResponse.headers['set-cookie'];
 
       const response = await request(server)
-        .post(`/api/users/rating/${toBeRatedUserId}`)
+        .post(`/api/users/${toBeRatedUserId}/rating`)
         .set('Content-Type', 'application/json')
         .set('Cookie', newAuthCookie)
         .send({ rating: 3 });
@@ -406,9 +406,9 @@ describe('User Endpoints', () => {
     });
 
     test('Should response with an error message when requested user ID does not exist', async () => {
-      const response = await request(server).get(
-        `/api/users/${notExistingUserId}`
-      );
+      const response = await request(server)
+        .post(`/api/users/${notExistingUserId}/rating`)
+        .set('Cookie', newAuthCookie);
       const responseBody = response.body;
       expect(response.header['content-type']).toContain('application/json');
       expect(response.statusCode).toBe(422);
@@ -418,7 +418,9 @@ describe('User Endpoints', () => {
     });
 
     test('Should response with an error message when requested user ID is not valid', async () => {
-      const response = await request(server).get(`/api/users/${invalidId}`);
+      const response = await request(server)
+        .post(`/api/users/${invalidId}/rating`)
+        .set('Cookie', newAuthCookie);
       const responseBody = response.body;
       expect(response.header['content-type']).toContain('application/json');
       expect(response.statusCode).toBe(422);
@@ -427,7 +429,7 @@ describe('User Endpoints', () => {
 
     test('Should response with an error message if the user is not authenticated', async () => {
       const response = await request(server)
-        .put(`/api/users/rating/${toBeRatedUserId}`)
+        .post(`/api/users/${toBeRatedUserId}/rating`)
         .set('Content-Type', 'application/json')
         .send({ rating: 3 });
 
@@ -438,7 +440,7 @@ describe('User Endpoints', () => {
 
     test('Should response with an error message if the rater already rated user before', async () => {
       const response = await request(server)
-        .post(`/api/users/rating/${toBeRatedUserId}`)
+        .post(`/api/users/${toBeRatedUserId}/rating`)
         .set('Content-Type', 'application/json')
         .set('Cookie', authCookie)
         .send({ rating: 3 });
@@ -449,10 +451,10 @@ describe('User Endpoints', () => {
     });
   });
 
-  describe('PUT /api/users/rating/:userid', () => {
+  describe('PUT /api/users/:userid/rating', () => {
     test('Should update a rating if the rater have rated before that user', async () => {
       const response = await request(server)
-        .put(`/api/users/rating/${toBeRatedUserId}`)
+        .put(`/api/users/${toBeRatedUserId}/rating`)
         .set('Content-Type', 'application/json')
         .set('Cookie', authCookie)
         .send({ rating: 1 });
@@ -464,9 +466,9 @@ describe('User Endpoints', () => {
     });
 
     test('Should response with an error message when requested user ID does not exist', async () => {
-      const response = await request(server).get(
-        `/api/users/${notExistingUserId}`
-      );
+      const response = await request(server)
+        .put(`/api/users/${notExistingUserId}/rating`)
+        .set('Cookie', newAuthCookie);
       const responseBody = response.body;
       expect(response.header['content-type']).toContain('application/json');
       expect(response.statusCode).toBe(422);
@@ -476,7 +478,9 @@ describe('User Endpoints', () => {
     });
 
     test('Should response with an error message when requested user ID is not valid', async () => {
-      const response = await request(server).get(`/api/users/${invalidId}`);
+      const response = await request(server)
+        .put(`/api/users/${invalidId}/rating`)
+        .set('Cookie', newAuthCookie);
       const responseBody = response.body;
       expect(response.header['content-type']).toContain('application/json');
       expect(response.statusCode).toBe(422);
@@ -485,7 +489,7 @@ describe('User Endpoints', () => {
 
     test('Should response with an error message if the user does not have any rating', async () => {
       const response = await request(server)
-        .put(`/api/users/rating/${userIdDonator}`)
+        .put(`/api/users/${userIdDonator}/rating`)
         .set('Content-Type', 'application/json')
         .set('Cookie', authCookie)
         .send({ rating: 4 });
@@ -497,7 +501,7 @@ describe('User Endpoints', () => {
 
     test('Should response with an error message if the user is not authenticated', async () => {
       const response = await request(server)
-        .put(`/api/users/rating/${toBeRatedUserId}`)
+        .put(`/api/users/${toBeRatedUserId}/rating`)
         .set('Content-Type', 'application/json')
         .send({ rating: 4 });
 
@@ -522,7 +526,7 @@ describe('User Endpoints', () => {
         });
 
       const response = await request(server)
-        .put(`/api/users/rating/${toBeRatedUserId}`)
+        .put(`/api/users/${toBeRatedUserId}/rating`)
         .set('Content-Type', 'application/json')
         .set('Cookie', signInResponse.headers['set-cookie'])
         .send({ rating: 3 });

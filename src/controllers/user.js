@@ -107,12 +107,10 @@ module.exports = {
           rating: req.body.rating,
         };
         const rating = await RatingModel.findById(user.rating);
-        /* eslint no-restricted-syntax: ["off"] */
-        /* eslint prefer-const: "off" */
-        for (let rater of user.rating.raters) {
-          if (rater.raterId.toString() === req.user._id.toString())
-            throw new Error('You had already rated this user');
-        }
+        const isRaterExisting = user.rating.raters.find(
+          (rater) => rater.raterId.toString() === req.user._id.toString()
+        );
+        if (isRaterExisting) throw new Error('You had already rated this user');
         rating.raters.push(newRater);
         await rating.save();
         res.status(201).json(rating);
@@ -134,18 +132,14 @@ module.exports = {
       const rating = await RatingModel.findById(user.rating);
       if (!rating) throw new Error('The user does not have any rating');
       const userRaters = user.rating.raters;
-      let raterExists = false;
-      let indexOfRater = 0;
-      /* eslint no-restricted-syntax: ["off"] */
-      /* eslint prefer-const: "off" */
-      for (let rater of userRaters) {
-        if (rater.raterId.toString() === req.user._id.toString()) {
-          raterExists = true;
-          rating.raters[indexOfRater].rating = req.body.rating;
-        }
-        indexOfRater += 1;
+      const indexOfRater = userRaters.findIndex(
+        (rater) => rater.raterId.toString() === req.user._id.toString()
+      );
+      if (indexOfRater > -1) {
+        rating.raters[indexOfRater].rating = req.body.rating;
+      } else {
+        throw new Error('You do not have a rating to update');
       }
-      if (!raterExists) throw new Error('You do not have a rating to update');
       await rating.save();
       await user.save();
       res.json(rating);
