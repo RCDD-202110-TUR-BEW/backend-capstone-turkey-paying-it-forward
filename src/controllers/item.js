@@ -1,5 +1,6 @@
 const { ObjectId } = require('mongoose').Types;
 const ItemModel = require('../models/item');
+const UserModel = require('../models/user');
 
 module.exports = {
   getAllItems: async (req, res) => {
@@ -95,6 +96,42 @@ module.exports = {
         throw new Error('The item with the specified ID was not found.');
       }
       res.status(204).end();
+    } catch (err) {
+      res.status(422).json({ message: err.message ?? err });
+    }
+  },
+
+  donateItem: async (req, res) => {
+    try {
+      const { donateItemId, borrowerId } = req.body;
+      if (String(new ObjectId(donateItemId)) !== donateItemId.toString())
+        throw new Error('Requested item ID is not valid!');
+      if (String(new ObjectId(borrowerId)) !== borrowerId.toString())
+        throw new Error('Borrower ID is not valid!');
+
+      const user = await UserModel.findById(borrowerId);
+      if (!user)
+        throw new Error('The borrower with the specified ID was not found.');
+
+      const item = await ItemModel.findById(donateItemId).populate('owner', {
+        password_hash: 0,
+      });
+
+      if (!item) {
+        throw new Error('The item with the specified ID was not found.');
+      }
+
+      if (!item.isAvailable)
+        throw new Error(
+          'The item with the specified ID is not available for donation.'
+        );
+
+      item.count -= 1;
+      item.borrowers.push(borrowerId);
+      if (item.count === 0) item.isAvailable = false;
+
+      await item.save();
+      res.json(item);
     } catch (err) {
       res.status(422).json({ message: err.message ?? err });
     }

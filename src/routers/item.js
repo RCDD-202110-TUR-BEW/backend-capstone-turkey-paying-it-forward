@@ -15,7 +15,17 @@ router.get('/filter', itemController.getFilteredItems);
 // POST route for /api/items
 router.post('/', userAuthenticationMiddleware, itemController.addItem);
 
+// PUT route for /api/items/donate
+router
+  .route('/donate')
+  .put(
+    userAuthenticationMiddleware,
+    itemAuthenticationMiddleware,
+    itemController.donateItem
+  );
+
 // GET, PUT and DELETE routes for /api/items/:id
+
 router
   .route('/:id')
   .get(itemController.getSingleItem)

@@ -6,8 +6,9 @@ const { closeDatabase, clearDatabase } = require('../../db/connection');
 jest.setTimeout(10000);
 
 let authCookie;
+let newAuthCookie;
 let userId;
-
+let toBeRatedUserId;
 let userIdDonator;
 
 const invalidId = 'invalidId123';
@@ -29,6 +30,16 @@ const newValidUser2 = {
   firstName: 'Ted',
   lastName: 'Mosby',
   email: 'mosbythearchitect@gmail.com',
+  password: 'haveyoumetme1A!',
+  passwordConfirm: 'haveyoumetme1A!',
+  address: '16 West 82nd Street',
+};
+
+const newValidUser3 = {
+  username: 'schmos',
+  firstName: 'Teddy',
+  lastName: 'Mosty',
+  email: 'mostyschmosty@gmail.com',
   password: 'haveyoumetme1A!',
   passwordConfirm: 'haveyoumetme1A!',
   address: '16 West 82nd Street',
@@ -345,6 +356,184 @@ describe('User Endpoints', () => {
       expect(res.statusCode).toBe(200);
       expect(res.body.length).toBe(1);
       expect(res.body[0]).toMatchObject(expectedDonatorResponse);
+    });
+  });
+
+  describe('POST /api/users/:userid/rating', () => {
+    test('Should create a new rating if it does not exist', async () => {
+      const res = await request(server).get(`/api/users/`);
+      toBeRatedUserId = res.body[1]._id;
+      const response = await request(server)
+        .post(`/api/users/${toBeRatedUserId}/rating`)
+        .set('Content-Type', 'application/json')
+        .set('Cookie', authCookie)
+        .send({ rating: 5 });
+
+      expect(response.header['content-type']).toContain('application/json');
+      expect(response.statusCode).toBe(201);
+      expect(response.body.averageRating).toBe(5);
+      expect(response.body.raters[0].rating).toBe(5);
+    });
+
+    test('Should add a new rating to the existing one and calculate average rating', async () => {
+      // Below sign up and sign in for a new user is implemented to add a new a rating
+      await request(server)
+        .post('/api/auth/signup')
+        .set('Content-Type', 'application/json')
+        .send(newValidUser2);
+
+      const signInResponse = await request(server)
+        .post(`/api/auth/signin`)
+        .set('Content-Type', 'application/json')
+        .send({
+          email: newValidUser2.email,
+          password: newValidUser2.password,
+        });
+
+      [newAuthCookie] = signInResponse.headers['set-cookie'];
+
+      const response = await request(server)
+        .post(`/api/users/${toBeRatedUserId}/rating`)
+        .set('Content-Type', 'application/json')
+        .set('Cookie', newAuthCookie)
+        .send({ rating: 3 });
+
+      expect(response.header['content-type']).toContain('application/json');
+      expect(response.statusCode).toBe(201);
+      expect(response.body.raters.length).toBe(2);
+      expect(response.body.averageRating).toBe(4);
+      expect(response.body.raters[1].rating).toBe(3);
+    });
+
+    test('Should response with an error message when requested user ID does not exist', async () => {
+      const response = await request(server)
+        .post(`/api/users/${notExistingUserId}/rating`)
+        .set('Cookie', newAuthCookie);
+      const responseBody = response.body;
+      expect(response.header['content-type']).toContain('application/json');
+      expect(response.statusCode).toBe(422);
+      expect(responseBody.message).toBe(
+        "The user with the specified ID wasn't found"
+      );
+    });
+
+    test('Should response with an error message when requested user ID is not valid', async () => {
+      const response = await request(server)
+        .post(`/api/users/${invalidId}/rating`)
+        .set('Cookie', newAuthCookie);
+      const responseBody = response.body;
+      expect(response.header['content-type']).toContain('application/json');
+      expect(response.statusCode).toBe(422);
+      expect(responseBody.message).toBe('Requested user ID is not valid!');
+    });
+
+    test('Should response with an error message if the user is not authenticated', async () => {
+      const response = await request(server)
+        .post(`/api/users/${toBeRatedUserId}/rating`)
+        .set('Content-Type', 'application/json')
+        .send({ rating: 3 });
+
+      expect(response.header['content-type']).toContain('application/json');
+      expect(response.statusCode).toBe(401);
+      expect(response.body.message).toBe('You are not authenticated');
+    });
+
+    test('Should response with an error message if the rater already rated user before', async () => {
+      const response = await request(server)
+        .post(`/api/users/${toBeRatedUserId}/rating`)
+        .set('Content-Type', 'application/json')
+        .set('Cookie', authCookie)
+        .send({ rating: 3 });
+
+      expect(response.header['content-type']).toContain('application/json');
+      expect(response.statusCode).toBe(422);
+      expect(response.body.message).toBe('You had already rated this user');
+    });
+  });
+
+  describe('PUT /api/users/:userid/rating', () => {
+    test('Should update a rating if the rater have rated before that user', async () => {
+      const response = await request(server)
+        .put(`/api/users/${toBeRatedUserId}/rating`)
+        .set('Content-Type', 'application/json')
+        .set('Cookie', authCookie)
+        .send({ rating: 1 });
+
+      expect(response.header['content-type']).toContain('application/json');
+      expect(response.statusCode).toBe(200);
+      expect(response.body.averageRating).toBe(2);
+      expect(response.body.raters[0].rating).toBe(1);
+    });
+
+    test('Should response with an error message when requested user ID does not exist', async () => {
+      const response = await request(server)
+        .put(`/api/users/${notExistingUserId}/rating`)
+        .set('Cookie', newAuthCookie);
+      const responseBody = response.body;
+      expect(response.header['content-type']).toContain('application/json');
+      expect(response.statusCode).toBe(422);
+      expect(responseBody.message).toBe(
+        "The user with the specified ID wasn't found"
+      );
+    });
+
+    test('Should response with an error message when requested user ID is not valid', async () => {
+      const response = await request(server)
+        .put(`/api/users/${invalidId}/rating`)
+        .set('Cookie', newAuthCookie);
+      const responseBody = response.body;
+      expect(response.header['content-type']).toContain('application/json');
+      expect(response.statusCode).toBe(422);
+      expect(responseBody.message).toBe('Requested user ID is not valid!');
+    });
+
+    test('Should response with an error message if the user does not have any rating', async () => {
+      const response = await request(server)
+        .put(`/api/users/${userIdDonator}/rating`)
+        .set('Content-Type', 'application/json')
+        .set('Cookie', authCookie)
+        .send({ rating: 4 });
+
+      expect(response.header['content-type']).toContain('application/json');
+      expect(response.statusCode).toBe(422);
+      expect(response.body.message).toBe('The user does not have any rating');
+    });
+
+    test('Should response with an error message if the user is not authenticated', async () => {
+      const response = await request(server)
+        .put(`/api/users/${toBeRatedUserId}/rating`)
+        .set('Content-Type', 'application/json')
+        .send({ rating: 4 });
+
+      expect(response.header['content-type']).toContain('application/json');
+      expect(response.statusCode).toBe(401);
+      expect(response.body.message).toBe('You are not authenticated');
+    });
+
+    test('Should response with an error message if the rater is trying to update a rating before even adding any rate', async () => {
+      // Below sign up and sign in for a new user is implemented to add a new a rating
+      await request(server)
+        .post('/api/auth/signup')
+        .set('Content-Type', 'application/json')
+        .send(newValidUser3);
+
+      const signInResponse = await request(server)
+        .post(`/api/auth/signin`)
+        .set('Content-Type', 'application/json')
+        .send({
+          email: newValidUser3.email,
+          password: newValidUser3.password,
+        });
+
+      const response = await request(server)
+        .put(`/api/users/${toBeRatedUserId}/rating`)
+        .set('Content-Type', 'application/json')
+        .set('Cookie', signInResponse.headers['set-cookie'])
+        .send({ rating: 3 });
+
+      expect(response.header['content-type']).toContain('application/json');
+      expect(response.statusCode).toBe(422);
+      expect(response.body.message).toBe('You do not have a rating to update');
     });
   });
 });
