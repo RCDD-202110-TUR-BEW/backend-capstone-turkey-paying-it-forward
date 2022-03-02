@@ -1208,7 +1208,7 @@
         }
       }
     },
-    "/users/rating/{userid}": {
+    "/users/{userid}/rating": {
       "post": {
         "summary": "Rates a user",
         "tags": ["Rating"],
