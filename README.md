@@ -63,7 +63,7 @@
 
 ## About The Project
 
-Paying it forward will help to reduce inequality in the education system in Turkey.In our current society, unfortunately some children or families couldn't afford basic needs such as books, stationery, etc. The platform aims to meet those needs via donation or enabling item sharing such as sending non-used books. The students also can request items they need and let the others know about this. The platform will also send a newsletter email to the registered users every week.
+Paying it forward will help to reduce inequality in the education system in Turkey. In our current society, unfortunately some children or families couldn't afford basic needs such as books, stationery, etc. The platform aims to meet those needs via donation or enabling item sharing such as sending non-used books. The students also can request items they need and let the others know about this. The platform will also send a newsletter email to the registered users every week.
 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -73,7 +73,7 @@ Paying it forward will help to reduce inequality in the education system in Turk
 - List items and users
 - CRUD operations for items
 - CRUD operations for users
-- Rating items
+- Rating users
 - Filter items by their category
 - Register/Login
   - Allow Google, Classic
@@ -94,23 +94,24 @@ Paying it forward will help to reduce inequality in the education system in Turk
 - [Swagger](https://swagger.io/)
 - [Jest](https://jestjs.io/)
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">back to top</a>)</p> 
 
 
 # Screenshots
 
 ### Database Design
 
-![Database]()
+![Database](src/assets/database.png)
 
 ### System Architecture Design
-![System Architecture]()
-
-### Docs
-![Docs]()
+![System Architecture](src/assets/system.png)
 
 ### Homepage
-![Homepage]()
+![Homepage](src/assets/frontend1.png)
+![Homepage](src/assets/frontend2.png)
+![Homepage](src/assets/frontend3.png)
+![Homepage](src/assets/frontend4.png)
+![Homepage](src/assets/frontend5.png)
 
 
 <!-- GETTING STARTED -->
@@ -120,9 +121,9 @@ Paying it forward will help to reduce inequality in the education system in Turk
 ### Prerequisites
 
 
-- npm
+- yarn
   ```sh
-  npm install npm@latest -g
+  npm install --global yarn
   ```
 
 ### Installation
@@ -136,13 +137,17 @@ Paying it forward will help to reduce inequality in the education system in Turk
    cd backend-capstone-turkey-paying-it-forward
    ```
 
-3. Install NPM packages
+3. Install dependencies
    ```sh
-   yarn / npm install
+   yarn
    ```
 4. Run the project
    ```sh
-   yarn start / npm run start
+   yarn start
+   ```
+5. Run checks and tests
+   ```sh
+   yarn test
    ```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -151,7 +156,7 @@ Paying it forward will help to reduce inequality in the education system in Turk
 
 ## Documentation
 
-[Documentation](https://localhost:3000/api/docs)_
+Explore our interactive API documentation [here](http://ec2-52-91-101-102.compute-1.amazonaws.com/api/docs/)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -176,6 +181,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 ## Acknowledgements
 * [![google-shield]][google-url]
 * [![stackoverflow-shield]][stackoverflow-url]
+* [![MDN Web Docs]][mdn-url]
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 [license-shield]: https://img.shields.io/github/license/RCDD-202110-TUR-BEW/backend-capstone-turkey-bursapediary.svg?style=flat-square
@@ -212,40 +218,6 @@ Distributed under the MIT License. See `LICENSE` for more information.
 [github-url]: https://github.com/
 [linkedin-shield]: https://img.shields.io/badge/-linkedin-blue?style=flat-square&logo=Linkedin&logoColor=white
 [linkedin-url]: https://linkedin.com/
-
-
-<!-- CONTRIBUTING -->
-
-## Contributing
-
-Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
-
-If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
-Don't forget to give the project a star! Thanks again!
-
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-<!-- LICENSE -->
-
-## License
-
-Distributed under the MIT License. See `LICENSE.txt` for more information.
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-<!-- ACKNOWLEDGMENTS -->
-
-## Acknowledgments
-
-- [![MDN Web Docs]][mdn-url]
-- [![stackoverflow-shield]][stackoverflow-url]
-- [![NPM]][npm-url]
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
