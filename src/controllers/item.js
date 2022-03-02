@@ -1,7 +1,6 @@
 const { ObjectId } = require('mongoose').Types;
 const ItemModel = require('../models/item');
 const UserModel = require('../models/user');
-const logger = require('../services/logger');
 
 module.exports = {
   getAllItems: async (req, res) => {
@@ -84,10 +83,8 @@ module.exports = {
     try {
       req.body.owner = req.user._id;
       await ItemModel.create(req.body);
-      logger.log('info', 'Item added successfully!');
       res.status(201).json({ message: 'Item created successfully.' });
     } catch (err) {
-      logger.log('error', err.message);
       res.status(422).json({ message: err.message });
     }
   },
