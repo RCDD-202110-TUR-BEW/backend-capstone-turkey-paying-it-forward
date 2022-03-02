@@ -1130,6 +1130,174 @@
           }
         }
       }
+    },
+    "/rating/{userid}": {
+      "post": {
+        "summary": "Rates a user",
+        "tags": ["Rating"],
+        "parameters": [
+          {
+            "name": "userid",
+            "in": "path",
+            "required": true,
+            "description": "Rated user ID",
+            "schema": {
+              "type": "string",
+              "example": "6212527f45b9ccd48e33860d"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Rating data",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "rating": {
+                    "type": "number",
+                    "example": 3
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "authCookie": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful Operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Rating"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Missing fields or user already rated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "You had already rated this user"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthenticated or Unauthorized Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "You are not authenticated"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update rating",
+        "tags": ["Rating"],
+        "parameters": [
+          {
+            "name": "userid",
+            "in": "path",
+            "required": true,
+            "description": "Rated user ID",
+            "schema": {
+              "type": "string",
+              "example": "6212527f45b9ccd48e33860d"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Rating data",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "rating": {
+                    "type": "number",
+                    "example": 3
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "authCookie": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful Operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Rating"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Missing fields or user is not rated previously",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "You do not have a rating to update"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthenticated or Unauthorized Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "You are not authenticated"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
