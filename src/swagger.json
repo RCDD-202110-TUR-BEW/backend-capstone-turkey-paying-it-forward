@@ -30,6 +30,14 @@
     {
       "name": "Items",
       "description": "Items endpoints"
+    },
+    {
+      "name": "Requests",
+      "description": "Requests endpoints"
+    },
+    {
+      "name": "Rating",
+      "description": "Rating endpoints"
     }
   ],
   "consumes": ["application/json"],
@@ -826,6 +834,302 @@
           }
         }
       }
+    },
+    "/requests": {
+      "post": {
+        "summary": "Posts a request",
+        "tags": ["Requests"],
+        "requestBody": {
+          "required": true,
+          "description": "Request data",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "$ref": "#/definitions/PostRequest"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "authCookie": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful Operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Request"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Missing fields",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Request name is required"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthenticated or Unauthorized Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "You are not authenticated"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Sends all requests",
+        "tags": ["Requests"],
+        "responses": {
+          "200": {
+            "description": "Successful Operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "$ref": "#/components/schemas/Request"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "No Requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "No requests found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/requests/{id}": {
+      "get": {
+        "summary": "Gets a request by its ID",
+        "tags": ["Requests"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Request ID",
+            "schema": {
+              "type": "string",
+              "example": "6212527f45b9ccd48e33860d"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Request"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Wrong Request ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "The request with the specified ID was not found."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Updates the request information with the specified ID",
+        "tags": ["Requests"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Request ID",
+            "schema": {
+              "type": "string",
+              "example": "6212527f45b9ccd48e33860d"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "One or more fields that needs to be updated",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Sofa"
+                  },
+                  "type": {
+                    "type": "string",
+                    "example": "Stationery"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "authCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "$ref": "#/components/schemas/Request"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Wrong Request ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "The request with the specified ID was not found."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthenticated or Unauthorized Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "unauthorized to modify the requested request"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Deletes the request with the specified ID",
+        "tags": ["Requests"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Request ID",
+            "schema": {
+              "type": "string",
+              "example": "6212527f45b9ccd48e33860d"
+            }
+          }
+        ],
+        "security": [
+          {
+            "authCookie": []
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Operation, No Content"
+          },
+          "422": {
+            "description": "Wrong Request ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "The request with the specified ID was not found."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthenticated or Unauthorized Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "unauthorized to modify the requested request"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -915,7 +1219,7 @@
     },
     "PostItem": {
       "type": "object",
-      "required": ["owner", "name", "description", "type", "photo"],
+      "required": ["name", "description", "type", "photo"],
       "properties": {
         "name": {
           "type": "string",
@@ -947,11 +1251,42 @@
           "example": 3,
           "default": 1,
           "description": "Optional, if not provided it will default to 1"
-        },
-        "owner": {
+        }
+      }
+    },
+    "PostRequest": {
+      "type": "object",
+      "required": ["name", "description", "type"],
+      "properties": {
+        "_id": {
           "type": "string",
-          "description": "Owner reference",
-          "example": "6212527f45b9ccd48e33860d"
+          "description": "Automatically generated ID, unique for each item",
+          "example": "62129b16ca8ad73083e24b98"
+        },
+        "name": {
+          "type": "string",
+          "example": "Clean Code"
+        },
+        "description": {
+          "type": "string",
+          "example": "Clean Code book by Robert Cecil Marten"
+        },
+        "type": {
+          "type": "string",
+          "example": "Books",
+          "enum": [
+            "Books",
+            "Stationery",
+            "School Books",
+            "Novels",
+            "Test Books",
+            "Furniture"
+          ]
+        },
+        "photo": {
+          "type": "string",
+          "example": "https://st.depositphotos.com/1500766/2998/i/950/depositphotos_29982203-stock-photo-sofa-furniture-isolated-on-white.jpg",
+          "description": "A valid image URL"
         }
       }
     },
