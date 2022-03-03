@@ -350,7 +350,7 @@ describe('Items Endpoints', () => {
 
       expect(response.header['content-type']).toContain('application/json');
       expect(response.statusCode).toBe(201);
-      expect(response.body.message).toBe('Item created successfully.');
+      expect(response.body).toMatchObject(trueItem);
     });
 
     test('Should not create a new item when image URL is invalid', async () => {
