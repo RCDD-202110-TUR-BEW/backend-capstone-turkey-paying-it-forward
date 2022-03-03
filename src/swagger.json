@@ -472,12 +472,7 @@
               "application/json": {
                 "schema": {
                   "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string",
-                      "example": "Item created successfully."
-                    }
-                  }
+                  "$ref": "#/components/schemas/Item"
                 }
               }
             }

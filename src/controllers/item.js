@@ -82,8 +82,11 @@ module.exports = {
   addItem: async (req, res) => {
     try {
       req.body.owner = req.user._id;
-      await ItemModel.create(req.body);
-      res.status(201).json({ message: 'Item created successfully.' });
+      const item = await ItemModel.create(req.body);
+      await item.populate('owner', {
+        password_hash: 0,
+      });
+      res.status(201).json(item);
     } catch (err) {
       res.status(422).json({ message: err.message });
     }
