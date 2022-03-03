@@ -24,7 +24,7 @@
     <a href="#getting-started"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="#">View Demo</a>
+    <a href="http://ec2-52-91-101-102.compute-1.amazonaws.com/">View Demo</a>
     ·
     <a href="https://github.com/RCDD-202110-TUR-BEW/backend-capstone-turkey-paying-it-forward/issues">Report Bug</a>
     ·
