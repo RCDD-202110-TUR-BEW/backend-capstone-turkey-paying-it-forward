@@ -10,7 +10,7 @@
   },
   "servers": [
     {
-      "url": "http://ec2-52-91-101-102.compute-1.amazonaws.com/api",
+      "url": "https://payingitforward.re-coded.com/api",
       "description": "Production Server"
     },
     {

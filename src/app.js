@@ -6,6 +6,7 @@ const path = require('path');
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const session = require('express-session');
+const cors = require('cors');
 const swaggerDocument = require('./swagger.json');
 const { connectToMongo } = require('./db/connection');
 const authRoutes = require('./routers/auth');
@@ -28,6 +29,7 @@ app.use(
     saveUninitialized: true,
   })
 );
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
