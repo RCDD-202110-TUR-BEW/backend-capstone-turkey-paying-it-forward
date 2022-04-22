@@ -24,6 +24,10 @@ router
     itemController.donateItem
   );
 
+// PUT route for /api/items/borrow
+
+router.put('/borrow', userAuthenticationMiddleware, itemController.borrowItem);
+
 // GET, PUT and DELETE routes for /api/items/:id
 
 router
