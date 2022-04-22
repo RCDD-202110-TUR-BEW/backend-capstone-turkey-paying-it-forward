@@ -406,6 +406,56 @@
         }
       }
     },
+    "/users/{userid}/donatedItems": {
+      "get": {
+        "summary": "Gets user's donated items",
+        "tags": ["Users"],
+        "parameters": [
+          {
+            "name": "userid",
+            "in": "path",
+            "required": true,
+            "description": "User ID",
+            "schema": {
+              "type": "string",
+              "example": "6212527f45b9ccd48e33860d"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "$ref": "#/components/schemas/Item"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Missing user ID or user did not donate anything yet",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "This user does not have any donatedItems"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/global/donators": {
       "get": {
         "summary": "Sends all donator users",
@@ -860,6 +910,84 @@
                     "message": {
                       "type": "string",
                       "example": "You are not authenticated"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/items/borrow": {
+      "put": {
+        "summary": "Borrow donated items",
+        "tags": ["Items"],
+        "requestBody": {
+          "required": true,
+          "description": "Item ID",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "requestedItemId": {
+                    "type": "string",
+                    "example": "6212527f45b9ccd48e33860d"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "authCookie": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Item Borrowed Successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Item borrowed successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "You are not authenticated"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Missing fields or item not available",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "The item with the specified ID was not found."
                     }
                   }
                 }
