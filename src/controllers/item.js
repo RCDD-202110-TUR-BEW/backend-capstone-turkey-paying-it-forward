@@ -139,4 +139,33 @@ module.exports = {
       res.status(422).json({ message: err.message ?? err });
     }
   },
+
+  borrowItem: async (req, res) => {
+    try {
+      const { requestedItemId } = req.body;
+      const borrowerId = req.user._id;
+      if (String(new ObjectId(requestedItemId)) !== requestedItemId.toString())
+        throw new Error('Requested item ID is not valid!');
+
+      const item = await ItemModel.findById(requestedItemId);
+
+      if (!item) {
+        throw new Error('The item with the specified ID was not found.');
+      }
+
+      if (!item.isAvailable)
+        throw new Error(
+          'The item with the specified ID is not available for donation.'
+        );
+
+      item.count -= 1;
+      item.borrowers.push(borrowerId);
+      if (item.count === 0) item.isAvailable = false;
+
+      await item.save();
+      res.json({ message: 'Item borrowed successfully' });
+    } catch (err) {
+      res.status(422).json({ message: err.message ?? err });
+    }
+  },
 };

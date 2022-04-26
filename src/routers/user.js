@@ -26,10 +26,12 @@ router
     userController.deleteUser
   );
 
-// POST and PUT routes for /api/users/rating/:id
+// POST and PUT routes for /api/users/:userid/rating
 router
   .route('/:userid/rating')
   .post(userAuthenticationMiddleware, userController.rateUser)
   .put(userAuthenticationMiddleware, userController.updateUserRating);
+
+router.get('/:userid/donatedItems', userController.donatedItems);
 
 module.exports = router;
